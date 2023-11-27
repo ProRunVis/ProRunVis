@@ -20,7 +20,7 @@ public class Main {
 
         //check if the argument specifies a .java file
         if(!args[0].endsWith(".java")) {
-            System.out.println("No .java file found");
+            System.out.println("Input is not a .java file");
             return;
         }
 
