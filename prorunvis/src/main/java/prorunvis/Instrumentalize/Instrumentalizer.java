@@ -20,14 +20,14 @@ import java.util.List;
 public class Instrumentalizer {
     public CompilationUnit cu;
     private final InstrumentalizerSetupVisitor isv;
-    private final List<ModifierVisitor<?>> visitor = new ArrayList<>();
+    private final List<ModifierVisitor<List<Integer>>> visitor = new ArrayList<>();
 
     /**
      * Enables instrumentalization over the given {@link CompilationUnit} with the given {@link ModifierVisitor}
      * @param cu The {@link CompilationUnit} to be instrumentalized
      * @param visitor {@link ModifierVisitor} implementing tracing for different statements. If none are passed, only setup is performed.
      */
-    public Instrumentalizer(CompilationUnit cu, List<ModifierVisitor<?>> visitor) {
+    public Instrumentalizer(CompilationUnit cu, List<ModifierVisitor<List<Integer>>> visitor) {
         isv = new InstrumentalizerSetupVisitor();
         this.visitor.addAll(visitor);
         this.cu = cu;
@@ -38,8 +38,11 @@ public class Instrumentalizer {
      */
     private void setupTrace(){
         File file = new File("out/Trace.tr");
-        try {file.createNewFile();}
-        catch (IOException e) {e.printStackTrace();}
+        try {
+            file.delete();
+            file.createNewFile();
+        }
+        catch (IOException e) {throw new RuntimeException(e.getMessage());}
         cu.addImport(BufferedWriter.class).addImport(FileWriter.class).addImport(IOException.class);
         isv.visit(cu, file.getAbsolutePath());
     }
@@ -49,8 +52,9 @@ public class Instrumentalizer {
      */
     public void run() {
         setupTrace();
-        for(ModifierVisitor<?> visitor : visitor) {
-            visitor.visit(cu, null);
+        List<Integer> IDs = new ArrayList<>();
+        for(ModifierVisitor<List<Integer>> visitor : visitor) {
+            visitor.visit(cu, IDs);
         }
     }
 }
@@ -68,7 +72,7 @@ class InstrumentalizerSetupVisitor extends ModifierVisitor<String> {
         method.setBody(StaticJavaParser.parseBlock("{try {" +
                 "BufferedWriter writer = new BufferedWriter(new FileWriter(\"" +
                 path.replace('\\', '.') +
-                "\", true));" + "writer.write(" + method.getParameter(0).getNameAsString() + ");" +
+                "\", true));" + "writer.write(" + method.getParameter(0).getNameAsString() + " + System.lineSeparator());" +
                 "writer.close();" +
                 "} catch (IOException e) {throw new RuntimeException(e.getMessage());}}")
         );
