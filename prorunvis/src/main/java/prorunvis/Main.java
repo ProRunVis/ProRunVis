@@ -2,10 +2,16 @@ package prorunvis;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.visitor.ModifierVisitor;
+import prorunvis.Instrumentalize.Instrumentalizer;
+import prorunvis.trace.modifier.IfStatementModifier;
+import prorunvis.trace.modifier.ReturnStatementModifier;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
@@ -37,7 +43,23 @@ public class Main {
         //parse the file and save the resulting ast
         CompilationUnit cu;
         try {
+
+            //create compilation unit and modifier
             cu = StaticJavaParser.parse(file);
+            IfStatementModifier ifMod = new IfStatementModifier();
+            ReturnStatementModifier retMod = new ReturnStatementModifier();
+
+            //add modifier to list
+            List<ModifierVisitor<List<Integer>>> modifier = new ArrayList<>();
+            modifier.add(ifMod);
+            modifier.add(retMod);
+
+            //instrumentalize the compilation unit
+            Instrumentalizer instrumentalizer = new Instrumentalizer(cu, modifier);
+            instrumentalizer.run();
+
+            //compile and execute the program
+            CompileAndRun.compile(cu);
         }catch(Exception e){
             throw new RuntimeException(e.getMessage());
         }
