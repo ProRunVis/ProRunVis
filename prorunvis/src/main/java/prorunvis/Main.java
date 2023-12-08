@@ -5,6 +5,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
 import prorunvis.Instrumentalize.Instrumentalizer;
 import prorunvis.trace.modifier.IfStatementModifier;
+import prorunvis.trace.modifier.MethodDeclarationModifier;
 import prorunvis.trace.modifier.ReturnStatementModifier;
 
 import java.io.File;
@@ -48,11 +49,13 @@ public class Main {
             cu = StaticJavaParser.parse(file);
             IfStatementModifier ifMod = new IfStatementModifier();
             ReturnStatementModifier retMod = new ReturnStatementModifier();
+            MethodDeclarationModifier decMod = new MethodDeclarationModifier();
 
             //add modifier to list
             List<ModifierVisitor<List<Integer>>> modifier = new ArrayList<>();
             modifier.add(ifMod);
             modifier.add(retMod);
+            modifier.add(decMod);
 
             //instrumentalize the compilation unit
             Instrumentalizer instrumentalizer = new Instrumentalizer(cu, modifier);
