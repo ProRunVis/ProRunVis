@@ -12,6 +12,7 @@ import java.util.List;
 public class MethodDeclarationModifier extends ModifierVisitor<List<Integer>>{
         @Override
         public MethodDeclaration visit(MethodDeclaration decl, List<Integer> arg){
+            if(decl.getNameAsString().equals("proRunVisTrace")) return decl;
             String methodCall = "proRunVisTrace(\"$ID\");";
             NodeList<Statement> statements;
             if(decl.getBody().isPresent()) {
