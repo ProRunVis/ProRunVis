@@ -8,9 +8,7 @@ import com.github.javaparser.symbolsolver.utils.SymbolSolverCollectionStrategy;
 import com.github.javaparser.utils.ProjectRoot;
 import prorunvis.Instrumentalize.Instrumentalizer;
 import prorunvis.preprocess.Preprocessor;
-import prorunvis.trace.modifier.IfStatementModifier;
-import prorunvis.trace.modifier.MethodDeclarationModifier;
-import prorunvis.trace.modifier.ReturnStatementModifier;
+import prorunvis.trace.modifier.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -39,6 +37,9 @@ public class Main {
         Instrumentalizer.addVisitor(new IfStatementModifier());
         Instrumentalizer.addVisitor(new ReturnStatementModifier());
         Instrumentalizer.addVisitor(new MethodDeclarationModifier());
+        Instrumentalizer.addVisitor(new ForLoopModifier());
+        Instrumentalizer.addVisitor(new SwitchModifier());
+        Instrumentalizer.addVisitor(new WhileLoopModifier());
 
         Instrumentalizer.setupTrace();
 
