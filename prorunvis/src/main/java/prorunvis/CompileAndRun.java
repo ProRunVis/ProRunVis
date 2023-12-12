@@ -1,31 +1,55 @@
 package prorunvis;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.utils.ProjectRoot;
 
-import javax.tools.JavaCompiler;
-import javax.tools.ToolProvider;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class CompileAndRun {
 
-    static JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-
     /**
-     * Writes the given {@link CompilationUnit} into a .java file, then compiles and runs that file
-     * @param unit - <code>CompilationUnit</code> to be compiled
-     * @throws IOException if something goes wrong while the file is created
-     * @throws InterruptedException if the execution is interrupted
+     * Writes the given {@link CompilationUnit}s into .java files, then compiles and runs the project
+     * @throws IOException if something goes wrong while the files are created
+     * @throws InterruptedException if the compilation or execution is interrupted
      */
-    public static void compile (CompilationUnit unit) throws IOException, InterruptedException {
+    public static void run (ProjectRoot projectRoot, List<CompilationUnit> cus) throws IOException, InterruptedException {
 
-        String fileName = unit.getStorage().get().getFileName();
+        Path savePath = Paths.get("resources/out/instrumented");
 
-        BufferedWriter writer = new BufferedWriter(new FileWriter("out/" + fileName, false));
-        writer.write(unit.toString());
-        writer.close();
-        compiler.run(null, null, null, "out/" + fileName, "-d", "out");
-        Runtime.getRuntime().exec("java -cp out " + fileName.replace(".java", "")).waitFor();
+        File instrumented = new File(savePath.toString());
+        instrumented.mkdir();
+
+        File compiled = new File("resources/out/compiled");
+        compiled.mkdir();
+
+        projectRoot.getSourceRoots().forEach(sr -> sr.saveAll(savePath));
+        CompilationUnit mainUnit = cus.stream().filter(cu -> cu.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("main")).isPresent()).toList().get(0);
+
+        String fileName = mainUnit.getStorage().get().getFileName();
+        Path path = mainUnit.getStorage().get().getDirectory();
+
+        Runtime currentRuntime = Runtime.getRuntime();
+        Process compileProc = currentRuntime.exec("javac -sourcepath " + savePath + " -d resources/out/compiled " + path.toString() + "\\" + fileName);
+        compileProc.waitFor();
+
+        String compileError = new BufferedReader(new InputStreamReader(compileProc.getErrorStream())).lines().collect(Collectors.joining("\n"));
+        if (!compileError.isEmpty()) {
+            System.out.println("An error occurred during compilation:\n" + compileError);
+            return;
+        }
+
+        String rootPath = new StringBuilder(String.valueOf(path)).delete(0, savePath.toAbsolutePath().toString().length() + 1).toString();
+        Process runProc = currentRuntime.exec("java -cp resources/out/compiled " + ((rootPath.isEmpty()) ? "" : rootPath + ".") + fileName.replace(".java", ""));
+        runProc.waitFor();
+
+        String runError = new BufferedReader(new InputStreamReader(runProc.getErrorStream())).lines().collect(Collectors.joining("\n"));
+        String output = new BufferedReader(new InputStreamReader(runProc.getInputStream())).lines().collect(Collectors.joining("\n"));
+        if (!runError.isEmpty()) System.out.println("There was an error running the input code:\n" + runError);
+        else System.out.println(output);
     }
 }

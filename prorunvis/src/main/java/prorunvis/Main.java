@@ -2,69 +2,57 @@ package prorunvis;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.visitor.ModifierVisitor;
+import com.github.javaparser.symbolsolver.JavaSymbolSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
+import com.github.javaparser.symbolsolver.utils.SymbolSolverCollectionStrategy;
+import com.github.javaparser.utils.ProjectRoot;
 import prorunvis.Instrumentalize.Instrumentalizer;
+import prorunvis.preprocess.Preprocessor;
 import prorunvis.trace.modifier.IfStatementModifier;
 import prorunvis.trace.modifier.MethodDeclarationModifier;
 import prorunvis.trace.modifier.ReturnStatementModifier;
 
-import java.io.File;
-import java.nio.file.Path;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
 
-    public static void main(String[]args){
+    public static void main(String[]args) throws IOException, InterruptedException {
 
         //check if an argument of sufficient length has been provided
-        if(args.length == 0
-                || args[0].length() < 6){
-            System.out.println("Invalid input");
+        if(args.length == 0){
+            System.out.println("Missing input");
             return;
         }
 
-        //check if the argument specifies a .java file
-        if(!args[0].endsWith(".java")) {
-            System.out.println("Input is not a .java file");
+        if(!Files.isDirectory(Paths.get(args[0]))) {
+            System.out.println("Folder not found");
             return;
         }
 
-        //generate a path and file object
-        Path path = Paths.get(args[0]);
-        File file = path.toFile().getAbsoluteFile();
+        StaticJavaParser.getParserConfiguration().setSymbolResolver(new JavaSymbolSolver(new CombinedTypeSolver()));
+        ProjectRoot projectRoot = new SymbolSolverCollectionStrategy().collect(Paths.get(args[0]).toAbsolutePath());
 
-        //check if the file exists
-        if(!file.exists()) {
-            System.out.println("Specified file does not exist");
-            return;
-        }
+        Instrumentalizer.addVisitor(new IfStatementModifier());
+        Instrumentalizer.addVisitor(new ReturnStatementModifier());
+        Instrumentalizer.addVisitor(new MethodDeclarationModifier());
 
-        //parse the file and save the resulting ast
-        CompilationUnit cu;
-        try {
+        Instrumentalizer.setupTrace();
 
-            //create compilation unit and modifier
-            cu = StaticJavaParser.parse(file);
-            IfStatementModifier ifMod = new IfStatementModifier();
-            ReturnStatementModifier retMod = new ReturnStatementModifier();
-            MethodDeclarationModifier decMod = new MethodDeclarationModifier();
+        List<CompilationUnit> cus = new ArrayList<>();
+        projectRoot.getSourceRoots().forEach(sr -> {
+            try {
+                sr.tryToParse().forEach(cu -> cus.add(cu.getResult().get()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
-            //add modifier to list
-            List<ModifierVisitor<List<Integer>>> modifier = new ArrayList<>();
-            modifier.add(ifMod);
-            modifier.add(retMod);
-            modifier.add(decMod);
+        cus.forEach(cu -> {Preprocessor.run(cu); Instrumentalizer.run(cu);});
 
-            //instrumentalize the compilation unit
-            Instrumentalizer instrumentalizer = new Instrumentalizer(cu, modifier);
-            instrumentalizer.run();
-
-            //compile and execute the program
-            CompileAndRun.compile(cu);
-        }catch(Exception e){
-            throw new RuntimeException(e.getMessage());
-        }
+        CompileAndRun.run(projectRoot, cus);
     }
 }
