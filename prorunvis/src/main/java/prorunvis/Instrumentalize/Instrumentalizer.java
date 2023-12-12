@@ -18,51 +18,41 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Instrumentalizer {
-    public CompilationUnit cu;
-    private final InstrumentalizerSetupVisitor isv;
-    private final List<ModifierVisitor<List<Integer>>> visitor = new ArrayList<>();
 
-    /**
-     * Enables instrumentalization over the given {@link CompilationUnit} with the given {@link ModifierVisitor}
-     * @param cu The {@link CompilationUnit} to be instrumentalized
-     * @param visitor {@link ModifierVisitor} implementing tracing for different statements. If none are passed, only setup is performed.
-     */
-    public Instrumentalizer(CompilationUnit cu, List<ModifierVisitor<List<Integer>>> visitor) {
-        isv = new InstrumentalizerSetupVisitor();
-        this.visitor.addAll(visitor);
-        this.cu = cu;
-    }
+    public static File traceFile = new File("resources/TraceFile.tr");
+    private static final List<ModifierVisitor<List<Integer>>> visitor = new ArrayList<>();
+    public static List<Integer> traces = new ArrayList<>();
+
+    public static void addVisitor(ModifierVisitor<List<Integer>> vis) {visitor.add(vis);}
 
     /**
      * Creates a tracefile, adds necessary imports to the {@link CompilationUnit} and adds a trace method to every class to be called by tracers for different Statements.
      */
-    private void setupTrace(){
-        File file = new File("out/Trace.tr");
+    public static void setupTrace(){
         try {
-            file.delete();
-            file.createNewFile();
+            traceFile.mkdirs();
+            if(traceFile.exists()) traceFile.delete();
+            traceFile.createNewFile();
         }
         catch (IOException e) {throw new RuntimeException(e.getMessage());}
-        cu.addImport(BufferedWriter.class).addImport(FileWriter.class).addImport(IOException.class);
-        isv.visit(cu, file.getAbsolutePath());
     }
 
     /**
      * runs every {@link ModifierVisitor} over the {@link CompilationUnit}.
      */
-    public void run() {
-        setupTrace();
-        List<Integer> IDs = new ArrayList<>();
+    public static void run(CompilationUnit cu) {
+        cu.addImport(BufferedWriter.class).addImport(FileWriter.class).addImport(IOException.class);
         for(ModifierVisitor<List<Integer>> visitor : visitor) {
-            visitor.visit(cu, IDs);
+            visitor.visit(cu, traces);
         }
+        new InstrumentalizerSetupVisitor().visit(cu, traceFile.getAbsolutePath());
     }
 }
 
 class InstrumentalizerSetupVisitor extends ModifierVisitor<String> {
 
     /**
-     * Adds a method to every Class or Interface which can be called to write a given String into the tracefile.
+     * Adds a method to every Class or Interface which can be called to write a given String into the trace file.
      */
     @Override
     public ClassOrInterfaceDeclaration visit(ClassOrInterfaceDeclaration cfd, String path) {
@@ -71,7 +61,7 @@ class InstrumentalizerSetupVisitor extends ModifierVisitor<String> {
 
         method.setBody(StaticJavaParser.parseBlock("{try {" +
                 "BufferedWriter writer = new BufferedWriter(new FileWriter(\"" +
-                path.replace('\\', '.') +
+                path.replace('\\','/') +
                 "\", true));" + "writer.write(" + method.getParameter(0).getNameAsString() + " + System.lineSeparator());" +
                 "writer.close();" +
                 "} catch (IOException e) {throw new RuntimeException(e.getMessage());}}")
@@ -81,4 +71,6 @@ class InstrumentalizerSetupVisitor extends ModifierVisitor<String> {
         return cfd;
     }
 }
+
+
 
