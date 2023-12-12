@@ -4,9 +4,7 @@ import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
 import prorunvis.Instrumentalize.Instrumentalizer;
-import prorunvis.trace.modifier.IfStatementModifier;
-import prorunvis.trace.modifier.MethodDeclarationModifier;
-import prorunvis.trace.modifier.ReturnStatementModifier;
+import prorunvis.trace.modifier.*;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -50,12 +48,18 @@ public class Main {
             IfStatementModifier ifMod = new IfStatementModifier();
             ReturnStatementModifier retMod = new ReturnStatementModifier();
             MethodDeclarationModifier decMod = new MethodDeclarationModifier();
+            ForLoopModifier forMod = new ForLoopModifier();
+            SwitchModifier switchMod = new SwitchModifier();
+            WhileLoopModifier whileMod = new WhileLoopModifier();
 
             //add modifier to list
             List<ModifierVisitor<List<Integer>>> modifier = new ArrayList<>();
             modifier.add(ifMod);
             modifier.add(retMod);
             modifier.add(decMod);
+            modifier.add(forMod);
+            modifier.add(switchMod);
+            modifier.add(whileMod);
 
             //instrumentalize the compilation unit
             Instrumentalizer instrumentalizer = new Instrumentalizer(cu, modifier);
