@@ -1,8 +1,15 @@
 Description:
+
 Acceptance criteria:
+
 Estimated effort: SP
+
 Developer:
+
 Finished in iteration:
-Actual effort:
+
+Actual effort: SP
+
 Velocity:
+
 Comments:
