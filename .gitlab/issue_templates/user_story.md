@@ -10,8 +10,8 @@ Planned for iteration:
 
 Finished in iteration:
 
-Actual effort: SP
+Actual effort: H
 
-Velocity:
+Velocity: SP/H
 
 Comments:
