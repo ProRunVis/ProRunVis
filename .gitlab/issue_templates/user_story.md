@@ -2,7 +2,7 @@ Description:
 
 Acceptance criteria:
 
-Estimated effort: SP
+Estimated effort: sp
 
 Developer:
 
@@ -10,8 +10,8 @@ Planned for iteration:
 
 Finished in iteration:
 
-Actual effort: H
+Actual effort: h
 
-Velocity: SP/H
+Velocity: sp/h
 
 Comments:
