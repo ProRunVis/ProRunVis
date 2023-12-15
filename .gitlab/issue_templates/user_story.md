@@ -12,6 +12,6 @@ Finished in iteration:
 
 Actual effort: h
 
-Velocity: sp/h
+Velocity: h/sp
 
 Comments:
