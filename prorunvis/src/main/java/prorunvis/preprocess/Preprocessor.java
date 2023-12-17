@@ -1,6 +1,7 @@
 package prorunvis.preprocess;
 
 import com.github.javaparser.ast.CompilationUnit;
+import prorunvis.preprocess.modifier.ForLoopPreprocessor;
 import prorunvis.preprocess.modifier.IfStatementPreprocessor;
 
 public class Preprocessor {
@@ -12,5 +13,6 @@ public class Preprocessor {
      */
     public static void run(CompilationUnit cu){
         new IfStatementPreprocessor().visit(cu, null);
+        new ForLoopPreprocessor().visit(cu, null);
     }
 }
