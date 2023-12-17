@@ -18,7 +18,6 @@ public class CompileAndRun {
      * @throws InterruptedException if the compilation or execution is interrupted
      */
     public static void run (ProjectRoot projectRoot, List<CompilationUnit> cus) throws IOException, InterruptedException {
-
         Path savePath = Paths.get("resources/out/instrumented");
 
         File instrumented = new File(savePath.toString());
@@ -34,7 +33,7 @@ public class CompileAndRun {
         Path path = mainUnit.getStorage().get().getDirectory();
 
         Runtime currentRuntime = Runtime.getRuntime();
-        Process compileProc = currentRuntime.exec("javac -sourcepath " + savePath + " -d resources/out/compiled " + path.toString() + "\\" + fileName);
+        Process compileProc = currentRuntime.exec("javac -sourcepath " + savePath + " -d resources/out/compiled " + path.toString() + "/" + fileName);
         compileProc.waitFor();
 
         String compileError = new BufferedReader(new InputStreamReader(compileProc.getErrorStream())).lines().collect(Collectors.joining("\n"));
