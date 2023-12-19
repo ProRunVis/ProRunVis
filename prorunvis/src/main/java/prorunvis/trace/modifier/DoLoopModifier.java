@@ -11,6 +11,10 @@ import com.github.javaparser.ast.visitor.ModifierVisitor;
 import java.util.List;
 
 public class DoLoopModifier extends ModifierVisitor<List<Integer>>{
+
+    /**
+     * Add a trace call to every do loop body
+     */
     @Override
     public DoStmt visit(DoStmt stmt, List<Integer> arg){
         String methodCall = "proRunVisTrace(\"$ID\");";

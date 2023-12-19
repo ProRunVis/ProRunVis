@@ -12,6 +12,10 @@ import javax.swing.plaf.nimbus.State;
 import java.util.List;
 
 public class ForLoopModifier extends ModifierVisitor<List<Integer>> {
+
+    /**
+     * Add a trace call to every for loop body
+     */
     @Override
     public ForStmt visit(ForStmt stmt, List<Integer> arg){
         String methodCall = "proRunVisTrace(\"$ID\");";

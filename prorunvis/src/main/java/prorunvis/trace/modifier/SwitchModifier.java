@@ -8,6 +8,10 @@ import com.github.javaparser.ast.visitor.ModifierVisitor;
 import java.util.List;
 
 public class SwitchModifier extends ModifierVisitor<List<Integer>>{
+
+    /**
+     * Add a trace call to every case in a switch statement
+     */
     @Override
     public SwitchStmt visit(SwitchStmt stmt, List<Integer> arg) {
         String methodCall = "proRunVisTrace(\"$ID\");";

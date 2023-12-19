@@ -10,6 +10,10 @@ import com.github.javaparser.ast.visitor.ModifierVisitor;
 import java.util.List;
 
 public class MethodDeclarationModifier extends ModifierVisitor<List<Integer>>{
+
+    /**
+     * Add a trace call to every method declaration body (if not a forward declaration)
+     */
         @Override
         public MethodDeclaration visit(MethodDeclaration stmt, List<Integer> arg){
             String methodCall = "proRunVisTrace(\"$ID\");";

@@ -10,6 +10,10 @@ import com.github.javaparser.ast.visitor.ModifierVisitor;
 import java.util.List;
 
 public class WhileLoopModifier extends ModifierVisitor<List<Integer>> {
+
+    /**
+     * Add a trace call to every while loop body
+     */
     @Override
     public WhileStmt visit(WhileStmt stmt, List<Integer> arg){
         String methodCall = "proRunVisTrace(\"$ID\");";
