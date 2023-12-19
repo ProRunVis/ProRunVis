@@ -12,3 +12,4 @@ plugins {
 
 rootProject.name = "ProRunVis"
 include("prorunvis")
+include("prorunvis-api")
