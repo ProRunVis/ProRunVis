@@ -19,7 +19,7 @@ public class FileSystemStorageService implements StorageService{
 
     public FileSystemStorageService(StorageProperties properties){
         if(properties.getLocation().trim().isEmpty()){
-            //TODO throw exception
+            throw new StorageException("File storage directory cannot be empty.");
         }
 
         this.rootLocation = Paths.get(properties.getLocation());
@@ -29,7 +29,7 @@ public class FileSystemStorageService implements StorageService{
         try{
             Files.createDirectories(rootLocation);
         }catch(IOException e){
-            //TODO throw exception
+            throw new StorageException("Could not create directory.", e);
         }
     }
 
@@ -47,7 +47,7 @@ public class FileSystemStorageService implements StorageService{
                 Files.copy(inputStream, file, StandardCopyOption.REPLACE_EXISTING);
             }
         }catch(IOException e){
-            //TODO throw fitting exception
+            throw new StorageException("Could not store file.", e);
         }
     }
 

@@ -1,5 +1,6 @@
 package api.upload;
 
+import api.upload.storage.StorageException;
 import api.upload.storage.StorageService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +29,7 @@ public class UploadController {
                 storageService.store(part);
             }
         }catch (IOException | ServletException e){
-            //TODO throw custom exception
+            throw new StorageException("One or more files from the directory could not be stored.");
         }
     }
 }
