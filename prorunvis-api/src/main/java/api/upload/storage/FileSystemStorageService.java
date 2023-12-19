@@ -11,7 +11,7 @@ public class FileSystemStorageService implements StorageService{
     }
 
     @Override
-    public void store(Part part) {  
+    public void store(Part part) {
 
     }
 
