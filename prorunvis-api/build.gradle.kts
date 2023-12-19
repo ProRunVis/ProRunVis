@@ -18,6 +18,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation(platform("org.springframework.boot:spring-boot-dependencies:2.7.8"))
+
+    //commons
+    implementation("commons-io:commons-io:2.15.1")
 }
 
 tasks.test {
