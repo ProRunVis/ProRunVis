@@ -2,7 +2,10 @@ package api.upload.storage;
 
 import jakarta.servlet.http.Part;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileSystemUtils;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -20,7 +23,11 @@ public class FileSystemStorageService implements StorageService{
     }
     @Override
     public void init() {
-
+        try{
+            Files.createDirectories(rootLocation);
+        }catch(IOException e){
+            //TODO throw exception
+        }
     }
 
     @Override
@@ -30,6 +37,6 @@ public class FileSystemStorageService implements StorageService{
 
     @Override
     public void deleteAll() {
-
+        FileSystemUtils.deleteRecursively(rootLocation.toFile());
     }
 }
