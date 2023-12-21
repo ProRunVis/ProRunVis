@@ -3,7 +3,6 @@ package prorunvis.trace.modifier;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
@@ -18,9 +17,13 @@ public class ConstructorDeclarationModifier extends ModifierVisitor<List<Integer
     @Override
     public ConstructorDeclaration visit(ConstructorDeclaration stmt, List<Integer> arg){
         String methodCall = "proRunVisTrace(\"$ID\");";
-        NodeList<Statement> statements;
-        statements = stmt.getBody().getStatements();
-        statements.addFirst(StaticJavaParser.parseStatement(methodCall.replace("$ID", String.valueOf(arg.size()))));
+        NodeList<Statement> statements = stmt.getBody().getStatements();
+
+        if (!statements.isEmpty() && statements.get(0).isExplicitConstructorInvocationStmt())
+            statements.add(1, StaticJavaParser.parseStatement(methodCall.replace("$ID", String.valueOf(arg.size()))));
+        else
+            statements.addFirst(StaticJavaParser.parseStatement(methodCall.replace("$ID", String.valueOf(arg.size()))));
+
         arg.add(arg.size());
         BlockStmt block = new BlockStmt().setStatements(statements);
         stmt.setBody(block);
