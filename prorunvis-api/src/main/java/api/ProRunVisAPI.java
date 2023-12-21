@@ -12,13 +12,25 @@ import org.springframework.context.annotation.Bean;
 @EnableConfigurationProperties(StorageProperties.class)
 public class ProRunVisAPI {
 
-    public static void main(String[] args){
+    /**
+     * Starts a {@link SpringApplication} on localhost.
+     * @param args the argument list for the program.
+     */
+    public static void main(final String[] args) {
         SpringApplication.run(ProRunVisAPI.class, args);
     }
 
+    /**
+     * Automated initialization for a {@link StorageService} used
+     * by this {@link SpringApplication}.
+     * @param storageService the {@link StorageService} to
+     *                       initialize.
+     * @return a function calling the <code>deleteAll()</code>
+     *         and <code>init()</code> methods of the storageService
+     */
     @Bean
-    CommandLineRunner init(StorageService storageService){
-        return (args) ->{
+    CommandLineRunner init(final StorageService storageService) {
+        return (args) -> {
             storageService.deleteAll();
             storageService.init();
         };
