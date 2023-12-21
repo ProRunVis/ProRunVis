@@ -40,6 +40,8 @@ public class Main {
         Instrumentalizer.addVisitor(new ForLoopModifier());
         Instrumentalizer.addVisitor(new SwitchModifier());
         Instrumentalizer.addVisitor(new WhileLoopModifier());
+        Instrumentalizer.addVisitor(new DoLoopModifier());
+        Instrumentalizer.addVisitor(new ConstructorDeclarationModifier());
 
         Instrumentalizer.setupTrace();
 
