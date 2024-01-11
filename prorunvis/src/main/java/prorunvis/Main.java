@@ -6,10 +6,11 @@ import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.utils.SymbolSolverCollectionStrategy;
 import com.github.javaparser.utils.ProjectRoot;
-import prorunvis.Instrumentalize.Instrumentalizer;
+import prorunvis.instrument.Instrumenter;
 import prorunvis.preprocess.Preprocessor;
-import prorunvis.trace.modifier.*;
+import prorunvis.trace.TraceProcessor;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -33,17 +34,9 @@ public class Main {
 
         StaticJavaParser.getParserConfiguration().setSymbolResolver(new JavaSymbolSolver(new CombinedTypeSolver()));
         ProjectRoot projectRoot = new SymbolSolverCollectionStrategy().collect(Paths.get(args[0]).toAbsolutePath());
+        File traceFile = new File("resources/TraceFile.tr");
 
-        Instrumentalizer.addVisitor(new IfStatementModifier());
-        Instrumentalizer.addVisitor(new ReturnStatementModifier());
-        Instrumentalizer.addVisitor(new MethodDeclarationModifier());
-        Instrumentalizer.addVisitor(new ForLoopModifier());
-        Instrumentalizer.addVisitor(new SwitchModifier());
-        Instrumentalizer.addVisitor(new WhileLoopModifier());
-        Instrumentalizer.addVisitor(new DoLoopModifier());
-        Instrumentalizer.addVisitor(new ConstructorDeclarationModifier());
-
-        Instrumentalizer.setupTrace();
+        Instrumenter.setupTrace(traceFile);
 
         List<CompilationUnit> cus = new ArrayList<>();
         projectRoot.getSourceRoots().forEach(sr -> {
@@ -54,8 +47,10 @@ public class Main {
             }
         });
 
-        cus.forEach(cu -> {Preprocessor.run(cu); Instrumentalizer.run(cu);});
+        cus.forEach(cu -> {Preprocessor.run(cu); Instrumenter.run(cu);});
 
         CompileAndRun.run(projectRoot, cus);
+
+        String JSONString = TraceProcessor.toJSON(TraceProcessor.parseToCodeEntries(traceFile));
     }
 }

@@ -10,14 +10,27 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CompileAndRun {
+/**
+ * This is a utility class which is responsible for converting a {@link ProjectRoot} back to a directory of java files and compiling said package.
+ */
+public final class CompileAndRun {
 
     /**
-     * Writes the given {@link CompilationUnit}s into .java files, then compiles and runs the project
-     * @throws IOException if something goes wrong while the files are created
-     * @throws InterruptedException if the compilation or execution is interrupted
+     * Should not be called
      */
-    public static void run (ProjectRoot projectRoot, List<CompilationUnit> cus) throws IOException, InterruptedException {
+    private CompileAndRun() {
+        throw new IllegalStateException();
+    }
+
+    /**
+     * Take in a {@link ProjectRoot} and a List of its {@link CompilationUnit}s. First the <code>projectRoot</code> is written out into a new folder
+     * and then compiled into another new folder. The compiled program is then executed.
+     * @param projectRoot the {@link ProjectRoot} to be processed
+     * @param cus an easily accessible List of the <code>projectRoot</code>s {@link CompilationUnit}s
+     * @throws IOException when a problem occurs while the <code>projectRoot</code> is written out
+     * @throws InterruptedException when something interrupts the compilation or execution process
+     */
+    public static void run(final ProjectRoot projectRoot, final List<CompilationUnit> cus) throws IOException, InterruptedException {
         Path savePath = Paths.get("resources/out/instrumented");
 
         File instrumented = new File(savePath.toString());
@@ -47,8 +60,8 @@ public class CompileAndRun {
         runProc.waitFor();
 
         String runError = new BufferedReader(new InputStreamReader(runProc.getErrorStream())).lines().collect(Collectors.joining("\n"));
-        String output = new BufferedReader(new InputStreamReader(runProc.getInputStream())).lines().collect(Collectors.joining("\n"));
-        if (!runError.isEmpty()) System.out.println("There was an error running the input code:\n" + runError);
-        else System.out.println(output);
+        if (!runError.isEmpty()) {
+            System.out.println("There was an error running the input code:\n" + runError);
+        }
     }
 }
