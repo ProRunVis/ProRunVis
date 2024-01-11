@@ -1,25 +1,27 @@
 package prorunvis.preprocess.modifier;
 
-import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
-import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
 
+/**
+ * A Visitor used by {@link prorunvis.preprocess.Preprocessor}. It can be used to
+ * modify for loops to follow common java conventions using curly braces.
+ */
 public class ForLoopPreprocessor extends ModifierVisitor<Void> {
 
     /**
-     * Modify forloop-statements, if the body statement is a single statement
-     * by replacing it with an equivalent block statement
+     * Modify for loop-statements, if the body statement is a single statement
+     * by replacing it with an equivalent block statement.
      */
     @Override
-    public ForStmt visit(ForStmt stmt, Void arg){
+    public ForStmt visit(final ForStmt stmt, final Void arg) {
         super.visit(stmt, arg);
 
         NodeList<Statement> statements;
-        if(!stmt.getBody().isBlockStmt()) {
+        if (!stmt.getBody().isBlockStmt()) {
             statements = new NodeList<Statement>(stmt.getBody());
             BlockStmt block = new BlockStmt().setStatements(statements);
             stmt.setBody(block);
