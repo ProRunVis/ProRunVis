@@ -2,6 +2,7 @@ package prorunvis;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.utils.SymbolSolverCollectionStrategy;
@@ -15,7 +16,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Main {
 
@@ -47,10 +50,10 @@ public class Main {
             }
         });
 
-        cus.forEach(cu -> {Preprocessor.run(cu); Instrumenter.run(cu);});
+        Map<Integer, Node> map = new HashMap<>();
+
+        cus.forEach(cu -> {Preprocessor.run(cu); Instrumenter.run(cu, map);});
 
         CompileAndRun.run(projectRoot, cus);
-
-        String JSONString = TraceProcessor.toJSON(TraceProcessor.parseToCodeEntries(traceFile));
     }
 }
