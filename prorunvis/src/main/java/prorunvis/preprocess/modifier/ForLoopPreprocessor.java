@@ -20,12 +20,10 @@ public class ForLoopPreprocessor extends ModifierVisitor<Void> {
     public ForStmt visit(final ForStmt stmt, final Void arg) {
         super.visit(stmt, arg);
 
-        NodeList<Statement> statements;
         if (!stmt.getBody().isBlockStmt()) {
-            statements = new NodeList<Statement>(stmt.getBody());
-            BlockStmt block = new BlockStmt().setStatements(statements);
+            BlockStmt block = new BlockStmt(new NodeList<>(stmt.getBody()));
+            block.setRange(stmt.getBody().getRange().get());
             stmt.setBody(block);
-
         }
         return stmt;
     }
