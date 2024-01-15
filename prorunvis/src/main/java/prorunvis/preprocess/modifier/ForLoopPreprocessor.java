@@ -3,7 +3,6 @@ package prorunvis.preprocess.modifier;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
-import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
 
 /**
@@ -20,12 +19,11 @@ public class ForLoopPreprocessor extends ModifierVisitor<Void> {
     public ForStmt visit(final ForStmt stmt, final Void arg) {
         super.visit(stmt, arg);
 
-        NodeList<Statement> statements;
         if (!stmt.getBody().isBlockStmt()) {
-            statements = new NodeList<Statement>(stmt.getBody());
-            BlockStmt block = new BlockStmt().setStatements(statements);
+            BlockStmt block = new BlockStmt(new NodeList<>(stmt.getBody()));
+            block.setRange(stmt.getBody().getRange().get());
             stmt.setBody(block);
-
+            block.getStatement(0).setParentNode(block);
         }
         return stmt;
     }

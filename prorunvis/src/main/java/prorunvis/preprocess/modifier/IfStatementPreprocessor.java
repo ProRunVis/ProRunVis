@@ -1,5 +1,6 @@
 package prorunvis.preprocess.modifier;
 
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
@@ -21,17 +22,19 @@ public class IfStatementPreprocessor extends ModifierVisitor<Void> {
 
         //check and process then statement
         if (!stmt.getThenStmt().isBlockStmt()) {
-            BlockStmt block = new BlockStmt();
-            block.addStatement(stmt.getThenStmt());
+            BlockStmt block = new BlockStmt(new NodeList<>(stmt.getThenStmt()));
+            block.setRange(stmt.getThenStmt().getRange().get());
             stmt.setThenStmt(block);
+            block.getStatement(0).setParentNode(block);
         }
 
         //check and process else statement if one is present
         if (stmt.getElseStmt().isPresent()) {
             if (!stmt.getElseStmt().get().isBlockStmt()) {
-                BlockStmt block = new BlockStmt();
-                block.addStatement(stmt.getElseStmt().get());
+                BlockStmt block = new BlockStmt(new NodeList<>(stmt.getElseStmt().get()));
+                block.setRange(stmt.getElseStmt().get().getRange().get());
                 stmt.setElseStmt(block);
+                block.getStatement(0).setParentNode(block);
             }
         }
         return stmt;
