@@ -25,6 +25,7 @@ public class IfStatementPreprocessor extends ModifierVisitor<Void> {
             BlockStmt block = new BlockStmt(new NodeList<>(stmt.getThenStmt()));
             block.setRange(stmt.getThenStmt().getRange().get());
             stmt.setThenStmt(block);
+            block.getStatement(0).setParentNode(block);
         }
 
         //check and process else statement if one is present
@@ -33,6 +34,7 @@ public class IfStatementPreprocessor extends ModifierVisitor<Void> {
                 BlockStmt block = new BlockStmt(new NodeList<>(stmt.getElseStmt().get()));
                 block.setRange(stmt.getElseStmt().get().getRange().get());
                 stmt.setElseStmt(block);
+                block.getStatement(0).setParentNode(block);
             }
         }
         return stmt;
