@@ -22,12 +22,12 @@ public class TraceNode {
      * A List containing TraceNodes for code blocks inside
      * of this node.
      */
-    private List<TraceNode> children;
+    private List<Integer> childrenIndex;
 
     /**
      * The node within which this node is located.
      */
-    private final TraceNode parent;
+    private final int parentIndex;
 
     /**
      * The Range of code which serves as link to access this node.
@@ -42,16 +42,16 @@ public class TraceNode {
     /**
      * The TraceNode to select upon following the link in outLink.
      */
-    private TraceNode out;
+    private int outIndex;
 
     /**
      * Constructs a {@link TraceNode} object.
      * @param parent The node within which this node is located.
      */
-    public TraceNode(final TraceNode parent) {
+    public TraceNode(final int parentIndex) {
         this.ranges = new ArrayList<>();
-        this.children = new ArrayList<>();
-        this.parent = parent;
+        this.childrenIndex = new ArrayList<>();
+        this.parentIndex = parentIndex;
     }
 
 
@@ -83,15 +83,15 @@ public class TraceNode {
      * Add a new {@link TraceNode} object to the list of children of this node.
      * @param child A node within this TraceNode.
      */
-    public void addChild(final TraceNode child) {
-        this.children.add(child);
+    public void addChildIndex(final int childIndex) {
+        this.childrenIndex.add(childIndex);
     }
 
     /**
      * @return The list of children of this node.
      */
-    public List<TraceNode> getChildren() {
-        return this.children;
+    public List<Integer> getChildrenIndex() {
+        return this.childrenIndex;
     }
 
     /**
@@ -99,16 +99,16 @@ public class TraceNode {
      * @param children A list of {@link TraceNode} object representing
      *                 code blocks.
      */
-    public void setChildren(final List<TraceNode> children) {
-        this.children = children;
+    public void setChildrenIndex(final List<Integer> childrenIndex) {
+        this.childrenIndex = childrenIndex;
     }
 
     /**
      * Gets the parent of this node.
      * @return The node within which this node is located.
      */
-    public TraceNode getParent() {
-        return this.parent;
+    public int getParentIndex() {
+        return this.parentIndex;
     }
 
     /**
@@ -152,8 +152,8 @@ public class TraceNode {
      * @return The node to be highlighted after using the
      *         {@link #outLink} of this node.
      */
-    public TraceNode getOut() {
-        return this.out;
+    public int getOutIndex() {
+        return this.outIndex;
     }
 
     /**
@@ -161,7 +161,7 @@ public class TraceNode {
      * @param out The node to be highlighted after using the
      *        {@link #outLink} of this node.
      */
-    public void setOut(final TraceNode out) {
-        this.out = out;
+    public void setOut(final int outIndex) {
+        this.outIndex = outIndex;
     }
 }
