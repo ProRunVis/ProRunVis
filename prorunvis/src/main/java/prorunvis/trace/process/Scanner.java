@@ -32,7 +32,7 @@ public class Scanner {
      * @throws IOException If the file does not exist or could not be
      *                     opened for other reasons.
      */
-    public void readFile() throws IOException {
+    public Stack<Integer> readFile() throws IOException {
 
         try {
             File traceFile = pathToTrace.toFile();
@@ -43,14 +43,7 @@ public class Scanner {
         } catch (FileNotFoundException e) {
             throw new IOException("Could not read file.", e);
         }
-    }
 
-    /**
-     * Gets the token stream.
-     * @return A Stack of type Integer containing the read trace ids
-     *         in reversed order.
-     */
-    public Stack<Integer> getTokens() {
-        return this.tokens;
+        return tokens;
     }
 }

@@ -44,15 +44,18 @@ public class TraceNode {
      */
     private int outIndex;
 
+    private String name;
+
     /**
      * Constructs a {@link TraceNode} object.
      * @param parentIndex The index of the node within which this node
      *                    is located.
      */
-    public TraceNode(final int parentIndex) {
-        this.ranges = new ArrayList<>();
-        this.childrenIndices = new ArrayList<>();
-        this.parentIndex = parentIndex;
+    public TraceNode(final int parentIndex, String name) {
+            this.ranges = new ArrayList<>();
+            this.childrenIndices = new ArrayList<>();
+            this.parentIndex = parentIndex;
+        this.name = name;
     }
 
 
@@ -164,5 +167,9 @@ public class TraceNode {
      */
     public void setOut(final int outIndex) {
         this.outIndex = outIndex;
+    }
+
+    public String getName(){
+        return this.name;
     }
 }
