@@ -22,7 +22,7 @@ public class TraceNode {
      * A List containing TraceNodes for code blocks inside
      * of this node.
      */
-    private List<Integer> childrenIndex;
+    private List<Integer> childrenIndices;
 
     /**
      * The node within which this node is located.
@@ -46,11 +46,12 @@ public class TraceNode {
 
     /**
      * Constructs a {@link TraceNode} object.
-     * @param parent The node within which this node is located.
+     * @param parentIndex The index of the node within which this node
+     *                    is located.
      */
     public TraceNode(final int parentIndex) {
         this.ranges = new ArrayList<>();
-        this.childrenIndex = new ArrayList<>();
+        this.childrenIndices = new ArrayList<>();
         this.parentIndex = parentIndex;
     }
 
@@ -80,32 +81,32 @@ public class TraceNode {
     }
 
     /**
-     * Add a new {@link TraceNode} object to the list of children of this node.
-     * @param child A node within this TraceNode.
+     * Add a new index for a {@link TraceNode} object to the list of children of this node.
+     * @param childIndex An index of a node within this TraceNode.
      */
     public void addChildIndex(final int childIndex) {
-        this.childrenIndex.add(childIndex);
+        this.childrenIndices.add(childIndex);
     }
 
     /**
-     * @return The list of children of this node.
+     * @return The list of indices of children of this node.
      */
-    public List<Integer> getChildrenIndex() {
-        return this.childrenIndex;
+    public List<Integer> getChildrenIndices() {
+        return this.childrenIndices;
     }
 
     /**
      * Set the code blocks located within this node.
-     * @param children A list of {@link TraceNode} object representing
-     *                 code blocks.
+     * @param childrenIndices A list of indices of {@link TraceNode} objects representing
+     *                        code blocks.
      */
-    public void setChildrenIndex(final List<Integer> childrenIndex) {
-        this.childrenIndex = childrenIndex;
+    public void setChildrenIndices(final List<Integer> childrenIndices) {
+        this.childrenIndices = childrenIndices;
     }
 
     /**
-     * Gets the parent of this node.
-     * @return The node within which this node is located.
+     * Gets the parent index of this node.
+     * @return The index of the node within which this node is located.
      */
     public int getParentIndex() {
         return this.parentIndex;
@@ -148,8 +149,8 @@ public class TraceNode {
     }
 
     /**
-     * Gets the out node of this node.
-     * @return The node to be highlighted after using the
+     * Gets the index of the out node of this node.
+     * @return The index of the node to be highlighted after using the
      *         {@link #outLink} of this node.
      */
     public int getOutIndex() {
@@ -157,8 +158,8 @@ public class TraceNode {
     }
 
     /**
-     * Sets the out node of this node.
-     * @param out The node to be highlighted after using the
+     * Sets the index of the out node of this node.
+     * @param outIndex The index of the node to be highlighted after using the
      *        {@link #outLink} of this node.
      */
     public void setOut(final int outIndex) {
