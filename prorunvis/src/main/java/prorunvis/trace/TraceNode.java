@@ -27,7 +27,7 @@ public class TraceNode {
     /**
      * The node within which this node is located.
      */
-    private final int parentIndex;
+    private final Integer parentIndex;
 
     /**
      * The Range of code which serves as link to access this node.
@@ -51,7 +51,7 @@ public class TraceNode {
      * @param parentIndex The index of the node within which this node
      *                    is located.
      */
-    public TraceNode(final int parentIndex, String name) {
+    public TraceNode(final Integer parentIndex, String name) {
             this.ranges = new ArrayList<>();
             this.childrenIndices = new ArrayList<>();
             this.parentIndex = parentIndex;
@@ -111,7 +111,7 @@ public class TraceNode {
      * Gets the parent index of this node.
      * @return The index of the node within which this node is located.
      */
-    public int getParentIndex() {
+    public Integer getParentIndex() {
         return this.parentIndex;
     }
 
