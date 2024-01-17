@@ -44,9 +44,10 @@ public class TraceProcessor {
         while(!tokens.empty()){
             int i = tokens.pop();
             Node node = traceMap.get(i);
-            TraceNode child = new TraceNode(root, String.valueOf(i));
+            TraceNode child = new TraceNode(nodeList.indexOf(root), String.valueOf(i));
+            nodeList.add(child);
             System.out.println(i);
-            root.addChild(child);
+            root.addChildIndex(nodeList.indexOf(child));
 
             current = child;
             Node tempNodeOfCurrent = nodeOfCurrent;
@@ -55,7 +56,7 @@ public class TraceProcessor {
             //call recursive method parseChildren to expand the tree for the child node
             processChildren();
 
-            current = child.getParent();
+            current = nodeList.get(child.getParentIndex());
             nodeOfCurrent = tempNodeOfCurrent;
         }
     }
@@ -71,16 +72,17 @@ public class TraceProcessor {
                 if (nodeOfCurrent.getRange().get().strictlyContains(range)){
                     tokens.pop();
                     System.out.println("TRUE");
-                    TraceNode child = new TraceNode(current, String.valueOf(i));
+                    TraceNode child = new TraceNode(nodeList.indexOf(current), String.valueOf(i));
+                    nodeList.add(child);
                     System.out.println(i);
-                    current.addChild(child);
+                    current.addChildIndex(nodeList.indexOf(child));
                     current = child;
                     Node tempNodeOfCurrent = nodeOfCurrent;
                     nodeOfCurrent = node;
 
                     processChildren();
 
-                    current = child.getParent();
+                    current = nodeList.get(child.getParentIndex());
                     nodeOfCurrent = tempNodeOfCurrent;
                 } else{
                     System.out.println("FALSE");
