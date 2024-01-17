@@ -61,15 +61,17 @@ public class Main {
         processor.start();
         TraceNode root = processor.root;
         System.out.println(root.getName() +", null");
-        for(TraceNode n: root.getChildren()){
-            testPrint(n);
+
+        List<TraceNode> nodes = processor.getNodeList();
+        for(Integer i: root.getChildrenIndices()){
+            testPrint(nodes.get(i), nodes);
         }
     }
 
-    public static void testPrint(TraceNode node){
-        System.out.println(node.getName() +", "+ node.getParent().getName());
-        for (TraceNode n: node.getChildren()){
-            testPrint(n);
+    public static void testPrint(TraceNode node, List<TraceNode> nodes){
+        System.out.println(node.getName() +", "+ nodes.get(node.getParentIndex()).getName());
+        for(Integer i: node.getChildrenIndices()){
+            testPrint(nodes.get(i), nodes);
         }
     }
 }

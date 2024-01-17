@@ -91,4 +91,8 @@ public class TraceProcessor {
             }
         }
     }
+
+    public List<TraceNode> getNodeList(){
+        return this.nodeList;
+    }
 }
