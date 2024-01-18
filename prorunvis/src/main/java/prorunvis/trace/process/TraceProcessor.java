@@ -44,25 +44,13 @@ public class TraceProcessor {
         while(!tokens.empty()){
             int i = tokens.pop();
             Node node = traceMap.get(i);
-            TraceNode child = new TraceNode(nodeList.indexOf(root), String.valueOf(i));
-            nodeList.add(child);
-            System.out.println(i);
-            root.addChildIndex(nodeList.indexOf(child));
-
-            current = child;
-            Node tempNodeOfCurrent = nodeOfCurrent;
-            nodeOfCurrent = node;
-
-            //call recursive method parseChildren to expand the tree for the child node
-            processChildren();
-
-            current = nodeList.get(child.getParentIndex());
-            nodeOfCurrent = tempNodeOfCurrent;
+            createNewTraceNode(i, node);
         }
     }
 
     public void processChildren(){
 
+        //add children to current if there are tokens left on the stack
         while(!tokens.empty()){
             int i = tokens.peek();
             Node node = traceMap.get(i);
@@ -72,24 +60,28 @@ public class TraceProcessor {
                 if (nodeOfCurrent.getRange().get().strictlyContains(range)){
                     tokens.pop();
                     System.out.println("TRUE");
-                    TraceNode child = new TraceNode(nodeList.indexOf(current), String.valueOf(i));
-                    nodeList.add(child);
-                    System.out.println(i);
-                    current.addChildIndex(nodeList.indexOf(child));
-                    current = child;
-                    Node tempNodeOfCurrent = nodeOfCurrent;
-                    nodeOfCurrent = node;
-
-                    processChildren();
-
-                    current = nodeList.get(child.getParentIndex());
-                    nodeOfCurrent = tempNodeOfCurrent;
+                    createNewTraceNode(i, node);
                 } else{
                     System.out.println("FALSE");
                     break;
                 }
             }
         }
+    }
+
+    private void createNewTraceNode(int i, Node node) {
+        TraceNode child = new TraceNode(nodeList.indexOf(current), String.valueOf(i));
+        nodeList.add(child);
+        System.out.println(i);
+        current.addChildIndex(nodeList.indexOf(child));
+        current = child;
+        Node tempNodeOfCurrent = nodeOfCurrent;
+        nodeOfCurrent = node;
+
+        processChildren();
+
+        current = nodeList.get(child.getParentIndex());
+        nodeOfCurrent = tempNodeOfCurrent;
     }
 
     public List<TraceNode> getNodeList(){
