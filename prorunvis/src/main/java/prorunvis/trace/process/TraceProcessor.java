@@ -18,7 +18,6 @@ public class TraceProcessor {
     private Node nodeOfCurrent;
     private final Scanner scanner;
     private Stack<Integer> tokens;
-    public TraceNode root;
 
     public TraceProcessor(Map<Integer, Node> trace, String traceFilePath){
         this.nodeList = new LinkedList<>();
@@ -35,8 +34,12 @@ public class TraceProcessor {
             throw new IOException("Could not read trace file.", e);
         }
 
-        //create root node
-        root = new TraceNode(null, "root");
+        createRoot();
+    }
+
+
+    private void createRoot(){
+        TraceNode root = new TraceNode(null, "root");
         nodeList.add(root);
         this.current = root;
 
