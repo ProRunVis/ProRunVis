@@ -5,10 +5,7 @@ import com.github.javaparser.ast.Node;
 import prorunvis.trace.TraceNode;
 
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 public class TraceProcessor {
 
@@ -39,52 +36,58 @@ public class TraceProcessor {
 
 
     private void createRoot(){
+        System.out.println("MAKE::ROOT");
         TraceNode root = new TraceNode(null, "root");
         nodeList.add(root);
-        this.current = root;
+        current = root;
 
-        //add children to root if there are tokens left on the stack
-        while(!tokens.empty()){
-            int i = tokens.pop();
-            Node node = traceMap.get(i);
-            createNewTraceNode(i, node);
-        }
+        //add the first node as child to root
+        createNewTraceNode();
     }
 
-    public void processChildren(){
+    private boolean processChild(){
+        Node node = traceMap.get(tokens.peek());
+        Optional<Range> range = node.getRange();
+        Optional<Range> currentRange = nodeOfCurrent.getRange();
 
-        //add children to current if there are tokens left on the stack
-        while(!tokens.empty()){
-            int i = tokens.peek();
-            Node node = traceMap.get(i);
-
-            if(node.getRange().isPresent() && nodeOfCurrent.getRange().isPresent()){
-                Range range = node.getRange().get();
-                if (nodeOfCurrent.getRange().get().strictlyContains(range)){
-                    tokens.pop();
-                    System.out.println("TRUE");
-                    createNewTraceNode(i, node);
-                } else{
-                    System.out.println("FALSE");
-                    break;
-                }
+        if(range.isPresent() && currentRange.isPresent()){
+            System.out.println("RANGECHECK::TRUE"+range.get()+";"+currentRange.get());
+            if(currentRange.get().strictlyContains(range.get())){
+                createNewTraceNode();
+                return true;
             }
         }
+
+        return false;
     }
 
-    private void createNewTraceNode(int i, Node node) {
-        TraceNode child = new TraceNode(nodeList.indexOf(current), String.valueOf(i));
-        nodeList.add(child);
-        System.out.println(i);
-        current.addChildIndex(nodeList.indexOf(child));
-        current = child;
-        Node tempNodeOfCurrent = nodeOfCurrent;
-        nodeOfCurrent = node;
+    private void createNewTraceNode() {
+        System.out.println("MAKE::CHILD");
+        //create a new node
+        int tokenValue = tokens.pop();
+        String name = String.valueOf(tokenValue);
+        int parentIndex = nodeList.indexOf(current);
+        TraceNode traceNode = new TraceNode(parentIndex, name);
 
-        processChildren();
+        //add the node to the list
+        nodeList.add(traceNode);
+        current.addChildIndex(nodeList.indexOf(traceNode));
 
-        current = nodeList.get(child.getParentIndex());
-        nodeOfCurrent = tempNodeOfCurrent;
+        boolean isFinished = false;
+
+        while(!(tokens.empty() || isFinished)) {
+            //save state
+            current = traceNode;
+            Node tempNodeOfCurrent = nodeOfCurrent;
+            nodeOfCurrent = traceMap.get(tokenValue);
+
+            //process the children of this node recursively
+            isFinished = !processChild();
+
+            //restore state
+            current = nodeList.get(traceNode.getParentIndex());
+            nodeOfCurrent = tempNodeOfCurrent;
+        }
     }
 
     public List<TraceNode> getNodeList(){
