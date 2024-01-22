@@ -88,49 +88,56 @@ public class TraceProcessor {
         current.addChildIndex(nodeList.indexOf(traceNode));
 
         boolean isFinished = false;
+        //save state
+        current = traceNode;
+        Node tempNodeOfCurrent = nodeOfCurrent;
+        nodeOfCurrent = traceMap.get(tokenValue);
+        List<Range> tempRanges = methodCallRanges;
+        methodCallRanges = new ArrayList<>();
 
         while(!tokens.empty() && !isFinished) {
-            //save state
-            current = traceNode;
-            Node tempNodeOfCurrent = nodeOfCurrent;
-            nodeOfCurrent = traceMap.get(tokenValue);
 
             //process the children of this node recursively
             isFinished = processChild();
-
-            //restore state
-            current = nodeList.get(traceNode.getParentIndex());
-            nodeOfCurrent = tempNodeOfCurrent;
         }
+
+        //restore state
+        current = nodeList.get(traceNode.getParentIndex());
+        nodeOfCurrent = tempNodeOfCurrent;
+        methodCallRanges = tempRanges;
     }
 
 
     private boolean createMethodCallTraceNode(){
-        //todo: implement behavior for method call
         MethodDeclaration node = (MethodDeclaration)traceMap.get(tokens.peek());
         SimpleName nameOfDeclaration = node.getName();
         SimpleName nameOfCall = null;
         MethodCallExpr callExpr = null;
         BlockStmt block = null;
 
+        //check if call is within a method
         if(nodeOfCurrent instanceof NodeWithOptionalBlockStmt<?> x){
             if(x.getBody().isPresent()) {
                 block = x.getBody().get();
 
             }
         }
+
+        //check if call  is in a statement, i.e. a then -or else clause
         if(nodeOfCurrent instanceof Statement y){
             if(y instanceof BlockStmt b){
                 block = b;
             }
         }
 
+        //search a found body for expression statements with callExpressions
         if(block != null){
             for(Statement statement: block.getStatements()){
 
                 if(statement instanceof ExpressionStmt expressionStmt){
                     Expression expression = expressionStmt.getExpression();
 
+                    //store the name of the found expression
                     if(expression instanceof MethodCallExpr call){
                         if(!methodCallRanges.contains(call.getRange().get())) {
                             callExpr = call;
@@ -142,6 +149,7 @@ public class TraceProcessor {
             }
         }
 
+        //if a name hast been found, check if it fits the declaration
         if(nameOfCall != null
         && nameOfCall.equals(nameOfDeclaration)){
             methodCallRanges.add(callExpr.getRange().get());
