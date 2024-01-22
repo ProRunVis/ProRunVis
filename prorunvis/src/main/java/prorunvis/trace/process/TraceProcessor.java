@@ -163,8 +163,16 @@ public class TraceProcessor {
         if(nameOfCall != null
         && nameOfCall.equals(nameOfDeclaration)){
             methodCallRanges.add(callExpr.getRange().get());
-            System.out.println(callExpr.getRange());
+            System.out.println(callExpr.getRange()+", "+nameOfCall);
             createNewTraceNode();
+
+            //set link, outlink and index of out
+            int lastAddedIndex = current.getChildrenIndices().get(current.getChildrenIndices().size()-1);
+            TraceNode lastAdded = nodeList.get(lastAddedIndex);
+            lastAdded.setLink(nameOfCall.getRange().get());
+            lastAdded.setOutLink(nameOfDeclaration.getRange().get());
+            lastAdded.setOut(lastAdded.getParentIndex());
+
             return true;
         }
 
