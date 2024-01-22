@@ -182,4 +182,23 @@ public class TraceProcessor {
     public List<TraceNode> getNodeList(){
         return this.nodeList;
     }
+
+    public String toString(){
+        StringBuilder bob = new StringBuilder();
+
+        for(TraceNode node: nodeList){
+            nodeToString(bob, node);
+        }
+
+        return bob.toString();
+    }
+
+    private void nodeToString(StringBuilder bob, TraceNode node){
+        bob.append("\n\nName: ").append(node.getName())
+                .append("\nChildren: ").append(node.getChildrenIndices())
+                .append("\nLink: ").append(node.getLink())
+                .append("\nOutlink: ").append(node.getOutLink())
+                .append("\nOut: ").append(node.getOutIndex())
+                .append("\nParent: ").append(node.getParentIndex());
+    }
 }
