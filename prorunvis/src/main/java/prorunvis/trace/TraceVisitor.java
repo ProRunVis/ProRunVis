@@ -3,6 +3,7 @@ package prorunvis.trace;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
 import java.util.Map;
@@ -12,6 +13,28 @@ import java.util.Map;
  * This Visitor extends the standard ModifierVisitor and overwrites the visit methods for each codetype being traced in order to instrument them with the needed trace call.
  */
 public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
+
+    /**
+     * Add a trace call to every try statement. Trace call is added as the first line of the try statement body and to the first line of the body of every corresponding catch statement.
+     * @param stmt the statement to be instrumented
+     * @param map maps the current ID to this node
+     * @return the modified statement
+     */
+    public TryStmt visit(final TryStmt stmt, final Map<Integer, Node> map) {
+
+        int id = map.size();
+        stmt.getTryBlock().addStatement(0, traceEntryCreator(id));
+        map.put(id, stmt.clone());
+
+        for (CatchClause clause : stmt.getCatchClauses()) {
+            id = map.size();
+            clause.getBody().addStatement(0, traceEntryCreator(id));
+            map.put(id, clause.clone());
+        }
+
+        super.visit(stmt, map);
+        return stmt;
+    }
 
     /**
      * Add a trace call to every do loop body. Trace call is added as the first line of the loop body.
@@ -131,5 +154,33 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
      */
     private Statement traceEntryCreator(final int id) {
         return StaticJavaParser.parseStatement("proRunVisTrace(\"" + id + "\");");
+    }
+
+    /**
+     * takes in a node and attempts to write a trace call before it. If that is not possible (because the parent node is not a statement type to which you can add another statement),
+     * the same is attempted with its parent, until trace is successfully written.
+     * @param map maps the current ID to this node
+     * @param node the node to be instrumented
+     */
+    private void backTrack(final Map<Integer, Node> map, final Node node) {
+
+        Node parent = node.getParentNode().get();
+        Node current = node;
+        int id = map.size();
+
+        while (true) {
+            if (parent instanceof BlockStmt block) {
+                block.addStatement(block.getStatements().indexOf(current), traceEntryCreator(id));
+                map.put(id, node.clone());
+                break;
+            } else if (parent instanceof SwitchEntry entry) {
+                entry.addStatement(entry.getStatements().indexOf(current), traceEntryCreator(id));
+                map.put(id, node.clone());
+                break;
+            } else {
+                current = parent;
+                parent = parent.getParentNode().get();
+            }
+        }
     }
 }
