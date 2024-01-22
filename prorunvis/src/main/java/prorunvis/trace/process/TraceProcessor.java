@@ -6,6 +6,7 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.SimpleName;
+import com.github.javaparser.ast.nodeTypes.NodeWithBody;
 import com.github.javaparser.ast.nodeTypes.NodeWithOptionalBlockStmt;
 import com.github.javaparser.ast.stmt.*;
 import prorunvis.trace.TraceNode;
@@ -123,10 +124,19 @@ public class TraceProcessor {
             }
         }
 
-        //check if call  is in a statement, i.e. a then -or else clause
+        //check if call is in a statement, i.e. a then -or else clause
         if(nodeOfCurrent instanceof Statement y){
             if(y instanceof BlockStmt b){
                 block = b;
+            }
+        }
+
+        //check if call is in a loop
+        if(nodeOfCurrent instanceof NodeWithBody<?> loop){
+            System.out.println("LOOP::TRUE");
+            Statement body = loop.getBody();
+            if(body instanceof BlockStmt z){
+                block = z;
             }
         }
 
