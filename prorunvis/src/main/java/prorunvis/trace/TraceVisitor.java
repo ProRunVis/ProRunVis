@@ -79,7 +79,7 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
         //add a methodCall to proRunVisTrace to the then-block of stmt
 
         int id = map.size();
-        map.put(id, stmt.clone());
+        map.put(id, stmt.getThenStmt().clone());
         stmt.getThenStmt().asBlockStmt().addStatement(0, traceEntryCreator(id));
 
         //check if stmt has an else-block
