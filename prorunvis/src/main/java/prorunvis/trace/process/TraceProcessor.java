@@ -311,5 +311,12 @@ public class TraceProcessor {
                 .append("\nOutlink: ").append(node.getOutLink())
                 .append("\nOut: ").append(node.getOutIndex())
                 .append("\nParent: ").append(node.getParentIndex());
+        builder.append("\nName: ").append(node.getName())
+                .append("\nChildren: ").append(node.getChildrenIndices())
+                .append("\nLink: ").append(node.getLink())
+                .append("\nOutlink: ").append(node.getOutLink())
+                .append("\nOut: ").append(node.getOutIndex())
+                .append("\nParent: ").append(node.getParentIndex())
+                .append("\n");
     }
 }
