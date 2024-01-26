@@ -2,20 +2,24 @@ package prorunvis;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.utils.SymbolSolverCollectionStrategy;
 import com.github.javaparser.utils.ProjectRoot;
 import prorunvis.instrument.Instrumenter;
 import prorunvis.preprocess.Preprocessor;
-import prorunvis.trace.TraceProcessor;
+import prorunvis.trace.TraceNode;
+import prorunvis.trace.process.TraceProcessor;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Main {
 
@@ -47,10 +51,28 @@ public class Main {
             }
         });
 
-        cus.forEach(cu -> {Preprocessor.run(cu); Instrumenter.run(cu);});
+        Map<Integer, Node> map = new HashMap<>();
+
+        cus.forEach(cu -> {Preprocessor.run(cu); Instrumenter.run(cu, map);});
 
         CompileAndRun.run(projectRoot, cus);
 
-        String JSONString = TraceProcessor.toJSON(TraceProcessor.parseToCodeEntries(traceFile));
+        TraceProcessor processor = new TraceProcessor(map, traceFile.getPath());
+        processor.start();
+        List<TraceNode> nodes = processor.getNodeList();
+        TraceNode root = nodes.get(0);
+        System.out.println(root.getName() +", null");
+
+
+        for(Integer i: root.getChildrenIndices()){
+            testPrint(nodes.get(i), nodes);
+        }
+    }
+
+    public static void testPrint(TraceNode node, List<TraceNode> nodes){
+        System.out.println(node.getName() +", "+ nodes.get(node.getParentIndex()).getName());
+        for(Integer i: node.getChildrenIndices()){
+            testPrint(nodes.get(i), nodes);
+        }
     }
 }

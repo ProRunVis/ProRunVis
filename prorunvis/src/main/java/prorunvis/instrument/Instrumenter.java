@@ -3,6 +3,7 @@ package prorunvis.instrument;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -15,6 +16,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This Instrumenter is used to modify (instrument) code.
@@ -60,9 +63,9 @@ public final class Instrumenter {
      * are executed.
      * @param cu The compilation unit which will be modified by this Instrumenter.
      */
-    public static void run(final CompilationUnit cu) {
+    public static void run(final CompilationUnit cu, Map<Integer, Node> map) {
         cu.addImport(BufferedWriter.class).addImport(FileWriter.class).addImport(IOException.class);
-        new TraceVisitor().visit(cu, null);
+        new TraceVisitor().visit(cu, map);
         new InstrumenterSetupVisitor().visit(cu, traceFile.getAbsolutePath());
     }
 }
