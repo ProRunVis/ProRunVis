@@ -170,11 +170,8 @@ public class TraceProcessor {
 
         //add children to the created node, while there are still tokens
         //on the stack and new nodes can be created
-        boolean isFinished = false;
-        while (!tokens.empty() && !isFinished) {
-            //process the children of this node recursively
-            isFinished = processChild();
-        }
+
+        fillRanges((getBlockStmt() == null) ? nodeOfCurrent.getChildNodes() : getBlockStmt().getChildNodes());
 
         //restore state
         current = nodeList.get(traceNode.getParentIndex());
@@ -244,6 +241,25 @@ public class TraceProcessor {
         }
 
         return false;
+    }
+
+    private void fillRanges(List<Node> childrenOfCurrent) {
+
+        for (Node currentRange : childrenOfCurrent) {
+
+            if (currentRange.getRange().isEmpty()) continue;
+
+            if (!tokens.empty()
+                    && traceMap.get(tokens.peek()).getRange().isPresent()
+                    && currentRange.getRange().get().strictlyContains(traceMap.get(tokens.peek()).getRange().get())) {
+                processChild();
+            } else {
+                if (currentRange instanceof BlockStmt block) {
+                    fillRanges(block.getChildNodes());
+                }
+                current.addRange(currentRange.getRange().get());
+            }
+        }
     }
 
     /**
