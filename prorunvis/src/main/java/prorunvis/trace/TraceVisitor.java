@@ -3,7 +3,6 @@ package prorunvis.trace;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
 import java.util.Map;
@@ -23,13 +22,19 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
     public TryStmt visit(final TryStmt stmt, final Map<Integer, Node> map) {
 
         int id = map.size();
-        stmt.getTryBlock().addStatement(0, traceEntryCreator(id));
         map.put(id, stmt.clone());
+        stmt.getTryBlock().addStatement(0, traceEntryCreator(id));
 
         for (CatchClause clause : stmt.getCatchClauses()) {
             id = map.size();
-            clause.getBody().addStatement(0, traceEntryCreator(id));
             map.put(id, clause.clone());
+            clause.getBody().addStatement(0, traceEntryCreator(id));
+        }
+
+        if (stmt.getFinallyBlock().isPresent()) {
+            id = map.size();
+            map.put(id, stmt.getFinallyBlock().get().clone());
+            stmt.getFinallyBlock().get().addStatement(traceEntryCreator(id));
         }
 
         super.visit(stmt, map);
@@ -154,33 +159,5 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
      */
     private Statement traceEntryCreator(final int id) {
         return StaticJavaParser.parseStatement("proRunVisTrace(\"" + id + "\");");
-    }
-
-    /**
-     * takes in a node and attempts to write a trace call before it. If that is not possible (because the parent node is not a statement type to which you can add another statement),
-     * the same is attempted with its parent, until trace is successfully written.
-     * @param map maps the current ID to this node
-     * @param node the node to be instrumented
-     */
-    private void backTrack(final Map<Integer, Node> map, final Node node) {
-
-        Node parent = node.getParentNode().get();
-        Node current = node;
-        int id = map.size();
-
-        while (true) {
-            if (parent instanceof BlockStmt block) {
-                block.addStatement(block.getStatements().indexOf(current), traceEntryCreator(id));
-                map.put(id, node.clone());
-                break;
-            } else if (parent instanceof SwitchEntry entry) {
-                entry.addStatement(entry.getStatements().indexOf(current), traceEntryCreator(id));
-                map.put(id, node.clone());
-                break;
-            } else {
-                current = parent;
-                parent = parent.getParentNode().get();
-            }
-        }
     }
 }
