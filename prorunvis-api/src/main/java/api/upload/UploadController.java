@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.Part;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.io.IOException;
@@ -31,6 +32,13 @@ public class UploadController {
     @Autowired
     public UploadController(final StorageService storageService) {
         this.storageService = storageService;
+    }
+
+
+
+    @GetMapping("/")
+    public String getIndex(){
+        return "index.html";
     }
 
     /**
