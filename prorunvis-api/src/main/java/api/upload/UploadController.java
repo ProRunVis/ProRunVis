@@ -35,15 +35,22 @@ public class UploadController {
     }
 
 
-
+    /**
+     * Handles hosting the default landing page. Always hosts
+     * index.html on the default path "/".
+     *
+     * @return A String representing th file to be hosted, which can
+     *         be used by the thymeleaf plugin
+     */
     @GetMapping("/")
-    public String getIndex(){
+    public String getIndex() {
         return "index.html";
     }
 
     /**
      * Handles file uploads to the server. The files will be stored as
      * provided by the used {@link StorageService} of this controller.
+     *
      * @param request The Http request containing the uploaded files
      *                as {@link Part}, which will be stored using the
      *                provided {@link #storageService}.
