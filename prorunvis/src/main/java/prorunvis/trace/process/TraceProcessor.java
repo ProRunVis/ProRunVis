@@ -1,5 +1,6 @@
 package prorunvis.trace.process;
 
+import com.github.javaparser.Position;
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -121,6 +122,9 @@ public class TraceProcessor {
      * for current are not finished, true otherwise.
      */
     private boolean processChild() {
+
+        if (tokens.empty()) return true;
+
         Node node = traceMap.get(tokens.peek());
 
         //check if the node is a method declaration or not
@@ -245,14 +249,22 @@ public class TraceProcessor {
 
     private void fillRanges(List<Node> childrenOfCurrent) {
 
+        Range nextRangeToIgnore = null;
+
         for (Node currentRange : childrenOfCurrent) {
 
-            if (currentRange.getRange().isEmpty()) continue;
+            if (nextRangeToIgnore == null) {
+                if (processChild()) {
+                    nextRangeToIgnore = new Range(nodeOfCurrent.getRange().get().end.nextLine(), nodeOfCurrent.getRange().get().end.nextLine());
+                } else {
+                    TraceNode nextChild = nodeList.get(current.getChildrenIndices().get(current.getChildrenIndices().size() - 1));
+                    nextRangeToIgnore = (nextChild.getLink() == null) ? traceMap.get(Integer.parseInt(nextChild.getName())).getRange().get() : nextChild.getLink();
+                }
+                System.out.println(nextRangeToIgnore);
+            }
 
-            if (!tokens.empty()
-                    && traceMap.get(tokens.peek()).getRange().isPresent()
-                    && currentRange.getRange().get().strictlyContains(traceMap.get(tokens.peek()).getRange().get())) {
-                processChild();
+            if (currentRange.getRange().get().strictlyContains(nextRangeToIgnore)) {
+                nextRangeToIgnore = null;
             } else {
                 if (currentRange instanceof BlockStmt block) {
                     fillRanges(block.getChildNodes());
@@ -260,6 +272,7 @@ public class TraceProcessor {
                 current.addRange(currentRange.getRange().get());
             }
         }
+        System.out.println(tokens);
     }
 
     /**
@@ -321,18 +334,13 @@ public class TraceProcessor {
     }
 
     private void nodeToString(final StringBuilder builder, final TraceNode node) {
-        builder.append("\n\nName: ").append(node.getName())
-                .append("\nChildren: ").append(node.getChildrenIndices())
-                .append("\nLink: ").append(node.getLink())
-                .append("\nOutlink: ").append(node.getOutLink())
-                .append("\nOut: ").append(node.getOutIndex())
-                .append("\nParent: ").append(node.getParentIndex());
         builder.append("\nName: ").append(node.getName())
-                .append("\nChildren: ").append(node.getChildrenIndices())
-                .append("\nLink: ").append(node.getLink())
-                .append("\nOutlink: ").append(node.getOutLink())
-                .append("\nOut: ").append(node.getOutIndex())
-                .append("\nParent: ").append(node.getParentIndex())
-                .append("\n");
+               .append("\nChildren: ").append(node.getChildrenIndices())
+               .append("\nRanges: ").append(node.getRanges())
+               .append("\nLink: ").append(node.getLink())
+               .append("\nOutlink: ").append(node.getOutLink())
+               .append("\nOut: ").append(node.getOutIndex())
+               .append("\nParent: ").append(node.getParentIndex())
+               .append("\n");
     }
 }
