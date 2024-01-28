@@ -122,7 +122,7 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
 
         for (SwitchEntry entry : stmt.getEntries()) {
             int id = map.size();
-            map.put(id, stmt.clone());
+            map.put(id, entry.clone());
             entry.addStatement(0, traceEntryCreator(id));
         }
 
