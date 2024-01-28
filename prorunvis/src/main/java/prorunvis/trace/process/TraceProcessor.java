@@ -2,12 +2,14 @@ package prorunvis.trace.process;
 
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.nodeTypes.NodeWithBody;
 import com.github.javaparser.ast.nodeTypes.NodeWithOptionalBlockStmt;
+import com.github.javaparser.ast.nodeTypes.NodeWithStatements;
 import com.github.javaparser.ast.stmt.*;
 import com.google.common.collect.Iterables;
 import prorunvis.trace.TraceNode;
@@ -244,7 +246,7 @@ public class TraceProcessor {
 
             //set link, out-link and index of out
             int lastAddedIndex = current.getChildrenIndices()
-                                .get(current.getChildrenIndices().size() - 1);
+                    .get(current.getChildrenIndices().size() - 1);
             TraceNode lastAdded = nodeList.get(lastAddedIndex);
 
             //check if ranges are present, should always be true due to preprocessing
@@ -374,6 +376,13 @@ public class TraceProcessor {
             }
         }
 
+        //check if call is in a switch entry
+        if (nodeOfCurrent instanceof NodeWithStatements<?> switchCase) {
+            block = new BlockStmt();
+            NodeList<Statement> statements = switchCase.getStatements();
+            block.setStatements(statements);
+        }
+        
         return block;
     }
 
