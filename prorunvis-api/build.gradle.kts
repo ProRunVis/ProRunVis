@@ -21,8 +21,24 @@ dependencies {
 
     //commons
     implementation("commons-io:commons-io:2.15.1")
+
+    //frontend submodule
+    implementation(project(":frontend"))
 }
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.register<Copy>("copyWebApp"){
+    from("../frontend/build")
+    into("build/resources/main/static")
+}
+
+tasks.named("copyWebApp"){
+    dependsOn(project(":frontend").tasks["appNpmBuild"])
+}
+
+tasks.named("compileJava"){
+    dependsOn(tasks["copyWebApp"])
 }
