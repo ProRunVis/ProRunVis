@@ -225,7 +225,6 @@ public class TraceProcessor {
         if (nameOfCall != null
                 && nameOfCall.equals(nameOfDeclaration)) {
             methodCallRanges.add(callExpr.getRange().get());
-            System.out.println(callExpr.getRange() + ", " + nameOfCall);
             createNewTraceNode();
 
             //set link, out-link and index of out
@@ -251,28 +250,43 @@ public class TraceProcessor {
 
         Range nextRangeToIgnore = null;
 
-        for (Node currentRange : childrenOfCurrent) {
+        boolean skipNext = false;
 
+        for (int i = 0; i < childrenOfCurrent.size();) {
+
+            Node currentRange = childrenOfCurrent.get(i);
+
+            //determine the range of the next traced codeblock
             if (nextRangeToIgnore == null) {
                 if (processChild()) {
-                    nextRangeToIgnore = new Range(nodeOfCurrent.getRange().get().end.nextLine(), nodeOfCurrent.getRange().get().end.nextLine());
+                    nextRangeToIgnore = new Range(nodeOfCurrent.getRange().get().end.nextLine(),
+                                                  nodeOfCurrent.getRange().get().end.nextLine());
                 } else {
                     TraceNode nextChild = nodeList.get(current.getChildrenIndices().get(current.getChildrenIndices().size() - 1));
                     nextRangeToIgnore = (nextChild.getLink() == null) ? traceMap.get(Integer.parseInt(nextChild.getName())).getRange().get() : nextChild.getLink();
                 }
-                System.out.println(nextRangeToIgnore);
+                System.out.println(currentRange.getRange().get() + ", " + nextRangeToIgnore);
             }
 
-            if (currentRange.getRange().get().strictlyContains(nextRangeToIgnore)) {
-                nextRangeToIgnore = null;
-            } else {
-                if (currentRange instanceof BlockStmt block) {
-                    fillRanges(block.getChildNodes());
+            if (!current.getRanges().contains(currentRange.getRange().get())) current.addRange(currentRange.getRange().get());
+
+            if (i + 1 < childrenOfCurrent.size()) {
+                if (childrenOfCurrent.get(i + 1).getRange().get().contains(nextRangeToIgnore)) {
+                    System.out.println("reset");
+                    nextRangeToIgnore = null;
+                    skipNext = true;
+                } else {
+                    if (skipNext) {
+                        i += 2;
+                        skipNext = false;
+                    } else {
+                        i += 1;
+                    }
                 }
-                current.addRange(currentRange.getRange().get());
+            } else {
+                i++;
             }
         }
-        System.out.println(tokens);
     }
 
     /**

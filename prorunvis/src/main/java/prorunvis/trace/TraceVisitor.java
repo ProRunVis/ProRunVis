@@ -5,6 +5,8 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
+
+import javax.swing.plaf.nimbus.State;
 import java.util.Map;
 
 
@@ -22,19 +24,19 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
     public TryStmt visit(final TryStmt stmt, final Map<Integer, Node> map) {
 
         int id = map.size();
-        map.put(id, stmt.clone());
+        map.put(id, stmt.getTryBlock().clone().setRange(stmt.getTryBlock().getRange().get()));
         stmt.getTryBlock().addStatement(0, traceEntryCreator(id));
 
         for (CatchClause clause : stmt.getCatchClauses()) {
             id = map.size();
-            map.put(id, clause.clone());
+            map.put(id, clause.clone().setRange(clause.getRange().get()));
             clause.getBody().addStatement(0, traceEntryCreator(id));
         }
 
         if (stmt.getFinallyBlock().isPresent()) {
             id = map.size();
-            map.put(id, stmt.getFinallyBlock().get().clone());
-            stmt.getFinallyBlock().get().addStatement(traceEntryCreator(id));
+            map.put(id, stmt.getFinallyBlock().get().clone().setRange(stmt.getFinallyBlock().get().getRange().get()));
+            stmt.getFinallyBlock().get().addStatement(0, traceEntryCreator(id));
         }
 
         super.visit(stmt, map);
@@ -51,7 +53,7 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
     public DoStmt visit(final DoStmt stmt, final Map<Integer, Node> map) {
 
         int id = map.size();
-        map.put(id, stmt.clone());
+        map.put(id, stmt.clone().setRange(stmt.getRange().get()));
         stmt.getBody().asBlockStmt().addStatement(0, traceEntryCreator(id));
         super.visit(stmt, map);
         return stmt;
@@ -67,7 +69,7 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
     public ForStmt visit(final ForStmt stmt, final Map<Integer, Node> map) {
 
         int id = map.size();
-        map.put(id, stmt.clone());
+        map.put(id, stmt.clone().setRange(stmt.getRange().get()));
         stmt.getBody().asBlockStmt().addStatement(0, traceEntryCreator(id));
         super.visit(stmt, map);
         return stmt;
@@ -84,13 +86,13 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
         //add a methodCall to proRunVisTrace to the then-block of stmt
 
         int id = map.size();
-        map.put(id, stmt.getThenStmt().clone());
+        map.put(id, stmt.getThenStmt().clone().setRange(stmt.getThenStmt().getRange().get()));
         stmt.getThenStmt().asBlockStmt().addStatement(0, traceEntryCreator(id));
 
         //check if stmt has an else-block
         if (stmt.getElseStmt().isPresent()) {
             id = map.size();
-            map.put(id, stmt.getElseStmt().get().clone());
+            map.put(id, stmt.getElseStmt().get().clone().setRange(stmt.getElseStmt().get().getRange().get()));
             stmt.getElseStmt().get().asBlockStmt().addStatement(0, traceEntryCreator(id));
         }
 
@@ -109,7 +111,7 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
 
         if (decl.getBody().isPresent()) {
             int id = map.size();
-            map.put(id, decl.clone());
+            map.put(id, decl.clone().setRange(decl.getRange().get()));
             decl.getBody().get().addStatement(0, traceEntryCreator(id));
         }
         super.visit(decl, map);
@@ -127,7 +129,7 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
 
         for (SwitchEntry entry : stmt.getEntries()) {
             int id = map.size();
-            map.put(id, entry.clone());
+            map.put(id, entry.clone().setRange(entry.getRange().get()));
             entry.addStatement(0, traceEntryCreator(id));
         }
 
@@ -145,7 +147,7 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
     public WhileStmt visit(final WhileStmt stmt, final Map<Integer, Node> map) {
 
         int id = map.size();
-        map.put(id, stmt.clone());
+        map.put(id, stmt.clone().setRange(stmt.getRange().get()));
         stmt.getBody().asBlockStmt().addStatement(0, traceEntryCreator(id));
 
         super.visit(stmt, map);
