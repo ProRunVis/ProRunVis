@@ -7,6 +7,7 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.SimpleName;
+import com.github.javaparser.ast.nodeTypes.NodeWithBlockStmt;
 import com.github.javaparser.ast.nodeTypes.NodeWithBody;
 import com.github.javaparser.ast.nodeTypes.NodeWithOptionalBlockStmt;
 import com.github.javaparser.ast.nodeTypes.NodeWithStatements;
@@ -362,6 +363,7 @@ public class TraceProcessor {
         }
 
         //check if call is in a statement, i.e. a then -or else clause
+        //or a finally-block
         if (nodeOfCurrent instanceof Statement stmt) {
             if (stmt instanceof BlockStmt b) {
                 block = b;
@@ -381,6 +383,11 @@ public class TraceProcessor {
             block = new BlockStmt();
             NodeList<Statement> statements = switchCase.getStatements();
             block.setStatements(statements);
+        }
+
+        //check if call is in a catch clause
+        if(nodeOfCurrent instanceof NodeWithBlockStmt<?> catchClause){
+            block = catchClause.getBody();
         }
         
         return block;
