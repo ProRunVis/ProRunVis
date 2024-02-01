@@ -14,7 +14,6 @@ import prorunvis.trace.process.TraceProcessor;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,7 +25,7 @@ public class Main {
     public static void main(String[]args) throws IOException, InterruptedException {
 
         //check if an argument of sufficient length has been provided
-        if(args.length == 0){
+        /*if(args.length == 0){
             System.out.println("Missing input");
             return;
         }
@@ -34,10 +33,10 @@ public class Main {
         if(!Files.isDirectory(Paths.get(args[0]))) {
             System.out.println("Folder not found");
             return;
-        }
+        }*/
 
         StaticJavaParser.getParserConfiguration().setSymbolResolver(new JavaSymbolSolver(new CombinedTypeSolver()));
-        ProjectRoot projectRoot = new SymbolSolverCollectionStrategy().collect(Paths.get(args[0]).toAbsolutePath());
+        ProjectRoot projectRoot = new SymbolSolverCollectionStrategy().collect(Paths.get("resources/in").toAbsolutePath());
         File traceFile = new File("resources/TraceFile.tr");
 
         Instrumenter.setupTrace(traceFile);
@@ -60,13 +59,9 @@ public class Main {
         TraceProcessor processor = new TraceProcessor(map, traceFile.getPath());
         processor.start();
         List<TraceNode> nodes = processor.getNodeList();
-        TraceNode root = nodes.get(0);
-        System.out.println(root.getName() +", null");
 
 
-        for(Integer i: root.getChildrenIndices()){
-            testPrint(nodes.get(i), nodes);
-        }
+        System.out.println(processor);
     }
 
     public static void testPrint(TraceNode node, List<TraceNode> nodes){

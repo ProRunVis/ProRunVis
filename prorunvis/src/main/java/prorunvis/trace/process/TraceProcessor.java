@@ -246,17 +246,21 @@ public class TraceProcessor {
         return false;
     }
 
+    /**
+     * advance through all parsable code of the current node and safe ranges which are not turned into their own tracenodes in a list,
+     * while creating new child-tracenodes for specific codetypes.
+     * @param childrenOfCurrent the list of code blocks in the current node
+     */
     private void fillRanges(List<Node> childrenOfCurrent) {
 
         Range nextRangeToIgnore = null;
-
         boolean skipNext = false;
 
         for (int i = 0; i < childrenOfCurrent.size();) {
 
             Node currentRange = childrenOfCurrent.get(i);
 
-            //determine the range of the next traced codeblock
+            // determine the range of the next traced codeblock
             if (nextRangeToIgnore == null) {
                 if (processChild()) {
                     nextRangeToIgnore = new Range(nodeOfCurrent.getRange().get().end.nextLine(),
@@ -265,26 +269,23 @@ public class TraceProcessor {
                     TraceNode nextChild = nodeList.get(current.getChildrenIndices().get(current.getChildrenIndices().size() - 1));
                     nextRangeToIgnore = (nextChild.getLink() == null) ? traceMap.get(Integer.parseInt(nextChild.getName())).getRange().get() : nextChild.getLink();
                 }
-                System.out.println(currentRange.getRange().get() + ", " + nextRangeToIgnore);
             }
 
-            if (!current.getRanges().contains(currentRange.getRange().get())) current.addRange(currentRange.getRange().get());
+            //  current range is a child, let it resolve and wait for the next child
+            if (currentRange.getRange().get().contains(nextRangeToIgnore)) {
+                nextRangeToIgnore = null;
+                skipNext = true;
+            }
 
-            if (i + 1 < childrenOfCurrent.size()) {
-                if (childrenOfCurrent.get(i + 1).getRange().get().contains(nextRangeToIgnore)) {
-                    System.out.println("reset");
-                    nextRangeToIgnore = null;
-                    skipNext = true;
+            // if the next child lies ahead, advance and safe current range in ranges if the skip flag isn't set (i.e. the current range isn't a child)
+            else {
+                if (skipNext) {
+                    skipNext = false;
+                    i++;
                 } else {
-                    if (skipNext) {
-                        i += 2;
-                        skipNext = false;
-                    } else {
-                        i += 1;
-                    }
+                    current.addRange(currentRange.getRange().get());
+                    i++;
                 }
-            } else {
-                i++;
             }
         }
     }
