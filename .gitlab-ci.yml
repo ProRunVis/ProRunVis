@@ -1,5 +1,8 @@
 image: gradle:8.3.0-jdk17
 
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
 build:
   stage: build
   script: gradle --build-cache assemble
