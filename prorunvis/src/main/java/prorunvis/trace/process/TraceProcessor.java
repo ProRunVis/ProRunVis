@@ -111,6 +111,7 @@ public class TraceProcessor {
 
         //add the first node as child to root
         createNewTraceNode();
+        System.out.println(tokens);
     }
 
     /**
@@ -253,7 +254,7 @@ public class TraceProcessor {
      * @param childrenOfCurrent the list of code blocks in the current node
      * @param nextRangeToIgnore range of the next child tracenode, necessary in order to skip it while adding ranges
      */
-    private void fillRanges(final List<Node> childrenOfCurrent, Range nextRangeToIgnore) {
+    private void fillRanges(List<Node> childrenOfCurrent, Range nextRangeToIgnore) {
 
         boolean skipNext = false;
 
@@ -293,6 +294,10 @@ public class TraceProcessor {
                     i++;
                 }
             }
+        }
+
+        if (nodeOfCurrent instanceof ForStmt forStmt) {
+            current.addRange(forStmt.getChildNodes().get(2).getRange().get());
         }
     }
 
