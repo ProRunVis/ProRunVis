@@ -4,13 +4,8 @@ import com.github.javaparser.Range;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.SimpleName;
-import com.github.javaparser.ast.nodeTypes.NodeWithBlockStmt;
-import com.github.javaparser.ast.nodeTypes.NodeWithBody;
-import com.github.javaparser.ast.nodeTypes.NodeWithOptionalBlockStmt;
-import com.github.javaparser.ast.nodeTypes.NodeWithStatements;
+import com.github.javaparser.ast.expr.*;
+import com.github.javaparser.ast.nodeTypes.*;
 import com.github.javaparser.ast.stmt.*;
 import com.google.common.collect.Iterables;
 import prorunvis.trace.TraceNode;
@@ -220,12 +215,57 @@ public class TraceProcessor {
         //if one is present
         BlockStmt block = getBlockStmt();
 
-        //search a found body for expression statements with callExpressions
+        //search a found body for expressions with callExpressions
         if (block != null) {
             for (Statement statement : block.getStatements()) {
 
+                //search for ExpressionStatements
                 if (statement instanceof ExpressionStmt expressionStmt) {
                     Expression expression = expressionStmt.getExpression();
+
+                    //store the name of the found expression
+                    if (expression instanceof MethodCallExpr call) {
+                        if (!methodCallRanges.contains(call.getRange().get())) {
+                            callExpr = call;
+                            nameOfCall = call.getName();
+                            break;
+                        }
+                    }
+                }
+
+                //search for conditions in while-, do-while or if-statements
+                if (statement instanceof NodeWithCondition<?> cond){
+                    Expression expression = cond.getCondition();
+
+                    //store the name of the found expression
+                    if (expression instanceof MethodCallExpr call) {
+                        if (!methodCallRanges.contains(call.getRange().get())) {
+                            callExpr = call;
+                            nameOfCall = call.getName();
+                            break;
+                        }
+                    }
+                }
+
+                //search for calls in for-statements
+                if (statement instanceof ForStmt forStmt
+                    && forStmt.getCompare().isPresent()){
+
+                    Expression expression = forStmt.getCompare().get();
+
+                    //store the name of the found expression
+                    if (expression instanceof MethodCallExpr call) {
+                        if (!methodCallRanges.contains(call.getRange().get())) {
+                            callExpr = call;
+                            nameOfCall = call.getName();
+                            break;
+                        }
+                    }
+                }
+
+                //search for calls in forEach statements
+                if (statement instanceof ForEachStmt forEach){
+                    Expression expression = forEach.getIterable();
 
                     //store the name of the found expression
                     if (expression instanceof MethodCallExpr call) {
