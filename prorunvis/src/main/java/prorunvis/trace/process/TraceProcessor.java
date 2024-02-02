@@ -175,7 +175,7 @@ public class TraceProcessor {
         //add children to the created node, while there are still tokens
         //on the stack and new nodes can be created
 
-        fillRanges((getBlockStmt() == null) ? nodeOfCurrent.getChildNodes() : getBlockStmt().getChildNodes());
+        fillRanges((getBlockStmt() == null) ? nodeOfCurrent.getChildNodes() : getBlockStmt().getChildNodes(), null);
 
         //restore state
         current = nodeList.get(traceNode.getParentIndex());
@@ -251,14 +251,13 @@ public class TraceProcessor {
      * while creating new child-tracenodes for specific codetypes.
      * @param childrenOfCurrent the list of code blocks in the current node
      */
-    private void fillRanges(List<Node> childrenOfCurrent) {
+    private void fillRanges(List<Node> childrenOfCurrent, Range nextRangeToIgnore) {
 
-        Range nextRangeToIgnore = null;
         boolean skipNext = false;
 
         for (int i = 0; i < childrenOfCurrent.size();) {
 
-            Node currentRange = childrenOfCurrent.get(i);
+            Node currentNode = childrenOfCurrent.get(i);
 
             // determine the range of the next traced codeblock
             if (nextRangeToIgnore == null) {
@@ -271,8 +270,11 @@ public class TraceProcessor {
                 }
             }
 
+            markStatementsInChild(currentNode, nextRangeToIgnore);
+
             //  current range is a child, let it resolve and wait for the next child
-            if (currentRange.getRange().get().contains(nextRangeToIgnore)) {
+            if (currentNode.getRange().get().contains(nextRangeToIgnore)) {
+
                 nextRangeToIgnore = null;
                 skipNext = true;
             }
@@ -283,10 +285,46 @@ public class TraceProcessor {
                     skipNext = false;
                     i++;
                 } else {
-                    current.addRange(currentRange.getRange().get());
+                    if (!current.getRanges().contains(currentNode.getRange().get())) {
+                        current.addRange(currentNode.getRange().get());
+                    }
                     i++;
                 }
             }
+        }
+    }
+
+    /**
+     * private method used by {@link #fillRanges} to determine weither the current statement is a childnode in which certain
+     * codeblocks are always executed (like the condition in an if statement) in order to mark it
+     * @param currentNode Node currently being analyzed
+     * @param nextRangeToIgnore next child in case it lies within the current Node
+     */
+    private void markStatementsInChild(Node currentNode, Range nextRangeToIgnore) {
+
+        if (currentNode instanceof IfStmt ifStmt) {
+            fillRanges(ifStmt.getChildNodes().subList(0, 1), nextRangeToIgnore);
+            return;
+        }
+
+        if (currentNode instanceof ForStmt forStmt) {
+            fillRanges(forStmt.getChildNodes().subList(0, 2), nextRangeToIgnore);
+            return;
+        }
+
+        if (currentNode instanceof WhileStmt whileStmt) {
+            fillRanges(whileStmt.getChildNodes().subList(0, 1), nextRangeToIgnore);
+            return;
+        }
+
+        if (currentNode instanceof ForEachStmt forEachStmt) {
+            fillRanges(forEachStmt.getChildNodes().subList(0, 2), nextRangeToIgnore);
+            return;
+        }
+
+        if (currentNode instanceof DoStmt doStmt) {
+            fillRanges(doStmt.getChildNodes().subList(doStmt.getChildNodes().size() - 2, doStmt.getChildNodes().size() - 1), nextRangeToIgnore);
+            return;
         }
     }
 
