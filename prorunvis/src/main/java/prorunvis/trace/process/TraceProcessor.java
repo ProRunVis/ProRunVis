@@ -1,6 +1,5 @@
 package prorunvis.trace.process;
 
-import com.github.javaparser.Position;
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -123,7 +122,9 @@ public class TraceProcessor {
      */
     private boolean processChild() {
 
-        if (tokens.empty()) return true;
+        if (tokens.empty()) {
+            return true;
+        }
 
         Node node = traceMap.get(tokens.peek());
 
@@ -250,8 +251,9 @@ public class TraceProcessor {
      * advance through all parsable code of the current node and safe ranges which are not turned into their own tracenodes in a list,
      * while creating new child-tracenodes for specific codetypes.
      * @param childrenOfCurrent the list of code blocks in the current node
+     * @param nextRangeToIgnore range of the next child tracenode, necessary in order to skip it while adding ranges
      */
-    private void fillRanges(List<Node> childrenOfCurrent, Range nextRangeToIgnore) {
+    private void fillRanges(final List<Node> childrenOfCurrent, Range nextRangeToIgnore) {
 
         boolean skipNext = false;
 
@@ -300,7 +302,7 @@ public class TraceProcessor {
      * @param currentNode Node currently being analyzed
      * @param nextRangeToIgnore next child in case it lies within the current Node
      */
-    private void markStatementsInChild(Node currentNode, Range nextRangeToIgnore) {
+    private void markStatementsInChild(final Node currentNode, final Range nextRangeToIgnore) {
 
         if (currentNode instanceof IfStmt ifStmt) {
             fillRanges(ifStmt.getChildNodes().subList(0, 1), nextRangeToIgnore);
