@@ -59,18 +59,9 @@ public class Main {
 
         TraceProcessor processor = new TraceProcessor(map, traceFile.getPath());
         processor.start();
-        List<TraceNode> nodes = processor.getNodeList();
-        TraceNode root = nodes.get(0);
-        System.out.println(root.getName() +", null");
-
-
-        for(Integer i: root.getChildrenIndices()){
-            testPrint(nodes.get(i), nodes);
-        }
     }
 
     public static void testPrint(TraceNode node, List<TraceNode> nodes){
-        System.out.println(node.getName() +", "+ nodes.get(node.getParentIndex()).getName());
         for(Integer i: node.getChildrenIndices()){
             testPrint(nodes.get(i), nodes);
         }

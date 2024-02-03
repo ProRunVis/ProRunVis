@@ -176,6 +176,17 @@ public class TraceProcessor {
             isFinished = processChild();
         }
 
+        //if current node is a loop: calculate and set iteration
+        if (nodeOfCurrent instanceof NodeWithBody<?>) {
+            int iteration = 0;
+            for (int i: nodeList.get(current.getParentIndex()).getChildrenIndices()) {
+                if (nodeList.get(i).getTraceID().equals(current.getTraceID())) {
+                    iteration++;
+                }
+            }
+            current.setIteration(iteration);
+        }
+
         //restore state
         current = nodeList.get(traceNode.getParentIndex());
         nodeOfCurrent = tempNodeOfCurrent;
@@ -305,7 +316,7 @@ public class TraceProcessor {
     }
 
     private void nodeToString(final StringBuilder builder, final TraceNode node) {
-        builder.append("\nName: ").append(node.getName())
+        builder.append("\nTraceID: ").append(node.getTraceID())
                 .append("\nChildren: ").append(node.getChildrenIndices())
                 .append("\nLink: ").append(node.getLink())
                 .append("\nOutlink: ").append(node.getOutLink())
