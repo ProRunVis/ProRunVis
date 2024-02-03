@@ -293,28 +293,33 @@ public class TraceProcessor {
             }
         }
 
+        // if the current node is a forStmt, and it has iteration steps, add them to the ranges
         if (nodeOfCurrent instanceof ForStmt forStmt) {
-            current.addRange(forStmt.getChildNodes().get(2).getRange().get());
+            forStmt.getUpdate().forEach(node -> current.addRange(node.getRange().get()));
         }
     }
 
     /**
-     * private method used by {@link #fillRanges} to determine weither the current statement is a childnode in which certain
-     * codeblocks are always executed (like the condition in an if statement) in order to mark it
+     * private method used by {@link #fillRanges} to determine whether the current statement is a child node in which certain
+     * codeblocks are always executed (like the condition in an if statement) in order to mark it.
      * @param currentNode Node currently being analyzed
      * @param nextRangeToIgnore next child in case it lies within the current Node
      */
     private void markStatementsInChild(final Node currentNode, final Range nextRangeToIgnore) {
         if (currentNode instanceof IfStmt ifStmt) {
-            fillRanges(ifStmt.getChildNodes().subList(0, 1), nextRangeToIgnore);
+            fillRanges(List.of(ifStmt.getCondition()), nextRangeToIgnore);
         } else if (currentNode instanceof ForStmt forStmt) {
-            fillRanges(forStmt.getChildNodes().subList(0, 2), nextRangeToIgnore);
+            List<Node> tempRanges = new ArrayList<>(forStmt.getInitialization());
+            if (forStmt.getCompare().isPresent()) {
+                tempRanges.add(forStmt.getCompare().get());
+            }
+            fillRanges(tempRanges, nextRangeToIgnore);
         } else if (currentNode instanceof WhileStmt whileStmt) {
-            fillRanges(whileStmt.getChildNodes().subList(0, 1), nextRangeToIgnore);
+            fillRanges(List.of(whileStmt.getCondition()), nextRangeToIgnore);
         } else if (currentNode instanceof ForEachStmt forEachStmt) {
-            fillRanges(forEachStmt.getChildNodes().subList(0, 2), nextRangeToIgnore);
+            fillRanges(List.of(forEachStmt.getVariable(), forEachStmt.getIterable()), nextRangeToIgnore);
         } else if (currentNode instanceof DoStmt doStmt) {
-            fillRanges(doStmt.getChildNodes().subList(doStmt.getChildNodes().size() - 2, doStmt.getChildNodes().size() - 1), nextRangeToIgnore);
+            fillRanges(List.of(doStmt.getCondition()), nextRangeToIgnore);
         }
     }
 
@@ -350,10 +355,6 @@ public class TraceProcessor {
             }
         }
         return block;
-    }
-
-    private List<Node> getChildren() {
-        return new ArrayList<>();
     }
 
     /**
