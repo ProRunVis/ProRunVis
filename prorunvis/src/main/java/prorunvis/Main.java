@@ -13,6 +13,7 @@ import prorunvis.trace.process.TraceProcessor;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +25,7 @@ public class Main {
     public static void main(String[]args) throws IOException, InterruptedException {
 
         //check if an argument of sufficient length has been provided
-        /*if(args.length == 0){
+        if(args.length == 0){
             System.out.println("Missing input");
             return;
         }
@@ -32,10 +33,10 @@ public class Main {
         if(!Files.isDirectory(Paths.get(args[0]))) {
             System.out.println("Folder not found");
             return;
-        }*/
+        }
 
         StaticJavaParser.getParserConfiguration().setSymbolResolver(new JavaSymbolSolver(new CombinedTypeSolver()));
-        ProjectRoot projectRoot = new SymbolSolverCollectionStrategy().collect(Paths.get("resources/in").toAbsolutePath());
+        ProjectRoot projectRoot = new SymbolSolverCollectionStrategy().collect(Paths.get(args[0]).toAbsolutePath());
         File traceFile = new File("resources/TraceFile.tr");
 
         Instrumenter.setupTrace(traceFile);
@@ -52,11 +53,8 @@ public class Main {
         Map<Integer, Node> map = new HashMap<>();
 
         cus.forEach(cu -> {Preprocessor.run(cu); Instrumenter.run(cu, map);});
-
         CompileAndRun.run(projectRoot, cus);
-
         TraceProcessor processor = new TraceProcessor(map, traceFile.getPath());
-
         processor.start();
     }
 }
