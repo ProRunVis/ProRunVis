@@ -111,7 +111,6 @@ public class TraceProcessor {
 
         //add the first node as child to root
         createNewTraceNode();
-        System.out.println(tokens);
     }
 
     /**

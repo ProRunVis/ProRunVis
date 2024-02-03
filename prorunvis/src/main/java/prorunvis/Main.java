@@ -56,8 +56,7 @@ public class Main {
         CompileAndRun.run(projectRoot, cus);
 
         TraceProcessor processor = new TraceProcessor(map, traceFile.getPath());
-        processor.start();
 
-        System.out.println(processor);
+        processor.start();
     }
 }
