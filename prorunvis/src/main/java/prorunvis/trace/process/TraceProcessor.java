@@ -262,7 +262,7 @@ public class TraceProcessor {
 
             Node currentNode = childrenOfCurrent.get(i);
 
-            // determine the range of the next traced codeblock
+            // determine the range of the next child
             if (nextRangeToIgnore == null) {
                 if (processChild()) {
                     nextRangeToIgnore = new Range(nodeOfCurrent.getRange().get().end.nextLine(),
@@ -277,7 +277,6 @@ public class TraceProcessor {
 
             //  current range is a child, let it resolve and wait for the next child
             if (currentNode.getRange().get().contains(nextRangeToIgnore)) {
-
                 nextRangeToIgnore = null;
                 skipNext = true;
             }
@@ -286,13 +285,12 @@ public class TraceProcessor {
             else {
                 if (skipNext) {
                     skipNext = false;
-                    i++;
                 } else {
                     if (!current.getRanges().contains(currentNode.getRange().get())) {
                         current.addRange(currentNode.getRange().get());
                     }
-                    i++;
                 }
+                i++;
             }
         }
 
@@ -308,30 +306,16 @@ public class TraceProcessor {
      * @param nextRangeToIgnore next child in case it lies within the current Node
      */
     private void markStatementsInChild(final Node currentNode, final Range nextRangeToIgnore) {
-
         if (currentNode instanceof IfStmt ifStmt) {
             fillRanges(ifStmt.getChildNodes().subList(0, 1), nextRangeToIgnore);
-            return;
-        }
-
-        if (currentNode instanceof ForStmt forStmt) {
+        } else if (currentNode instanceof ForStmt forStmt) {
             fillRanges(forStmt.getChildNodes().subList(0, 2), nextRangeToIgnore);
-            return;
-        }
-
-        if (currentNode instanceof WhileStmt whileStmt) {
+        } else if (currentNode instanceof WhileStmt whileStmt) {
             fillRanges(whileStmt.getChildNodes().subList(0, 1), nextRangeToIgnore);
-            return;
-        }
-
-        if (currentNode instanceof ForEachStmt forEachStmt) {
+        } else if (currentNode instanceof ForEachStmt forEachStmt) {
             fillRanges(forEachStmt.getChildNodes().subList(0, 2), nextRangeToIgnore);
-            return;
-        }
-
-        if (currentNode instanceof DoStmt doStmt) {
+        } else if (currentNode instanceof DoStmt doStmt) {
             fillRanges(doStmt.getChildNodes().subList(doStmt.getChildNodes().size() - 2, doStmt.getChildNodes().size() - 1), nextRangeToIgnore);
-            return;
         }
     }
 
@@ -367,6 +351,10 @@ public class TraceProcessor {
             }
         }
         return block;
+    }
+
+    private List<Node> getChildren() {
+        return new ArrayList<>();
     }
 
     /**
