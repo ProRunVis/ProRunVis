@@ -291,7 +291,7 @@ public class TraceProcessor {
                 skipNext = true;
             }
 
-            // if the next child lies ahead, advance and safe current range in ranges if the skip flag isn't set (i.e. the current range isn't a child)
+            // if the next child lies ahead, advance and save current range in ranges if the skip flag isn't set (i.e. the current range isn't a child)
             else {
                 if (skipNext) {
                     skipNext = false;
