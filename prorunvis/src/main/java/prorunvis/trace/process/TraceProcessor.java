@@ -218,10 +218,14 @@ public class TraceProcessor {
         //search a found body for expressions with callExpressions
         if (block != null) {
             for (Statement statement : block.getStatements()) {
-
                 //search for ExpressionStatements
                 if (statement instanceof ExpressionStmt expressionStmt) {
                     Expression expression = expressionStmt.getExpression();
+
+                    //check for assignments
+                    if(expression instanceof AssignExpr assign){
+                        expression = assign.getValue();
+                    }
 
                     //store the name of the found expression
                     if (expression instanceof MethodCallExpr call) {
@@ -432,6 +436,7 @@ public class TraceProcessor {
         
         return block;
     }
+
 
     /**
      * Gets the nodes created by this preprocessor.
