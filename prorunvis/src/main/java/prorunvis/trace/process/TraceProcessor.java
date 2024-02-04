@@ -121,6 +121,11 @@ public class TraceProcessor {
      * for current are not finished, true otherwise.
      */
     private boolean processChild() {
+
+        if (tokens.empty()) {
+            return true;
+        }
+
         Node node = traceMap.get(tokens.peek());
 
         //check if the node is a method declaration or not
@@ -170,11 +175,8 @@ public class TraceProcessor {
 
         //add children to the created node, while there are still tokens
         //on the stack and new nodes can be created
-        boolean isFinished = false;
-        while (!tokens.empty() && !isFinished) {
-            //process the children of this node recursively
-            isFinished = processChild();
-        }
+
+        fillRanges((getBlockStmt() == null) ? nodeOfCurrent.getChildNodes() : getBlockStmt().getChildNodes(), null);
 
         //if current node is a loop: calculate and set iteration
         if (nodeOfCurrent instanceof NodeWithBody<?>) {
@@ -235,7 +237,6 @@ public class TraceProcessor {
         if (nameOfCall != null
                 && nameOfCall.equals(nameOfDeclaration)) {
             methodCallRanges.add(callExpr.getRange().get());
-            System.out.println(callExpr.getRange() + ", " + nameOfCall);
             createNewTraceNode();
 
             //set link, out-link and index of out
@@ -255,6 +256,82 @@ public class TraceProcessor {
         }
 
         return false;
+    }
+
+    /**
+     * advance through all parsable code of the current node and save ranges which are not turned into their own tracenodes in a list,
+     * while creating new child-tracenodes for specific codetypes.
+     * @param childrenOfCurrent the list of code blocks in the current node
+     * @param nextRangeToIgnore range of the next child tracenode, necessary in order to skip it while adding ranges
+     */
+    private void fillRanges(List<Node> childrenOfCurrent, Range nextRangeToIgnore) {
+
+        boolean skipNext = false;
+
+        for (int i = 0; i < childrenOfCurrent.size();) {
+
+            Node currentNode = childrenOfCurrent.get(i);
+
+            // determine the range of the next child
+            if (nextRangeToIgnore == null) {
+                if (processChild()) {
+                    nextRangeToIgnore = new Range(nodeOfCurrent.getRange().get().end.nextLine(),
+                                                  nodeOfCurrent.getRange().get().end.nextLine());
+                } else {
+                    TraceNode nextChild = nodeList.get(current.getChildrenIndices().get(current.getChildrenIndices().size() - 1));
+                    nextRangeToIgnore = (nextChild.getLink() == null) ? traceMap.get(Integer.parseInt(nextChild.getTraceID())).getRange().get() : nextChild.getLink();
+                }
+            }
+
+            markStatementsInChild(currentNode, nextRangeToIgnore);
+
+            //  current range is a child, let it resolve and wait for the next child
+            if (currentNode.getRange().get().contains(nextRangeToIgnore)) {
+                nextRangeToIgnore = null;
+                skipNext = true;
+            }
+
+            // if the next child lies ahead, advance and save current range in ranges if the skip flag isn't set (i.e. the current range isn't a child)
+            else {
+                if (skipNext) {
+                    skipNext = false;
+                } else {
+                    if (!current.getRanges().contains(currentNode.getRange().get())) {
+                        current.addRange(currentNode.getRange().get());
+                    }
+                }
+                i++;
+            }
+        }
+
+        // if the current node is a forStmt, and it has iteration steps, add them to the ranges
+        if (nodeOfCurrent instanceof ForStmt forStmt) {
+            forStmt.getUpdate().forEach(node -> current.addRange(node.getRange().get()));
+        }
+    }
+
+    /**
+     * private method used by {@link #fillRanges} to determine whether the current statement is a child node in which certain
+     * codeblocks are always executed (like the condition in an if statement) in order to mark it.
+     * @param currentNode Node currently being analyzed
+     * @param nextRangeToIgnore next child in case it lies within the current Node
+     */
+    private void markStatementsInChild(final Node currentNode, final Range nextRangeToIgnore) {
+        if (currentNode instanceof IfStmt ifStmt) {
+            fillRanges(List.of(ifStmt.getCondition()), nextRangeToIgnore);
+        } else if (currentNode instanceof ForStmt forStmt) {
+            List<Node> tempRanges = new ArrayList<>(forStmt.getInitialization());
+            if (forStmt.getCompare().isPresent()) {
+                tempRanges.add(forStmt.getCompare().get());
+            }
+            fillRanges(tempRanges, nextRangeToIgnore);
+        } else if (currentNode instanceof WhileStmt whileStmt) {
+            fillRanges(List.of(whileStmt.getCondition()), nextRangeToIgnore);
+        } else if (currentNode instanceof ForEachStmt forEachStmt) {
+            fillRanges(List.of(forEachStmt.getVariable(), forEachStmt.getIterable()), nextRangeToIgnore);
+        } else if (currentNode instanceof DoStmt doStmt) {
+            fillRanges(List.of(doStmt.getCondition()), nextRangeToIgnore);
+        }
     }
 
     /**
@@ -317,11 +394,12 @@ public class TraceProcessor {
 
     private void nodeToString(final StringBuilder builder, final TraceNode node) {
         builder.append("\nTraceID: ").append(node.getTraceID())
-                .append("\nChildren: ").append(node.getChildrenIndices())
-                .append("\nLink: ").append(node.getLink())
-                .append("\nOutlink: ").append(node.getOutLink())
-                .append("\nOut: ").append(node.getOutIndex())
-                .append("\nParent: ").append(node.getParentIndex())
-                .append("\n");
+               .append("\nChildren: ").append(node.getChildrenIndices())
+               .append("\nRanges: ").append(node.getRanges())
+               .append("\nLink: ").append(node.getLink())
+               .append("\nOutlink: ").append(node.getOutLink())
+               .append("\nOut: ").append(node.getOutIndex())
+               .append("\nParent: ").append(node.getParentIndex())
+               .append("\n");
     }
 }

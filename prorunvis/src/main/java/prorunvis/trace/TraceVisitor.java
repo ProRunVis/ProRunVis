@@ -5,6 +5,7 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
+
 import java.util.Map;
 
 
@@ -22,19 +23,19 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
     public TryStmt visit(final TryStmt stmt, final Map<Integer, Node> map) {
 
         int id = map.size();
-        map.put(id, stmt.clone());
+        createMapEntry(id, map, stmt.getTryBlock());
         stmt.getTryBlock().addStatement(0, traceEntryCreator(id));
 
         for (CatchClause clause : stmt.getCatchClauses()) {
             id = map.size();
-            map.put(id, clause.clone());
+            createMapEntry(id, map, clause);
             clause.getBody().addStatement(0, traceEntryCreator(id));
         }
 
         if (stmt.getFinallyBlock().isPresent()) {
             id = map.size();
-            map.put(id, stmt.getFinallyBlock().get().clone());
-            stmt.getFinallyBlock().get().addStatement(traceEntryCreator(id));
+            createMapEntry(id, map, stmt.getFinallyBlock().get());
+            stmt.getFinallyBlock().get().addStatement(0, traceEntryCreator(id));
         }
 
         super.visit(stmt, map);
@@ -51,7 +52,7 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
     public DoStmt visit(final DoStmt stmt, final Map<Integer, Node> map) {
 
         int id = map.size();
-        map.put(id, stmt.clone());
+        createMapEntry(id, map, stmt);
         stmt.getBody().asBlockStmt().addStatement(0, traceEntryCreator(id));
         super.visit(stmt, map);
         return stmt;
@@ -67,7 +68,7 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
     public ForStmt visit(final ForStmt stmt, final Map<Integer, Node> map) {
 
         int id = map.size();
-        map.put(id, stmt.clone());
+        createMapEntry(id, map, stmt);
         stmt.getBody().asBlockStmt().addStatement(0, traceEntryCreator(id));
         super.visit(stmt, map);
         return stmt;
@@ -84,13 +85,13 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
         //add a methodCall to proRunVisTrace to the then-block of stmt
 
         int id = map.size();
-        map.put(id, stmt.getThenStmt().clone());
+        createMapEntry(id, map, stmt.getThenStmt());
         stmt.getThenStmt().asBlockStmt().addStatement(0, traceEntryCreator(id));
 
         //check if stmt has an else-block
         if (stmt.getElseStmt().isPresent()) {
             id = map.size();
-            map.put(id, stmt.getElseStmt().get().clone());
+            createMapEntry(id, map, stmt.getElseStmt().get());
             stmt.getElseStmt().get().asBlockStmt().addStatement(0, traceEntryCreator(id));
         }
 
@@ -109,7 +110,7 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
 
         if (decl.getBody().isPresent()) {
             int id = map.size();
-            map.put(id, decl.clone());
+            createMapEntry(id, map, decl);
             decl.getBody().get().addStatement(0, traceEntryCreator(id));
         }
         super.visit(decl, map);
@@ -127,7 +128,7 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
 
         for (SwitchEntry entry : stmt.getEntries()) {
             int id = map.size();
-            map.put(id, entry.clone());
+            createMapEntry(id, map, entry);
             entry.addStatement(0, traceEntryCreator(id));
         }
 
@@ -145,7 +146,7 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
     public WhileStmt visit(final WhileStmt stmt, final Map<Integer, Node> map) {
 
         int id = map.size();
-        map.put(id, stmt.clone());
+        createMapEntry(id, map, stmt);
         stmt.getBody().asBlockStmt().addStatement(0, traceEntryCreator(id));
 
         super.visit(stmt, map);
@@ -159,5 +160,15 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
      */
     private Statement traceEntryCreator(final int id) {
         return StaticJavaParser.parseStatement("proRunVisTrace(\"" + id + "\");");
+    }
+
+    /**
+     * creats a map entry with a clone of the given node while preserving its range
+     * @param id the key to map
+     * @param map the map in which to put the entry
+     * @param node the value to map
+     */
+    private void createMapEntry(int id, Map<Integer, Node> map, Node node) {
+        map.put(id, node.clone().setRange(node.getRange().get()));
     }
 }

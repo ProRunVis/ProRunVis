@@ -9,7 +9,6 @@ import com.github.javaparser.symbolsolver.utils.SymbolSolverCollectionStrategy;
 import com.github.javaparser.utils.ProjectRoot;
 import prorunvis.instrument.Instrumenter;
 import prorunvis.preprocess.Preprocessor;
-import prorunvis.trace.TraceNode;
 import prorunvis.trace.process.TraceProcessor;
 
 import java.io.File;
@@ -54,16 +53,8 @@ public class Main {
         Map<Integer, Node> map = new HashMap<>();
 
         cus.forEach(cu -> {Preprocessor.run(cu); Instrumenter.run(cu, map);});
-
         CompileAndRun.run(projectRoot, cus);
-
         TraceProcessor processor = new TraceProcessor(map, traceFile.getPath());
         processor.start();
-    }
-
-    public static void testPrint(TraceNode node, List<TraceNode> nodes){
-        for(Integer i: node.getChildrenIndices()){
-            testPrint(nodes.get(i), nodes);
-        }
     }
 }
