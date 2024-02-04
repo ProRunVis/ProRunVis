@@ -279,7 +279,7 @@ public class TraceProcessor {
                                                   nodeOfCurrent.getRange().get().end.nextLine());
                 } else {
                     TraceNode nextChild = nodeList.get(current.getChildrenIndices().get(current.getChildrenIndices().size() - 1));
-                    nextRangeToIgnore = (nextChild.getLink() == null) ? traceMap.get(Integer.parseInt(nextChild.getName())).getRange().get() : nextChild.getLink();
+                    nextRangeToIgnore = (nextChild.getLink() == null) ? traceMap.get(Integer.parseInt(nextChild.getTraceID())).getRange().get() : nextChild.getLink();
                 }
             }
 
@@ -393,7 +393,7 @@ public class TraceProcessor {
     }
 
     private void nodeToString(final StringBuilder builder, final TraceNode node) {
-        builder.append("\nTraceID: ").append(node.getName())
+        builder.append("\nTraceID: ").append(node.getTraceID())
                .append("\nChildren: ").append(node.getChildrenIndices())
                .append("\nRanges: ").append(node.getRanges())
                .append("\nLink: ").append(node.getLink())
