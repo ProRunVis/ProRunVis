@@ -439,6 +439,45 @@ public class TraceProcessor {
 
 
     /**
+     * Recursively checks every parameter in a MethodCall for additional calls,
+     * including possible parameters of parameters, to ensure that the trace contains
+     * every call in the correct order of execution.
+     * @param expr The MethodCallExpression for which the parameter should
+     *             be checked.
+     * @param name The name of the Method to look for.
+     * @return The {@link MethodCallExpr} corresponding to the name, if one has been
+     *         found in the parameters, null otherwise.
+     */
+    private MethodCallExpr checkCallInParameters(final MethodCallExpr expr, final SimpleName name){
+        MethodCallExpr callExpr = null;
+
+        //check every argument of the call for a possible method call
+        for(Expression arg: expr.getArguments()){
+            if(arg instanceof MethodCallExpr call){
+                //recursively check all parameters
+                callExpr = checkCallInParameters(call, name);
+
+                if(callExpr != null) {
+
+                    if (callExpr.getName().equals(name)
+                            && !methodCallRanges.contains(callExpr.getRange().get())) {
+                        break;
+                    } else {
+                        callExpr = null;
+                    }
+                }else{
+                    if(call.getName().equals(name)
+                    && !methodCallRanges.contains(call.getRange().get())){
+                        callExpr = call;
+                        break;
+                    }
+                }
+            }
+        }
+        return callExpr;
+    }
+
+    /**
      * Gets the nodes created by this preprocessor.
      *
      * @return A List containing the created {@link TraceNode}
