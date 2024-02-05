@@ -177,12 +177,14 @@ public class TraceProcessor {
         //add children to the created node, while there are still tokens
         //on the stack and new nodes can be created
 
-        fillRanges((getBlockStmt() == null) ? nodeOfCurrent.getChildNodes() : getBlockStmt().getChildNodes(), null);
+        fillRanges((getBlockStmt() == null)
+                ? nodeOfCurrent.getChildNodes()
+                : getBlockStmt().getChildNodes(), null);
 
         //if current node is a loop: calculate and set iteration
         if (nodeOfCurrent instanceof NodeWithBody<?>) {
             int iteration = 0;
-            for (int i: nodeList.get(current.getParentIndex()).getChildrenIndices()) {
+            for (int i : nodeList.get(current.getParentIndex()).getChildrenIndices()) {
                 if (nodeList.get(i).getTraceID().equals(current.getTraceID())) {
                     iteration++;
                 }
@@ -223,7 +225,7 @@ public class TraceProcessor {
                     Expression expression = expressionStmt.getExpression();
 
                     //check for assignments
-                    if(expression instanceof AssignExpr assign){
+                    if (expression instanceof AssignExpr assign) {
                         expression = assign.getValue();
                     }
 
@@ -238,7 +240,7 @@ public class TraceProcessor {
                 }
 
                 //search for conditions in while-, do-while or if-statements
-                if (statement instanceof NodeWithCondition<?> cond){
+                if (statement instanceof NodeWithCondition<?> cond) {
                     Expression expression = cond.getCondition();
 
                     //store the name of the found expression
@@ -253,7 +255,7 @@ public class TraceProcessor {
 
                 //search for calls in for-statements
                 if (statement instanceof ForStmt forStmt
-                    && forStmt.getCompare().isPresent()){
+                        && forStmt.getCompare().isPresent()) {
 
                     Expression expression = forStmt.getCompare().get();
 
@@ -268,7 +270,7 @@ public class TraceProcessor {
                 }
 
                 //search for calls in forEach statements
-                if (statement instanceof ForEachStmt forEach){
+                if (statement instanceof ForEachStmt forEach) {
                     Expression expression = forEach.getIterable();
 
                     //store the name of the found expression
@@ -312,14 +314,16 @@ public class TraceProcessor {
      * Advance through all parsable code of the current node and save ranges
      * which are not turned into their own tracenodes in a list,
      * while creating new child-tracenodes for specific codetypes.
+     *
      * @param childrenOfCurrent the list of code blocks in the current node
-     * @param nextRangeToIgnore range of the next child tracenode, necessary in order to skip it while adding ranges
+     * @param nextRangeToIgnore range of the next child tracenode, necessary in order to
+     *                          skip it while adding ranges
      */
     private void fillRanges(final List<Node> childrenOfCurrent, Range nextRangeToIgnore) {
 
         boolean skipNext = false;
 
-        for (int i = 0; i < childrenOfCurrent.size();) {
+        for (int i = 0; i < childrenOfCurrent.size(); ) {
 
             Node currentNode = childrenOfCurrent.get(i);
 
@@ -327,7 +331,7 @@ public class TraceProcessor {
             if (nextRangeToIgnore == null) {
                 if (processChild()) {
                     nextRangeToIgnore = new Range(nodeOfCurrent.getRange().get().end.nextLine(),
-                                                  nodeOfCurrent.getRange().get().end.nextLine());
+                            nodeOfCurrent.getRange().get().end.nextLine());
                 } else {
                     TraceNode nextChild = nodeList.get(Iterables.getLast(current.getChildrenIndices()));
                     nextRangeToIgnore = (nextChild.getLink() == null)
@@ -343,6 +347,7 @@ public class TraceProcessor {
                 nextRangeToIgnore = null;
                 skipNext = true;
             } else {
+
                 //if the next child lies ahead, advance and save current range in ranges if
                 //the skip flag isn't set (i.e. the current range isn't a child)
                 if (skipNext) {
@@ -430,10 +435,10 @@ public class TraceProcessor {
         }
 
         //check if call is in a catch clause
-        if(nodeOfCurrent instanceof NodeWithBlockStmt<?> catchClause){
+        if (nodeOfCurrent instanceof NodeWithBlockStmt<?> catchClause) {
             block = catchClause.getBody();
         }
-        
+
         return block;
     }
 
@@ -442,22 +447,23 @@ public class TraceProcessor {
      * Recursively checks every parameter in a MethodCall for additional calls,
      * including possible parameters of parameters, to ensure that the trace contains
      * every call in the correct order of execution.
+     *
      * @param expr The MethodCallExpression for which the parameter should
      *             be checked.
      * @param name The name of the Method to look for.
      * @return The {@link MethodCallExpr} corresponding to the name, if one has been
-     *         found in the parameters, null otherwise.
+     * found in the parameters, null otherwise.
      */
-    private MethodCallExpr checkCallInParameters(final MethodCallExpr expr, final SimpleName name){
+    private MethodCallExpr checkCallInParameters(final MethodCallExpr expr, final SimpleName name) {
         MethodCallExpr callExpr = null;
 
         //check every argument of the call for a possible method call
-        for(Expression arg: expr.getArguments()){
-            if(arg instanceof MethodCallExpr call){
+        for (Expression arg : expr.getArguments()) {
+            if (arg instanceof MethodCallExpr call) {
                 //recursively check all parameters
                 callExpr = checkCallInParameters(call, name);
 
-                if(callExpr != null) {
+                if (callExpr != null) {
 
                     if (callExpr.getName().equals(name)
                             && !methodCallRanges.contains(callExpr.getRange().get())) {
@@ -465,9 +471,9 @@ public class TraceProcessor {
                     } else {
                         callExpr = null;
                     }
-                }else{
-                    if(call.getName().equals(name)
-                    && !methodCallRanges.contains(call.getRange().get())){
+                } else {
+                    if (call.getName().equals(name)
+                            && !methodCallRanges.contains(call.getRange().get())) {
                         callExpr = call;
                         break;
                     }
@@ -503,12 +509,13 @@ public class TraceProcessor {
 
     private void nodeToString(final StringBuilder builder, final TraceNode node) {
         builder.append("\nTraceID: ").append(node.getTraceID())
-               .append("\nChildren: ").append(node.getChildrenIndices())
-               .append("\nRanges: ").append(node.getRanges())
-               .append("\nLink: ").append(node.getLink())
-               .append("\nOutlink: ").append(node.getOutLink())
-               .append("\nOut: ").append(node.getOutIndex())
-               .append("\nParent: ").append(node.getParentIndex())
-               .append("\n");
+                .append("\nChildren: ").append(node.getChildrenIndices())
+                .append("\nRanges: ").append(node.getRanges())
+                .append("\nLink: ").append(node.getLink())
+                .append("\nOutlink: ").append(node.getOutLink())
+                .append("\nOut: ").append(node.getOutIndex())
+                .append("\nParent: ").append(node.getParentIndex())
+                .append("\nIteration: ").append(node.getIteration())
+                .append("\n");
     }
 }
