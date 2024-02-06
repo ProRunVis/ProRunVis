@@ -146,7 +146,6 @@ public class TraceProcessor {
                 }
             }
         }
-
         return true;
     }
 

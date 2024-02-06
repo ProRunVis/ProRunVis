@@ -29,18 +29,12 @@ public class Main {
             System.out.println("Missing input");
             return;
         }
-
         if(!Files.isDirectory(Paths.get(args[0]))) {
             System.out.println("Folder not found");
             return;
         }
-
         StaticJavaParser.getParserConfiguration().setSymbolResolver(new JavaSymbolSolver(new CombinedTypeSolver()));
         ProjectRoot projectRoot = new SymbolSolverCollectionStrategy().collect(Paths.get(args[0]).toAbsolutePath());
-        File traceFile = new File("resources/TraceFile.tr");
-
-        Instrumenter.setupTrace(traceFile);
-
         List<CompilationUnit> cus = new ArrayList<>();
         projectRoot.getSourceRoots().forEach(sr -> {
             try {
@@ -51,9 +45,16 @@ public class Main {
         });
 
         Map<Integer, Node> map = new HashMap<>();
+        File traceFile = new File("resources/TraceFile.tr");
+        Instrumenter.setupTrace(traceFile);
 
-        cus.forEach(cu -> {Preprocessor.run(cu); Instrumenter.run(cu, map);});
+        cus.forEach(cu -> {
+            Preprocessor.run(cu);
+            Instrumenter.run(cu, map);
+        });
+
         CompileAndRun.run(projectRoot, cus);
+
         TraceProcessor processor = new TraceProcessor(map, traceFile.getPath());
         processor.start();
     }

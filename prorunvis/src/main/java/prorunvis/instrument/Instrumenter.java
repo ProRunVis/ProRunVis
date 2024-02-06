@@ -41,10 +41,8 @@ public final class Instrumenter {
      * to avoid problems at runtime.
      * @param file The file to which the code trace is written.
      */
-    public static void setupTrace(final File file) {
-
+    public static void setupTrace(File file) {
         traceFile = file;
-
         try {
             traceFile.mkdirs();
             if (traceFile.exists()) {
