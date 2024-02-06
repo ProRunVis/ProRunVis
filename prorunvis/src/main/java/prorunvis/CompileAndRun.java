@@ -30,13 +30,13 @@ public final class CompileAndRun {
      * @throws IOException when a problem occurs while the <code>projectRoot</code> is written out
      * @throws InterruptedException when something interrupts the compilation or execution process
      */
-    public static void run(final ProjectRoot projectRoot, final List<CompilationUnit> cus) throws IOException, InterruptedException {
-        Path savePath = Paths.get("resources/out/instrumented");
+    public static void run(final ProjectRoot projectRoot, final List<CompilationUnit> cus, String instrumentedOutPath, String compiledOutPath) throws IOException, InterruptedException {
+        Path savePath = Paths.get(instrumentedOutPath);
 
         File instrumented = new File(savePath.toString());
         instrumented.mkdir();
 
-        File compiled = new File("resources/out/compiled");
+        File compiled = new File(compiledOutPath);
         compiled.mkdir();
 
         projectRoot.getSourceRoots().forEach(sr -> sr.saveAll(savePath));
@@ -46,7 +46,7 @@ public final class CompileAndRun {
         Path path = mainUnit.getStorage().get().getDirectory();
 
         Runtime currentRuntime = Runtime.getRuntime();
-        Process compileProc = currentRuntime.exec("javac -sourcepath " + savePath + " -d resources/out/compiled " + path.toString() + "/" + fileName);
+        Process compileProc = currentRuntime.exec("javac -sourcepath " + savePath + " -d " + compiledOutPath + " " + path.toString() + "/" + fileName);
         compileProc.waitFor();
 
         String compileError = new BufferedReader(new InputStreamReader(compileProc.getErrorStream())).lines().collect(Collectors.joining("\n"));
@@ -56,7 +56,7 @@ public final class CompileAndRun {
         }
 
         String rootPath = new StringBuilder(String.valueOf(path)).delete(0, savePath.toAbsolutePath().toString().length() + 1).toString();
-        Process runProc = currentRuntime.exec("java -cp resources/out/compiled " + ((rootPath.isEmpty()) ? "" : rootPath + ".") + fileName.replace(".java", ""));
+        Process runProc = currentRuntime.exec("java -cp " + compiledOutPath +" " + ((rootPath.isEmpty()) ? "" : rootPath + ".") + fileName.replace(".java", ""));
         runProc.waitFor();
 
         String runError = new BufferedReader(new InputStreamReader(runProc.getErrorStream())).lines().collect(Collectors.joining("\n"));

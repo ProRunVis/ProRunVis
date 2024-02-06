@@ -2,7 +2,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-class ForLoopTest {
+class Test1 {
 
     public static void main(String[] args) {
         proRunVisTrace("0");
@@ -19,7 +19,7 @@ class ForLoopTest {
 
     private static void proRunVisTrace(String trace) {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("/home/fred/Bp/prorunvis/prorunvis/src/test/testfiles/instrument/test1result/TraceFile.tr", true));
+            BufferedWriter writer = new BufferedWriter(new FileWriter("/home/fred/Bp/prorunvis/resources/TraceFile.tr", true));
             writer.write(trace + System.lineSeparator());
             writer.close();
         } catch (IOException e) {
