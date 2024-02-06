@@ -10,9 +10,11 @@ import com.github.javaparser.ast.nodeTypes.NodeWithBody;
 import com.github.javaparser.ast.nodeTypes.NodeWithOptionalBlockStmt;
 import com.github.javaparser.ast.stmt.*;
 import prorunvis.trace.TraceNode;
+import prorunvis.trace.TracedCode;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * This class is used to convert a previously generated id-trace
@@ -296,7 +298,8 @@ public class TraceProcessor {
                 if (skipNext) {
                     skipNext = false;
                 } else {
-                    if (!current.getRanges().contains(currentNode.getRange().get())) {
+                    if (!current.getRanges().contains(currentNode.getRange().get()) &&
+                        !Stream.of(TracedCode.values()).map(entry -> entry.type).toList().contains(currentNode.getClass())) {
                         current.addRange(currentNode.getRange().get());
                     }
                 }
@@ -365,6 +368,7 @@ public class TraceProcessor {
                 block = z;
             }
         }
+
         return block;
     }
 
