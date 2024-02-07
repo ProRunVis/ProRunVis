@@ -1,6 +1,7 @@
 package prorunvis.compileandrun;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.symbolsolver.utils.SymbolSolverCollectionStrategy;
 import com.github.javaparser.utils.ProjectRoot;
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,10 @@ import prorunvis.preprocess.Preprocessor;
 
 import java.io.*;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import prorunvis.Tester;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -52,6 +56,15 @@ class CompileAndRunTest extends Tester {
         ProjectRoot testProjectRoot = new SymbolSolverCollectionStrategy().collect(Paths.get(instrumentedInPath).toAbsolutePath());
 
         List<CompilationUnit> cusResult = createCompilationUnits(testProjectRoot);
+
+
+        Map<Integer, Node> map = new HashMap<>();
+        File traceFile = new File("resources/TraceFile.tr");
+        Instrumenter.setupTrace(traceFile);
+        cusResult.forEach(cu -> {
+            Preprocessor.run(cu);
+            Instrumenter.run(cu, map);
+        });
 
         File solutionTrace = new File(solutionPath + "/TraceFile.tr");
 
