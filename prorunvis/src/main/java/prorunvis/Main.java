@@ -52,11 +52,11 @@ public class Main {
             Preprocessor.run(cu);
             Instrumenter.run(cu, map);
         });
-        //CompileAndRun.run(projectRoot, cus);
+        Instrumenter.safeInstrumented(projectRoot, "resources/out/instrumented");
 
         CompileAndRun.run(projectRoot, cus, "resources/out/instrumented", "resources/out/compiled");
 
-        //TraceProcessor processor = new TraceProcessor(map, traceFile.getPath());
-        //processor.start();
+        TraceProcessor processor = new TraceProcessor(map, traceFile.getPath());
+        processor.start();
     }
 }

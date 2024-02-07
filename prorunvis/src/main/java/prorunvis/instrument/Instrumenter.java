@@ -10,12 +10,14 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
+import com.github.javaparser.utils.ProjectRoot;
 import prorunvis.trace.TraceVisitor;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,6 +55,17 @@ public final class Instrumenter {
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    /**
+     * Saves the given project to the given path.
+     * @param pr Project root of the project to be saved
+     * @param instrumentedOutPath relative path where project is to be saved to
+     */
+    public static void safeInstrumented(ProjectRoot pr, String instrumentedOutPath){
+        File instrumented = new File(instrumentedOutPath);
+        instrumented.mkdir();
+        pr.getSourceRoots().forEach(sr -> sr.saveAll(Paths.get(instrumentedOutPath)));
     }
 
     /**

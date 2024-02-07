@@ -27,19 +27,18 @@ public final class CompileAndRun {
      * and then compiled into another new folder. The compiled program is then executed.
      * @param projectRoot the {@link ProjectRoot} to be processed
      * @param cus an easily accessible List of the <code>projectRoot</code>s {@link CompilationUnit}s
+     * @param instrumentedInPath the relative Path of the directory where the instrumented project lies
+     * @param compiledOutPath the relative Path of the directory where the compiled project will be saved
      * @throws IOException when a problem occurs while the <code>projectRoot</code> is written out
      * @throws InterruptedException when something interrupts the compilation or execution process
+     *
      */
-    public static void run(final ProjectRoot projectRoot, final List<CompilationUnit> cus, String instrumentedOutPath, String compiledOutPath) throws IOException, InterruptedException {
-        Path savePath = Paths.get(instrumentedOutPath);
-
-        File instrumented = new File(savePath.toString());
-        instrumented.mkdir();
+    public static void run(final ProjectRoot projectRoot, final List<CompilationUnit> cus, String instrumentedInPath, String compiledOutPath) throws IOException, InterruptedException {
+        Path savePath = Paths.get(instrumentedInPath);
 
         File compiled = new File(compiledOutPath);
         compiled.mkdir();
 
-        projectRoot.getSourceRoots().forEach(sr -> sr.saveAll(savePath));
         CompilationUnit mainUnit = cus.stream().filter(cu -> cu.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("main")).isPresent()).toList().get(0);
 
         String fileName = mainUnit.getStorage().get().getFileName();
