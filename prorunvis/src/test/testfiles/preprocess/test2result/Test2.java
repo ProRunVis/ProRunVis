@@ -1,8 +1,9 @@
-class SwitchModifierTest {
+class Test2 {
+
     public static void main(String[] args) {
         int x = 1;
         int i = 0;
-        switch (x) {
+        switch(x) {
             case 2:
                 i++;
                 break;

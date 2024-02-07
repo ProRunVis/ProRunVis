@@ -2,7 +2,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-class ForLoopTest {
+class Test1 {
 
     public static void main(String[] args) {
         proRunVisTrace("0");

@@ -2,7 +2,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-class SwitchModifierTest {
+class Test2 {
 
     public static void main(String[] args) {
         proRunVisTrace("0");

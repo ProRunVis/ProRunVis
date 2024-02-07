@@ -53,14 +53,25 @@ class CompileAndRunTest extends Tester {
 
         List<CompilationUnit> cusResult = createCompilationUnits(testProjectRoot);
 
+        File solutionTrace = new File(solutionPath + "/TraceFile.tr");
+
+        File resultTrace = new File(instrumentedInPath + "/TraceFile.tr");
+
+        if (resultTrace.exists()) {
+            resultTrace.delete();
+        }
+        try {
+            resultTrace.createNewFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         try {
             CompileAndRun.run(testProjectRoot, cusResult, instrumentedInPath, compiledOutPath);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
 
-        File solutionTrace = new File(solutionPath + "/TraceFile.tr");
-        File resultTrace = new File(instrumentedInPath + "/TraceFile.tr");
         FileReader frSolution, frResult;
         try {
             frSolution = new FileReader(solutionTrace);
