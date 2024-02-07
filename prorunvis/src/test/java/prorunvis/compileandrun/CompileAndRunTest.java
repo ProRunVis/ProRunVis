@@ -66,7 +66,7 @@ class CompileAndRunTest extends Tester {
             Instrumenter.run(cu, map);
         });
 
-        File solutionTrace = new File(solutionPath + "/TraceFile.tr");
+        File solutionTrace = traceFile;
 
         File resultTrace = new File(instrumentedInPath + "/TraceFile.tr");
 
