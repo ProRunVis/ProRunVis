@@ -26,7 +26,7 @@ class Test2 {
 
     private static void proRunVisTrace(String trace) {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("/home/fred/Bp/prorunvis/prorunvis/src/test/testfiles/compileandrun/test2/TraceFile.tr", true));
+            BufferedWriter writer = new BufferedWriter(new FileWriter("/prorunvis/prorunvis/src/test/testfiles/instrument/test1/TraceFile.tr", true));
             writer.write(trace + System.lineSeparator());
             writer.close();
         } catch (IOException e) {
