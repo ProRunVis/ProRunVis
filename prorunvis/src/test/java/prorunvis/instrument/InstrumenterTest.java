@@ -16,36 +16,53 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * This class is for testing the {@link Instrumenter}.
+ */
 class InstrumenterTest extends Tester {
+
+    /**
+     * A String to store the relative path to the directory where all the tests are stored, to use in the test functions.
+     */
     String testDir = "src/test/testfiles/instrument/";
 
+    /**
+     * Test 1
+     */
     @Test
     void test1(){
         instrument(testDir + "test1", testDir + "test1result", testDir + "test1solution");
     }
 
+    /**
+     * Test 2
+     */
     @Test
     void test2(){
         instrument(testDir + "test2", testDir + "test2result", testDir + "test2solution");
     }
 
-    private void instrument(String testPath, String resultPath, String solutionPath){
-        ProjectRoot testProjectRoot = new SymbolSolverCollectionStrategy().collect(Paths.get(testPath).toAbsolutePath());
+    /**
+     * Take a directory with a preprocessed(by the {@link Preprocessor}) java project.
+     * Instrument it with the {@link Instrumenter}, safe the result, compare it to a given solution and assert any differences between the two.
+     * @param preprocessedInPath the relative Path of the directory where the already preprocessed Test-project is located
+     * @param instrumentedOutPath the relative Path of the directory where the instrumented Test-project will be stored
+     * @param solutionPath the relative Path of the directory where the solution(how the instrumented Test-project should look like) for the Test-project is located
+     */
+    private void instrument(String preprocessedInPath, String instrumentedOutPath, String solutionPath){
+        ProjectRoot testProjectRoot = new SymbolSolverCollectionStrategy().collect(Paths.get(preprocessedInPath).toAbsolutePath());
         ProjectRoot solutionProjectRoot = new SymbolSolverCollectionStrategy().collect(Paths.get(solutionPath).toAbsolutePath());
 
         List<CompilationUnit> cusResult = createCompilationUnits(testProjectRoot);
         List<CompilationUnit> cusSolution = createCompilationUnits(solutionProjectRoot);
 
         Map<Integer, Node> map = new HashMap<>();
-        File traceFile = new File(resultPath + "/TraceFile.tr");
+        File traceFile = new File(instrumentedOutPath + "/TraceFile.tr");
         Instrumenter.setupTrace(traceFile);
 
-        cusResult.forEach(cu -> {
-            Preprocessor.run(cu);
-            Instrumenter.run(cu, map);
-        });
+        cusResult.forEach(cu -> Instrumenter.run(cu, map));
 
-        testProjectRoot.getSourceRoots().forEach(sr -> sr.saveAll(Paths.get(resultPath)));
+        Instrumenter.safeInstrumented(testProjectRoot, instrumentedOutPath);
 
         assertEquals(cusSolution.size(), cusResult.size());
 
