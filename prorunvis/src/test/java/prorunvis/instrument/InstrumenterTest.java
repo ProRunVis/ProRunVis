@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.*;
  * This class is for testing the {@link Instrumenter}.
  */
 class InstrumenterTest extends Tester {
-
     /**
      * A String to store the relative path to the directory where all the tests are stored, to use in the test functions.
      */
