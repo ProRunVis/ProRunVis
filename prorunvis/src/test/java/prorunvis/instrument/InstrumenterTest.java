@@ -58,9 +58,10 @@ class InstrumenterTest extends Tester {
 
         Map<Integer, Node> map = new HashMap<>();
         File traceFile = new File(instrumentedOutPath + "/TraceFile.tr");
-        Instrumenter.setupTrace(traceFile);
 
         cusResult.forEach(cu -> Instrumenter.run(cu, map));
+
+        cusResult.add(Instrumenter.setupTrace(traceFile, preprocessedInPath));
 
         Instrumenter.safeInstrumented(testProjectRoot, instrumentedOutPath);
 

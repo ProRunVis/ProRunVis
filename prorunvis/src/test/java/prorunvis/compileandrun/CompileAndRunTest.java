@@ -60,11 +60,13 @@ class CompileAndRunTest extends Tester {
 
         Map<Integer, Node> map = new HashMap<>();
         File traceFile = new File("resources/TraceFile.tr");
-        Instrumenter.setupTrace(traceFile);
+
         cusResult.forEach(cu -> {
             Preprocessor.run(cu);
             Instrumenter.run(cu, map);
         });
+
+        cusResult.add(Instrumenter.setupTrace(traceFile, testInPath));
 
         File solutionTrace = traceFile;
 

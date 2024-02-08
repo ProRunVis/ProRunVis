@@ -46,12 +46,14 @@ public class Main {
 
         Map<Integer, Node> map = new HashMap<>();
         File traceFile = new File("resources/TraceFile.tr");
-        Instrumenter.setupTrace(traceFile);
 
         cus.forEach(cu -> {
             Preprocessor.run(cu);
             Instrumenter.run(cu, map);
         });
+
+        cus.add(Instrumenter.setupTrace(traceFile, "root"));
+
         Instrumenter.safeInstrumented(projectRoot, "resources/out/instrumented");
 
         CompileAndRun.run(projectRoot, cus, "resources/out/instrumented", "resources/out/compiled");
