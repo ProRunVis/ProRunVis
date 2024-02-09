@@ -10,13 +10,14 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
+import com.github.javaparser.utils.ProjectRoot;
 import prorunvis.trace.TraceVisitor;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
+import java.nio.file.Paths;
 import java.util.Map;
 
 /**
@@ -42,9 +43,7 @@ public final class Instrumenter {
      * @param file The file to which the code trace is written.
      */
     public static void setupTrace(final File file) {
-
         traceFile = file;
-
         try {
             traceFile.mkdirs();
             if (traceFile.exists()) {
@@ -58,12 +57,24 @@ public final class Instrumenter {
     }
 
     /**
+     * Saves the given project to the given path.
+     * @param pr Project root of the project to be saved
+     * @param instrumentedOutPath relative path where project is to be saved to
+     */
+    public static void safeInstrumented(final ProjectRoot pr, final String instrumentedOutPath) {
+        File instrumented = new File(instrumentedOutPath);
+        instrumented.mkdir();
+        pr.getSourceRoots().forEach(sr -> sr.saveAll(Paths.get(instrumentedOutPath)));
+    }
+
+    /**
      * Runs this Instrumenter. The given {@link CompilationUnit} is modified by
      * adding necessary imports before the {@link TraceVisitor} and {@link InstrumenterSetupVisitor}
      * are executed.
      * @param cu The compilation unit which will be modified by this Instrumenter.
+     * @param map the map where the Ids are mapped to the AST-Nodes
      */
-    public static void run(final CompilationUnit cu, Map<Integer, Node> map) {
+    public static void run(final CompilationUnit cu, final Map<Integer, Node> map) {
         cu.addImport(BufferedWriter.class).addImport(FileWriter.class).addImport(IOException.class);
         new TraceVisitor().visit(cu, map);
         new InstrumenterSetupVisitor().visit(cu, traceFile.getAbsolutePath());
@@ -85,7 +96,10 @@ class InstrumenterSetupVisitor extends ModifierVisitor<String> {
     @Override
     public ClassOrInterfaceDeclaration visit(final ClassOrInterfaceDeclaration cfd, final String path) {
 
-        MethodDeclaration method = new MethodDeclaration(new NodeList<>(Modifier.privateModifier(), Modifier.staticModifier()), "proRunVisTrace", new VoidType(), new NodeList<>(new Parameter(StaticJavaParser.parseClassOrInterfaceType("String"), "trace")));
+        MethodDeclaration method = new MethodDeclaration(new NodeList<>(
+                Modifier.privateModifier(), Modifier.staticModifier()),
+                "proRunVisTrace", new VoidType(),
+                new NodeList<>(new Parameter(StaticJavaParser.parseClassOrInterfaceType("String"), "trace")));
 
         method.setBody(StaticJavaParser.parseBlock("{try {"
                 + "BufferedWriter writer = new BufferedWriter(new FileWriter(\""
