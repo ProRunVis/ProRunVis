@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class InstrumenterTest extends Tester {
     /**
      * A String to store the relative path to the directory where all the tests are stored, to use in the test functions.
-     * !!! Can't run right now tests until ProRunVisTrace method in project is outsourced into own file
+     * !!! Can't run tests right now until ProRunVisTrace method in project is outsourced into own file
      */
     String testDir = "src/test/testfiles/instrument/";
 
