@@ -58,7 +58,7 @@ public final class Main {
         });
         Instrumenter.safeInstrumented(projectRoot, "resources/out/instrumented");
 
-        CompileAndRun.run(projectRoot, cus, "resources/out/instrumented", "resources/out/compiled");
+        CompileAndRun.run(cus, "resources/out/instrumented", "resources/out/compiled");
 
         TraceProcessor processor = new TraceProcessor(map, traceFile.getPath());
         processor.start();

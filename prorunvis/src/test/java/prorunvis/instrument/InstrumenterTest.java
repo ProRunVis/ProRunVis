@@ -51,19 +51,19 @@ class InstrumenterTest extends Tester {
      * @param solutionPath the relative path of the directory where the solution-project is located.
      */
     private void instrument(String preprocessedInPath, String instrumentedOutPath, String solutionPath){
-        //setup CompilationUnits
+        //Setup CompilationUnits
         ProjectRoot testProjectRoot = new SymbolSolverCollectionStrategy().collect(Paths.get(preprocessedInPath).toAbsolutePath());
         ProjectRoot solutionProjectRoot = new SymbolSolverCollectionStrategy().collect(Paths.get(solutionPath).toAbsolutePath());
         List<CompilationUnit> cusResult = createCompilationUnits(testProjectRoot);
         List<CompilationUnit> cusSolution = createCompilationUnits(solutionProjectRoot);
 
-        //run Instrumenter
+        //Run Instrumenter
         Map<Integer, Node> map = new HashMap<>();
         File traceFile = new File(instrumentedOutPath + "/TraceFile.tr");
         Instrumenter.setupTrace(traceFile);
         cusResult.forEach(cu -> Instrumenter.run(cu, map));
 
-        //safe result
+        //Safe result
         Instrumenter.safeInstrumented(testProjectRoot, instrumentedOutPath);
 
         //Evaluate result

@@ -27,7 +27,6 @@ public final class CompileAndRun {
      * Take in a {@link ProjectRoot} and a List of its {@link CompilationUnit}s.
      * First the <code>projectRoot</code> is written out into a new folder
      * and then compiled into another new folder. The compiled program is then executed.
-     * @param projectRoot the {@link ProjectRoot} to be processed
      * @param cus an easily accessible List of the <code>projectRoot</code>s {@link CompilationUnit}s
      * @param instrumentedInPath the relative Path of the directory where the instrumented project lies
      * @param compiledOutPath the relative Path of the directory where the compiled project will be saved
@@ -35,7 +34,7 @@ public final class CompileAndRun {
      * @throws InterruptedException when something interrupts the compilation or execution process
      *
      */
-    public static void run(final ProjectRoot projectRoot, final List<CompilationUnit> cus,
+    public static void run(final List<CompilationUnit> cus,
                            final String instrumentedInPath, final String compiledOutPath)
             throws IOException, InterruptedException {
         Path savePath = Paths.get(instrumentedInPath);

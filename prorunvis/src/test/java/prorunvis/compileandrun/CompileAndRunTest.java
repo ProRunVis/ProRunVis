@@ -53,23 +53,24 @@ class CompileAndRunTest extends Tester {
      * Compare it to a given solution traceFile and assert any differences between the two.
      * @param preprocessedInPath the relative path of the directory where the preprocessed test-project is located.
      * Note: it shouldn't be instrumented yet so the absolute path can be set correctly.
-     * @param compiledOutPath the relative path of the directory where the compiled test-project and the trace-file will be stored.
+     * @param compiledOutPath the relative path of the directory where the instrumented test-project,
+     *                        the compiled test-project and the result trace file will be stored.
      * @param solutionPath the relative path of the directory where the solution trace-file is located.
      */
     void compileAndRun(String preprocessedInPath, String compiledOutPath, String solutionPath){
-        //setup CompilationUnits
+        //Setup CompilationUnits
         ProjectRoot testProjectRoot = new SymbolSolverCollectionStrategy().collect(Paths.get(preprocessedInPath).toAbsolutePath());
         List<CompilationUnit> cusResult = createCompilationUnits(testProjectRoot);
 
         //Run Instrumenter
         Map<Integer, Node> map = new HashMap<>();
-        File traceFile = new File("resources/TraceFile.tr");
-        Instrumenter.setupTrace(traceFile);
+        File resultTrace = new File(compiledOutPath + "/TraceFile.tr");
+        Instrumenter.setupTrace(resultTrace);
         cusResult.forEach(cu -> Instrumenter.run(cu, map));
+        Instrumenter.safeInstrumented(testProjectRoot, compiledOutPath);
+        File solutionTrace = new File(solutionPath + "/TraceFile.tr");
 
-        //Setup trace file, compile and run
-        File solutionTrace = traceFile;
-        File resultTrace = new File(preprocessedInPath + "/TraceFile.tr");
+
         if (resultTrace.exists()) {
             resultTrace.delete();
         }
@@ -79,7 +80,7 @@ class CompileAndRunTest extends Tester {
             throw new RuntimeException(e);
         }
         try {
-            CompileAndRun.run(testProjectRoot, cusResult, preprocessedInPath, compiledOutPath);
+            CompileAndRun.run(cusResult, compiledOutPath, compiledOutPath);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
