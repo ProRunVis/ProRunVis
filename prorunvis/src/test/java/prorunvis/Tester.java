@@ -22,9 +22,7 @@ public class Tester {
      */
     protected List<CompilationUnit> createCompilationUnits(ProjectRoot projectRoot){
         StaticJavaParser.getParserConfiguration().setSymbolResolver(new JavaSymbolSolver(new CombinedTypeSolver()));
-
         List<CompilationUnit> cus = new ArrayList<>();
-
         projectRoot.getSourceRoots().forEach(sr -> {
             try {
                 sr.tryToParse().forEach(cu -> cus.add(cu.getResult().get()));

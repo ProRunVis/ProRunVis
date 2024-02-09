@@ -46,17 +46,17 @@ class PreprocessorTest extends Tester {
      * @param solutionPath the relative path of the directory where the solution-project is located.
      */
     private void preprocess(String testInPath, String preprocessedOutPath, String solutionPath){
+        //Setup CompilationUnits
         ProjectRoot testProjectRoot = new SymbolSolverCollectionStrategy().collect(Paths.get(testInPath).toAbsolutePath());
         ProjectRoot solutionProjectRoot = new SymbolSolverCollectionStrategy().collect(Paths.get(solutionPath).toAbsolutePath());
-
         List<CompilationUnit> cusResult = createCompilationUnits(testProjectRoot);
         List<CompilationUnit> cusSolution = createCompilationUnits(solutionProjectRoot);
 
+        //Run Preprocessor
         cusResult.forEach(Preprocessor::run);
         testProjectRoot.getSourceRoots().forEach(sr -> sr.saveAll(Paths.get(preprocessedOutPath)));
-        assertEquals(cusSolution.size(), cusResult.size());
 
-        for (int i = 0; i<cusResult.size(); i++)
-            assertEquals(cusSolution.get(i).toString(), cusResult.get(i).toString());
+        //Evaluate result
+        assertIterableEquals(cusSolution, cusResult);
     }
 }

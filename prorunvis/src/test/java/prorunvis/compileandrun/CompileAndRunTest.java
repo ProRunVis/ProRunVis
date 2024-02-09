@@ -18,6 +18,7 @@ import java.util.Map;
 import prorunvis.Tester;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 /**
  * This class is for testing the {@link CompileAndRun} class.
@@ -56,23 +57,19 @@ class CompileAndRunTest extends Tester {
      * @param solutionPath the relative path of the directory where the solution trace-file is located.
      */
     void compileAndRun(String preprocessedInPath, String compiledOutPath, String solutionPath){
+        //setup CompilationUnits
         ProjectRoot testProjectRoot = new SymbolSolverCollectionStrategy().collect(Paths.get(preprocessedInPath).toAbsolutePath());
-
         List<CompilationUnit> cusResult = createCompilationUnits(testProjectRoot);
 
-
+        //Run Instrumenter
         Map<Integer, Node> map = new HashMap<>();
         File traceFile = new File("resources/TraceFile.tr");
         Instrumenter.setupTrace(traceFile);
-        cusResult.forEach(cu -> {
-            Preprocessor.run(cu);
-            Instrumenter.run(cu, map);
-        });
+        cusResult.forEach(cu -> Instrumenter.run(cu, map));
 
+        //Setup trace file, compile and run
         File solutionTrace = traceFile;
-
         File resultTrace = new File(preprocessedInPath + "/TraceFile.tr");
-
         if (resultTrace.exists()) {
             resultTrace.delete();
         }
@@ -81,42 +78,32 @@ class CompileAndRunTest extends Tester {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         try {
             CompileAndRun.run(testProjectRoot, cusResult, preprocessedInPath, compiledOutPath);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
 
-        FileReader frSolution, frResult;
+        //Setup readers for trace-files and read
+        FileReader rSolution, rResult;
         try {
-            frSolution = new FileReader(solutionTrace);
-            frResult = new FileReader(resultTrace);
+            rSolution = new FileReader(solutionTrace);
+            rResult = new FileReader(resultTrace);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
+        BufferedReader brSolution = new BufferedReader(rSolution);
+        BufferedReader brResult = new BufferedReader(rResult);
+        List<String> result = brResult.lines().toList();
+        List<String> solution = brSolution.lines().toList();
 
-        BufferedReader rSolution = new BufferedReader(frSolution);
-        BufferedReader rResult = new BufferedReader(frResult);
-
-        String lineResult, lineSolution;
-
-        do {
-            try {
-                lineResult = rResult.readLine();
-                lineSolution = rSolution.readLine();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            assertEquals(lineSolution, lineResult);
-        }while(lineResult != null && lineSolution != null);
-
+        //Evaluate result
+        assertIterableEquals(solution, result);
         try {
-            frSolution.close();
-            frResult.close();
+            rSolution.close();
+            rResult.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-
 }
