@@ -30,7 +30,6 @@
   Finally, it is worth reading the documentation.
 
 -->
-
 <module name="Checker">
     <!--
         If you set the basedir property below, then all reported file
@@ -39,6 +38,12 @@
 
         <property name="basedir" value="${basedir}"/>
     -->
+    <module name="SuppressWarningsFilter" />
+    <module name="TreeWalker">
+
+        <module name="SuppressWarningsHolder" />
+    </module>
+
     <property name="severity" value="error"/>
 
     <property name="fileExtensions" value="java, properties, xml"/>
