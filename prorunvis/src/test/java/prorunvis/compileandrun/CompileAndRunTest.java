@@ -46,14 +46,17 @@ class CompileAndRunTest extends Tester {
     }
 
     /**
-     * Take a directory with a preprocessed(by the {@link Preprocessor}) and instrumented(by the {@link Instrumenter}) java project with a corresponding traceFile.
-     * Compile and run it with {@link CompileAndRun}, safe the result of the traceFile, compare it to a given solution and assert any differences between the two.
-     * @param testInPath the relative Path of the directory where the instrumented Test-project is located, it shouldn't be instrumented yet so the absolute path can be set correctly, otherwise the test will fail
-     * @param compiledOutPath the relative Path of the directory where the compiled Test-project will be stored
-     * @param solutionPath the relative Path of the directory where the solution(how the traceFile should look like) for the Test-project is located
+     * Take a directory with a preprocessed(by the {@link Preprocessor}) java project.
+     * Instrument it with the {@link Instrumenter}.
+     * Compile and run it with {@link CompileAndRun} and safe the result of the trace-file.
+     * Compare it to a given solution traceFile and assert any differences between the two.
+     * @param preprocessedInPath the relative path of the directory where the preprocessed test-project is located.
+     * Note: it shouldn't be instrumented yet so the absolute path can be set correctly.
+     * @param compiledOutPath the relative path of the directory where the compiled test-project and the trace-file will be stored.
+     * @param solutionPath the relative path of the directory where the solution trace-file is located.
      */
-    void compileAndRun(String testInPath, String compiledOutPath, String solutionPath){
-        ProjectRoot testProjectRoot = new SymbolSolverCollectionStrategy().collect(Paths.get(testInPath).toAbsolutePath());
+    void compileAndRun(String preprocessedInPath, String compiledOutPath, String solutionPath){
+        ProjectRoot testProjectRoot = new SymbolSolverCollectionStrategy().collect(Paths.get(preprocessedInPath).toAbsolutePath());
 
         List<CompilationUnit> cusResult = createCompilationUnits(testProjectRoot);
 
@@ -68,7 +71,7 @@ class CompileAndRunTest extends Tester {
 
         File solutionTrace = traceFile;
 
-        File resultTrace = new File(testInPath + "/TraceFile.tr");
+        File resultTrace = new File(preprocessedInPath + "/TraceFile.tr");
 
         if (resultTrace.exists()) {
             resultTrace.delete();
@@ -80,7 +83,7 @@ class CompileAndRunTest extends Tester {
         }
 
         try {
-            CompileAndRun.run(testProjectRoot, cusResult, testInPath, compiledOutPath);
+            CompileAndRun.run(testProjectRoot, cusResult, preprocessedInPath, compiledOutPath);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }

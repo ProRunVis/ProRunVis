@@ -39,10 +39,11 @@ class PreprocessorTest extends Tester {
 
     /**
      * Take a directory with a java project.
-     * Preprocess it with the {@link Preprocessor}, safe the result, compare it to a given solution and assert any differences between the two.
-     * @param testInPath the relative Path of the directory where the Test-project is located
-     * @param preprocessedOutPath the relative Path of the directory where the preprocessed Test-project will be stored
-     * @param solutionPath the relative Path of the directory where the solution(how the preprocessed Test-project should look like) for the Test-project is located
+     * Preprocess it with the {@link Preprocessor} and safe the result.
+     * Compare it to a given solution and assert any differences between the two.
+     * @param testInPath the relative path of the directory where the test-project is located.
+     * @param preprocessedOutPath the relative path of the directory where the preprocessed test-project will be stored.
+     * @param solutionPath the relative path of the directory where the solution-project is located.
      */
     private void preprocess(String testInPath, String preprocessedOutPath, String solutionPath){
         ProjectRoot testProjectRoot = new SymbolSolverCollectionStrategy().collect(Paths.get(testInPath).toAbsolutePath());

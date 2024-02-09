@@ -44,10 +44,11 @@ class InstrumenterTest extends Tester {
 
     /**
      * Take a directory with a preprocessed(by the {@link Preprocessor}) java project.
-     * Instrument it with the {@link Instrumenter}, safe the result, compare it to a given solution and assert any differences between the two.
-     * @param preprocessedInPath the relative Path of the directory where the already preprocessed Test-project is located
-     * @param instrumentedOutPath the relative Path of the directory where the instrumented Test-project will be stored
-     * @param solutionPath the relative Path of the directory where the solution(how the instrumented Test-project should look like) for the Test-project is located
+     * Instrument it with the {@link Instrumenter} and safe the result.
+     * Compare it to a given solution and assert any differences between the two.
+     * @param preprocessedInPath the relative path of the directory where the already preprocessed test-project is located.
+     * @param instrumentedOutPath the relative path of the directory where the instrumented test-project will be stored.
+     * @param solutionPath the relative path of the directory where the solution-project is located.
      */
     private void instrument(String preprocessedInPath, String instrumentedOutPath, String solutionPath){
         ProjectRoot testProjectRoot = new SymbolSolverCollectionStrategy().collect(Paths.get(preprocessedInPath).toAbsolutePath());

@@ -17,8 +17,8 @@ import java.util.List;
 public class Tester {
     /**
      * Take in a {@link ProjectRoot} and create a List of its {@link CompilationUnit}s.
-     * @param projectRoot the {@link ProjectRoot} to be processed
-     * @return the created List of {@link CompilationUnit}s
+     * @param projectRoot the {@link ProjectRoot} to be processed.
+     * @return the created List of {@link CompilationUnit}s.
      */
     protected List<CompilationUnit> createCompilationUnits(ProjectRoot projectRoot){
         StaticJavaParser.getParserConfiguration().setSymbolResolver(new JavaSymbolSolver(new CombinedTypeSolver()));

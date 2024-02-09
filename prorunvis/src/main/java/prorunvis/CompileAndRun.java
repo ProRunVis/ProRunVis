@@ -1,7 +1,10 @@
 package prorunvis;
 
+import com.github.javaparser.Position;
+import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.stmt.TryStmt;
 import com.github.javaparser.utils.ProjectRoot;
 
 import java.io.*;
