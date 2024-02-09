@@ -6,3 +6,7 @@ build
 
 #Ignore IntelliJ specific files
 .idea
+/prorunvis/src/test/testfiles/preprocess/test1result/
+/prorunvis/src/test/testfiles/preprocess/test2result/
+/prorunvis/src/test/testfiles/compileandrun/test1result/
+/prorunvis/src/test/testfiles/compileandrun/test2result/
