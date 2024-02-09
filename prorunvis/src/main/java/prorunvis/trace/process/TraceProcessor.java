@@ -264,7 +264,7 @@ public class TraceProcessor {
      * @param childrenOfCurrent the list of code blocks in the current node
      * @param nextRangeToIgnore range of the next child tracenode, necessary in order to skip it while adding ranges
      */
-    private void fillRanges(final List<Node> childrenOfCurrent, Range nextRangeToIgnore) {
+    private void fillRanges(final List<Node> childrenOfCurrent, final Range nextRangeToIgnore) {
 
         boolean skipNext = false;
 
