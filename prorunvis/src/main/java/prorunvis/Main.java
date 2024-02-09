@@ -20,16 +20,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Main {
-
-    public static void main(String[]args) throws IOException, InterruptedException {
+public final class Main {
+    private Main() { }
+    /**
+     * Main Method should not be called.
+     * @param args arguments of the main method
+     */
+    public static void main(final String[]args) throws IOException, InterruptedException {
 
         //check if an argument of sufficient length has been provided
-        if(args.length == 0){
+        if (args.length == 0) {
             System.out.println("Missing input");
             return;
         }
-        if(!Files.isDirectory(Paths.get(args[0]))) {
+        if (!Files.isDirectory(Paths.get(args[0]))) {
             System.out.println("Folder not found");
             return;
         }
