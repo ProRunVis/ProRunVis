@@ -45,21 +45,21 @@ public class TraceNode {
     private int outIndex;
 
     /**
-     * The index of the current iteration if TraceNode is of the loop type
+     * The index of the current iteration if TraceNode is of the loop type.
      */
     private Integer iteration;
 
     /**
-     * The ID that maps the Node to an ASTNode
+     * The ID that maps the Node to an ASTNode.
      */
     private String traceId;
 
     /**
      * Constructs a {@link TraceNode} object.
-     * @param parentIndex The index of the node within which this node
-     *                    is located.
+     * @param parentIndex The index of the node within which this node is located.
+     * @param traceId The Id that maps this node to the AST
      */
-    public TraceNode(final Integer parentIndex, String traceId) {
+    public TraceNode(final Integer parentIndex, final String traceId) {
             this.ranges = new ArrayList<>();
             this.childrenIndices = new ArrayList<>();
             this.parentIndex = parentIndex;
@@ -179,10 +179,10 @@ public class TraceNode {
     }
 
     /**
-     * Gets the Trace ID of this node
+     * Gets the Trace ID of this node.
      * @return TraceId of the TraceNode
      */
-    public String getTraceID(){
+    public String getTraceID() {
         return this.traceId;
     }
 
@@ -190,7 +190,7 @@ public class TraceNode {
      * Sets the iteration value of this node.
      * @param iteration The current iteration of the loop, so the number of times this TraceNode repeated itself so far
      */
-    public void setIteration(Integer iteration) {
+    public void setIteration(final Integer iteration) {
         this.iteration = iteration;
     }
 

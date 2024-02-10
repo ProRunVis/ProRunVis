@@ -10,12 +10,14 @@ import java.util.Map;
 
 
 /**
- * This Visitor extends the standard ModifierVisitor and overwrites the visit methods for each codetype being traced in order to instrument them with the needed trace call.
+ * This Visitor extends the standard ModifierVisitor and overwrites the visit methods for each codetype being traced
+ * in order to instrument them with the needed trace call.
  */
 public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
 
     /**
-     * Add a trace call to every try statement. Trace call is added as the first line of the try statement body and to the first line of the body of every corresponding catch statement.
+     * Add a trace call to every try statement. Trace call is added as the first line of the try statement body and to
+     * the first line of the body of every corresponding catch statement.
      * @param stmt the statement to be instrumented
      * @param map maps the current ID to this node
      * @return the modified statement
@@ -75,7 +77,8 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
     }
 
     /**
-     * Add a trace call to every then and else block of an if-statement. Trace call is added as the first line of the if body and else body if present.
+     * Add a trace call to every then and else block of an if-statement. Trace call is added as the first line of
+     * the if body and else body if present.
      * @param stmt the statement to be instrumented
      * @param map maps the current ID to this node
      * @return the modified statement
@@ -100,7 +103,8 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
     }
 
     /**
-     * Add a trace call to every method declaration body (if not a forward declaration). Trace call is added as the first line of the method body.
+     * Add a trace call to every method declaration body (if not a forward declaration).
+     * Trace call is added as the first line of the method body.
      * @param decl the declaration to be instrumented
      * @param map maps the current ID to this node
      * @return the modified method
@@ -119,7 +123,8 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
     }
 
     /**
-     * Add a trace call to every case in a switch statement. Trace call is added as the first line of the body of every case in the switch statement.
+     * Add a trace call to every case in a switch statement.
+     * Trace call is added as the first line of the body of every case in the switch statement.
      * @param stmt the statement to be instrumented
      * @param map maps the current ID to this node
      * @return the modified statement
@@ -155,7 +160,8 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
     }
 
     /**
-     * A private method which collects the characteristics of the given statement into a new statement containing the trace call, which can then be added to the original code.
+     * A private method which collects the characteristics of the given statement into a new statement
+     * containing the trace call, which can then be added to the original code.
      * @param id the current id to be printed
      * @return a statement containing the call to the trace methode with the characteristics of the given statement
      */
@@ -169,7 +175,7 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
      * @param map the map in which to put the entry
      * @param node the value to map
      */
-    private void createMapEntry(int id, Map<Integer, Node> map, Node node) {
+    private void createMapEntry(final int id, final Map<Integer, Node> map, final Node node) {
         map.put(id, node.clone().setRange(node.getRange().get()));
     }
 }

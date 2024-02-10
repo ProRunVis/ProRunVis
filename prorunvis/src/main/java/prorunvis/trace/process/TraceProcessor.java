@@ -262,8 +262,9 @@ public class TraceProcessor {
     }
 
     /**
-     * advance through all parsable code of the current node and save ranges which are not turned into their own
-     * tracenodes in a list, while creating new child-tracenodes for specific codetypes.
+     * Advance through all parsable code of the current node and save ranges
+     * which are not turned into their own tracenodes in a list,
+     * while creating new child-tracenodes for specific codetypes.
      * @param childrenOfCurrent the list of code blocks in the current node
      * @param nextRangeToIgnore range of the next child tracenode, necessary in order to skip it while adding ranges
      */

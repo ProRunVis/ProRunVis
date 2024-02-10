@@ -20,27 +20,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Main {
-
-    public static void main(String[]args) throws IOException, InterruptedException {
+public final class Main {
+    private Main() { }
+    /**
+     * Main Method should not be called.
+     * @param args arguments of the main method
+     */
+    public static void main(final String[]args) throws IOException, InterruptedException {
 
         //check if an argument of sufficient length has been provided
-        if(args.length == 0){
+        if (args.length == 0) {
             System.out.println("Missing input");
             return;
         }
-
-        if(!Files.isDirectory(Paths.get(args[0]))) {
+        if (!Files.isDirectory(Paths.get(args[0]))) {
             System.out.println("Folder not found");
             return;
         }
-
         StaticJavaParser.getParserConfiguration().setSymbolResolver(new JavaSymbolSolver(new CombinedTypeSolver()));
         ProjectRoot projectRoot = new SymbolSolverCollectionStrategy().collect(Paths.get(args[0]).toAbsolutePath());
-        File traceFile = new File("resources/TraceFile.tr");
-
-        Instrumenter.setupTrace(traceFile);
-
         List<CompilationUnit> cus = new ArrayList<>();
         projectRoot.getSourceRoots().forEach(sr -> {
             try {
@@ -51,9 +49,17 @@ public class Main {
         });
 
         Map<Integer, Node> map = new HashMap<>();
+        File traceFile = new File("resources/TraceFile.tr");
+        Instrumenter.setupTrace(traceFile);
 
-        cus.forEach(cu -> {Preprocessor.run(cu); Instrumenter.run(cu, map);});
-        CompileAndRun.run(projectRoot, cus);
+        cus.forEach(cu -> {
+            Preprocessor.run(cu);
+            Instrumenter.run(cu, map);
+        });
+        Instrumenter.safeInstrumented(projectRoot, "resources/out/instrumented");
+
+        CompileAndRun.run(cus, "resources/out/instrumented", "resources/out/compiled");
+
         TraceProcessor processor = new TraceProcessor(map, traceFile.getPath());
         processor.start();
     }
