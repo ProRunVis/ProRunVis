@@ -276,7 +276,7 @@ public class TraceProcessor {
 
             Node currentNode = childrenOfCurrent.get(i);
 
-            // determine the range of the next child
+            //determine the range of the next child
             if (nextRangeToIgnore == null) {
                 if (processChild()) {
                     nextRangeToIgnore = new Range(nodeOfCurrent.getRange().get().end.nextLine(),
@@ -291,15 +291,13 @@ public class TraceProcessor {
 
             markStatementsInChild(currentNode, nextRangeToIgnore);
 
-            //  current range is a child, let it resolve and wait for the next child
+            //current range is a child, let it resolve and wait for the next child
             if (currentNode.getRange().get().contains(nextRangeToIgnore)) {
                 nextRangeToIgnore = null;
                 skipNext = true;
-            }
-
-            // if the next child lies ahead, advance and save current range in ranges if
-            // the skip flag isn't set (i.e. the current range isn't a child)
-            else {
+            } else {
+                //if the next child lies ahead, advance and save current range in ranges if
+                //the skip flag isn't set (i.e. the current range isn't a child)
                 if (skipNext) {
                     skipNext = false;
                 } else {
@@ -313,7 +311,7 @@ public class TraceProcessor {
             }
         }
 
-        // if the current node is a forStmt, and it has iteration steps, add them to the ranges
+        //if the current node is a forStmt, and it has iteration steps, add them to the ranges
         if (nodeOfCurrent instanceof ForStmt forStmt) {
             forStmt.getUpdate().forEach(node -> current.addRange(node.getRange().get()));
         }
