@@ -9,6 +9,7 @@ import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.nodeTypes.NodeWithBody;
 import com.github.javaparser.ast.nodeTypes.NodeWithOptionalBlockStmt;
 import com.github.javaparser.ast.stmt.*;
+import com.google.common.collect.Iterables;
 import prorunvis.trace.TraceNode;
 import prorunvis.trace.TracedCode;
 
@@ -261,12 +262,12 @@ public class TraceProcessor {
     }
 
     /**
-     * advance through all parsable code of the current node and save ranges which are not turned into their own tracenodes in a list,
-     * while creating new child-tracenodes for specific codetypes.
+     * advance through all parsable code of the current node and save ranges which are not turned into their own
+     * tracenodes in a list, while creating new child-tracenodes for specific codetypes.
      * @param childrenOfCurrent the list of code blocks in the current node
      * @param nextRangeToIgnore range of the next child tracenode, necessary in order to skip it while adding ranges
      */
-    private void fillRanges(List<Node> childrenOfCurrent, Range nextRangeToIgnore) {
+    private void fillRanges(final List<Node> childrenOfCurrent, Range nextRangeToIgnore) {
 
         boolean skipNext = false;
 
@@ -280,8 +281,10 @@ public class TraceProcessor {
                     nextRangeToIgnore = new Range(nodeOfCurrent.getRange().get().end.nextLine(),
                                                   nodeOfCurrent.getRange().get().end.nextLine());
                 } else {
-                    TraceNode nextChild = nodeList.get(current.getChildrenIndices().get(current.getChildrenIndices().size() - 1));
-                    nextRangeToIgnore = (nextChild.getLink() == null) ? traceMap.get(Integer.parseInt(nextChild.getTraceID())).getRange().get() : nextChild.getLink();
+                    TraceNode nextChild = nodeList.get(Iterables.getLast(current.getChildrenIndices()));
+                    nextRangeToIgnore = (nextChild.getLink() == null)
+                            ? traceMap.get(Integer.parseInt(nextChild.getTraceID())).getRange().get()
+                            : nextChild.getLink();
                 }
             }
 
@@ -293,13 +296,15 @@ public class TraceProcessor {
                 skipNext = true;
             }
 
-            // if the next child lies ahead, advance and save current range in ranges if the skip flag isn't set (i.e. the current range isn't a child)
+            // if the next child lies ahead, advance and save current range in ranges if
+            // the skip flag isn't set (i.e. the current range isn't a child)
             else {
                 if (skipNext) {
                     skipNext = false;
                 } else {
-                    if (!current.getRanges().contains(currentNode.getRange().get()) &&
-                        !Stream.of(TracedCode.values()).map(entry -> entry.type).toList().contains(currentNode.getClass())) {
+                    if (!current.getRanges().contains(currentNode.getRange().get())
+                        && !Stream.of(TracedCode.values()).map(TracedCode::getType)
+                            .toList().contains(currentNode.getClass())) {
                         current.addRange(currentNode.getRange().get());
                     }
                 }
@@ -314,8 +319,9 @@ public class TraceProcessor {
     }
 
     /**
-     * private method used by {@link #fillRanges} to determine whether the current statement is a child node in which certain
-     * codeblocks are always executed (like the condition in an if statement) in order to mark it.
+     * private method used by {@link #fillRanges} to determine whether the current statement
+     * is a child node in which certain codeblocks are always executed
+     * (like the condition in an if statement) in order to mark it.
      * @param currentNode Node currently being analyzed
      * @param nextRangeToIgnore next child in case it lies within the current Node
      */
