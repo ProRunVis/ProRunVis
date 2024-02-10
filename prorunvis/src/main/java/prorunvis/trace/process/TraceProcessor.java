@@ -9,10 +9,13 @@ import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.nodeTypes.NodeWithBody;
 import com.github.javaparser.ast.nodeTypes.NodeWithOptionalBlockStmt;
 import com.github.javaparser.ast.stmt.*;
+import com.google.common.collect.Iterables;
 import prorunvis.trace.TraceNode;
+import prorunvis.trace.TracedCode;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * This class is used to convert a previously generated id-trace
@@ -146,6 +149,7 @@ public class TraceProcessor {
                 }
             }
         }
+
         return true;
     }
 
@@ -258,13 +262,12 @@ public class TraceProcessor {
     }
 
     /**
-     * * Advance through all parsable code of the current node and save ranges
+     * Advance through all parsable code of the current node and save ranges
      * which are not turned into their own tracenodes in a list,
      * while creating new child-tracenodes for specific codetypes.
      * @param childrenOfCurrent the list of code blocks in the current node
      * @param nextRangeToIgnore range of the next child tracenode, necessary in order to skip it while adding ranges
      */
-
     private void fillRanges(final List<Node> childrenOfCurrent, Range nextRangeToIgnore) {
 
         boolean skipNext = false;
@@ -273,34 +276,34 @@ public class TraceProcessor {
 
             Node currentNode = childrenOfCurrent.get(i);
 
-            // determine the range of the next child
+            //determine the range of the next child
             if (nextRangeToIgnore == null) {
                 if (processChild()) {
                     nextRangeToIgnore = new Range(nodeOfCurrent.getRange().get().end.nextLine(),
                                                   nodeOfCurrent.getRange().get().end.nextLine());
                 } else {
-                    TraceNode nextChild =
-                            nodeList.get(current.getChildrenIndices().get(current.getChildrenIndices().size() - 1));
-                    nextRangeToIgnore =
-                            (nextChild.getLink() == null)
-                                    ? traceMap.get(Integer.parseInt(nextChild.getTraceID())).getRange().get()
-                                    : nextChild.getLink();
+                    TraceNode nextChild = nodeList.get(Iterables.getLast(current.getChildrenIndices()));
+                    nextRangeToIgnore = (nextChild.getLink() == null)
+                            ? traceMap.get(Integer.parseInt(nextChild.getTraceID())).getRange().get()
+                            : nextChild.getLink();
                 }
             }
 
             markStatementsInChild(currentNode, nextRangeToIgnore);
 
-            //  current range is a child, let it resolve and wait for the next child
+            //current range is a child, let it resolve and wait for the next child
             if (currentNode.getRange().get().contains(nextRangeToIgnore)) {
                 nextRangeToIgnore = null;
                 skipNext = true;
             } else {
-            // if the next child lies ahead, advance and save current range in ranges
-            // if the skip flag isn't set (i.e. the current range isn't a child)
+                //if the next child lies ahead, advance and save current range in ranges if
+                //the skip flag isn't set (i.e. the current range isn't a child)
                 if (skipNext) {
                     skipNext = false;
                 } else {
-                    if (!current.getRanges().contains(currentNode.getRange().get())) {
+                    if (!current.getRanges().contains(currentNode.getRange().get())
+                        && !Stream.of(TracedCode.values()).map(TracedCode::getType)
+                            .toList().contains(currentNode.getClass())) {
                         current.addRange(currentNode.getRange().get());
                     }
                 }
@@ -308,15 +311,16 @@ public class TraceProcessor {
             }
         }
 
-        // if the current node is a forStmt, and it has iteration steps, add them to the ranges
+        //if the current node is a forStmt, and it has iteration steps, add them to the ranges
         if (nodeOfCurrent instanceof ForStmt forStmt) {
             forStmt.getUpdate().forEach(node -> current.addRange(node.getRange().get()));
         }
     }
 
     /**
-     * private method used by {@link #fillRanges} to determine whether the current statement is a child node in
-     * which certain codeblocks are always executed (like the condition in an if statement) in order to mark it.
+     * private method used by {@link #fillRanges} to determine whether the current statement
+     * is a child node in which certain codeblocks are always executed
+     * (like the condition in an if statement) in order to mark it.
      * @param currentNode Node currently being analyzed
      * @param nextRangeToIgnore next child in case it lies within the current Node
      */
@@ -369,6 +373,7 @@ public class TraceProcessor {
                 block = z;
             }
         }
+
         return block;
     }
 

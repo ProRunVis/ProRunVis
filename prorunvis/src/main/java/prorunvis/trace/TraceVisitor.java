@@ -117,6 +117,7 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
             createMapEntry(id, map, decl);
             decl.getBody().get().addStatement(0, traceEntryCreator(id));
         }
+
         super.visit(decl, map);
         return decl;
     }
@@ -169,7 +170,7 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
     }
 
     /**
-     * Creats a map entry with a clone of the given node while preserving its range.
+     * creates a map entry with a clone of the given node while preserving its range
      * @param id the key to map
      * @param map the map in which to put the entry
      * @param node the value to map
