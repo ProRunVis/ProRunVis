@@ -212,11 +212,34 @@ public class TraceProcessor {
         MethodDeclaration node = (MethodDeclaration) traceMap.get(tokens.peek());
         SimpleName nameOfDeclaration = node.getName();
         SimpleName nameOfCall = null;
-        MethodCallExpr callExpr = null;
-        //call extracted method to get the surrounding block-statement
-        //if one is present
-        BlockStmt block = getBlockStmt();
 
+            List<MethodCallExpr> callExprs = nodeOfCurrent.findAll(MethodCallExpr.class, Node.TreeTraversal.POSTORDER);
+            for(MethodCallExpr expr: callExprs){
+                if(isValidCall(expr, nameOfDeclaration)){
+
+                    methodCallRanges.add(expr.getRange().get());
+                    nameOfCall = expr.getName();
+                    createNewTraceNode();
+
+                    //set link, out-link and index of out
+                    int lastAddedIndex = current.getChildrenIndices()
+                            .get(current.getChildrenIndices().size() - 1);
+                    TraceNode lastAdded = nodeList.get(lastAddedIndex);
+
+                    //check if ranges are present, should always be true due to preprocessing
+                    if (nameOfCall.getRange().isPresent()
+                            && nameOfDeclaration.getRange().isPresent()) {
+                        lastAdded.setLink(nameOfCall.getRange().get());
+                        lastAdded.setOutLink(nameOfDeclaration.getRange().get());
+                    }
+                    lastAdded.setOut(lastAdded.getParentIndex());
+
+                    return true;
+                }
+            }
+        //}
+        return false;
+        /*
         //search a found body for expressions with callExpressions
         if (block != null) {
             for (Statement statement : block.getStatements()) {
@@ -307,7 +330,10 @@ public class TraceProcessor {
             return true;
         }
 
-        return false;
+         */
+
+
+
     }
 
     /**
@@ -481,6 +507,12 @@ public class TraceProcessor {
             }
         }
         return callExpr;
+    }
+
+
+    private boolean isValidCall(MethodCallExpr callExpr, SimpleName name){
+        if(methodCallRanges.contains(callExpr.getRange().get())) return false;
+        return callExpr.getName().equals(name);
     }
 
     /**
