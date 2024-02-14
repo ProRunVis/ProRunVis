@@ -170,9 +170,13 @@ public class TraceProcessor {
         //save the current state
         current = traceNode;
         Node tempNodeOfCurrent = nodeOfCurrent;
+        List<Range> tempRanges = new ArrayList<>();
         nodeOfCurrent = traceMap.get(tokenValue);
-        List<Range> tempRanges = methodCallRanges;
-        methodCallRanges = new ArrayList<>();
+        //save executed ranges only if next node is a loop
+        if(nodeOfCurrent instanceof NodeWithBody<?>){
+            tempRanges = methodCallRanges;
+            methodCallRanges = new ArrayList<>();
+        }
 
         //add children to the created node, while there are still tokens
         //on the stack and new nodes can be created
@@ -192,10 +196,14 @@ public class TraceProcessor {
             current.setIteration(iteration);
         }
 
+        //restore ranges only if node of current was a loop
+        if(nodeOfCurrent instanceof NodeWithBody<?>){
+            tempRanges.addAll(methodCallRanges);
+            methodCallRanges = tempRanges;
+        }
         //restore state
         current = nodeList.get(traceNode.getParentIndex());
         nodeOfCurrent = tempNodeOfCurrent;
-        methodCallRanges = tempRanges;
     }
 
 
@@ -213,7 +221,17 @@ public class TraceProcessor {
         SimpleName nameOfDeclaration = node.getName();
         SimpleName nameOfCall = null;
 
-            List<MethodCallExpr> callExprs = nodeOfCurrent.findAll(MethodCallExpr.class, Node.TreeTraversal.POSTORDER);
+
+        List<MethodCallExpr> callExprs = new ArrayList<>();
+        //if the current statement is a statement-block, search statements individually for calls
+        if(nodeOfCurrent instanceof NodeWithStatements<?> block){
+            for (Statement statement: block.getStatements()){
+                callExprs.addAll(statement.findAll(MethodCallExpr.class, Node.TreeTraversal.POSTORDER));
+            }
+        } else{
+            callExprs = nodeOfCurrent.findAll(MethodCallExpr.class, Node.TreeTraversal.POSTORDER);
+        }
+
             for(MethodCallExpr expr: callExprs){
                 if(isValidCall(expr, nameOfDeclaration)){
 
