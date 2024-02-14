@@ -173,7 +173,7 @@ public class TraceProcessor {
         List<Range> tempRanges = new ArrayList<>();
         nodeOfCurrent = traceMap.get(tokenValue);
         //save executed ranges only if next node is a loop
-        if(nodeOfCurrent instanceof NodeWithBody<?>){
+        if (nodeOfCurrent instanceof NodeWithBody<?>) {
             tempRanges = methodCallRanges;
             methodCallRanges = new ArrayList<>();
         }
@@ -197,7 +197,7 @@ public class TraceProcessor {
         }
 
         //restore ranges only if node of current was a loop
-        if(nodeOfCurrent instanceof NodeWithBody<?>){
+        if (nodeOfCurrent instanceof NodeWithBody<?>) {
             tempRanges.addAll(methodCallRanges);
             methodCallRanges = tempRanges;
         }
@@ -224,134 +224,38 @@ public class TraceProcessor {
 
         List<MethodCallExpr> callExprs = new ArrayList<>();
         //if the current statement is a statement-block, search statements individually for calls
-        if(nodeOfCurrent instanceof NodeWithStatements<?> block){
-            for (Statement statement: block.getStatements()){
+        if (nodeOfCurrent instanceof NodeWithStatements<?> block) {
+            for (Statement statement : block.getStatements()) {
                 callExprs.addAll(statement.findAll(MethodCallExpr.class, Node.TreeTraversal.POSTORDER));
             }
-        } else{
+        } else {
             callExprs = nodeOfCurrent.findAll(MethodCallExpr.class, Node.TreeTraversal.POSTORDER);
         }
 
-            for(MethodCallExpr expr: callExprs){
-                if(isValidCall(expr, nameOfDeclaration)){
+        for (MethodCallExpr expr : callExprs) {
+            if (isValidCall(expr, nameOfDeclaration)) {
 
-                    methodCallRanges.add(expr.getRange().get());
-                    nameOfCall = expr.getName();
-                    createNewTraceNode();
+                methodCallRanges.add(expr.getRange().get());
+                nameOfCall = expr.getName();
+                createNewTraceNode();
 
-                    //set link, out-link and index of out
-                    int lastAddedIndex = current.getChildrenIndices()
-                            .get(current.getChildrenIndices().size() - 1);
-                    TraceNode lastAdded = nodeList.get(lastAddedIndex);
+                //set link, out-link and index of out
+                int lastAddedIndex = current.getChildrenIndices()
+                        .get(current.getChildrenIndices().size() - 1);
+                TraceNode lastAdded = nodeList.get(lastAddedIndex);
 
-                    //check if ranges are present, should always be true due to preprocessing
-                    if (nameOfCall.getRange().isPresent()
-                            && nameOfDeclaration.getRange().isPresent()) {
-                        lastAdded.setLink(nameOfCall.getRange().get());
-                        lastAdded.setOutLink(nameOfDeclaration.getRange().get());
-                    }
-                    lastAdded.setOut(lastAdded.getParentIndex());
-
-                    return true;
+                //check if ranges are present, should always be true due to preprocessing
+                if (nameOfCall.getRange().isPresent()
+                        && nameOfDeclaration.getRange().isPresent()) {
+                    lastAdded.setLink(nameOfCall.getRange().get());
+                    lastAdded.setOutLink(nameOfDeclaration.getRange().get());
                 }
+                lastAdded.setOut(lastAdded.getParentIndex());
+
+                return true;
             }
-        //}
+        }
         return false;
-        /*
-        //search a found body for expressions with callExpressions
-        if (block != null) {
-            for (Statement statement : block.getStatements()) {
-                //search for ExpressionStatements
-                if (statement instanceof ExpressionStmt expressionStmt) {
-                    Expression expression = expressionStmt.getExpression();
-
-                    //check for assignments
-                    if (expression instanceof AssignExpr assign) {
-                        expression = assign.getValue();
-                    }
-
-                    //store the name of the found expression
-                    if (expression instanceof MethodCallExpr call) {
-                        if (!methodCallRanges.contains(call.getRange().get())) {
-                            callExpr = call;
-                            nameOfCall = call.getName();
-                            break;
-                        }
-                    }
-                }
-
-                //search for conditions in while-, do-while or if-statements
-                if (statement instanceof NodeWithCondition<?> cond) {
-                    Expression expression = cond.getCondition();
-
-                    //store the name of the found expression
-                    if (expression instanceof MethodCallExpr call) {
-                        if (!methodCallRanges.contains(call.getRange().get())) {
-                            callExpr = call;
-                            nameOfCall = call.getName();
-                            break;
-                        }
-                    }
-                }
-
-                //search for calls in for-statements
-                if (statement instanceof ForStmt forStmt
-                        && forStmt.getCompare().isPresent()) {
-
-                    Expression expression = forStmt.getCompare().get();
-
-                    //store the name of the found expression
-                    if (expression instanceof MethodCallExpr call) {
-                        if (!methodCallRanges.contains(call.getRange().get())) {
-                            callExpr = call;
-                            nameOfCall = call.getName();
-                            break;
-                        }
-                    }
-                }
-
-                //search for calls in forEach statements
-                if (statement instanceof ForEachStmt forEach) {
-                    Expression expression = forEach.getIterable();
-
-                    //store the name of the found expression
-                    if (expression instanceof MethodCallExpr call) {
-                        if (!methodCallRanges.contains(call.getRange().get())) {
-                            callExpr = call;
-                            nameOfCall = call.getName();
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        //if a name hast been found, check if it fits the declaration
-        if (nameOfCall != null
-                && nameOfCall.equals(nameOfDeclaration)) {
-            methodCallRanges.add(callExpr.getRange().get());
-            createNewTraceNode();
-
-            //set link, out-link and index of out
-            int lastAddedIndex = current.getChildrenIndices()
-                    .get(current.getChildrenIndices().size() - 1);
-            TraceNode lastAdded = nodeList.get(lastAddedIndex);
-
-            //check if ranges are present, should always be true due to preprocessing
-            if (nameOfCall.getRange().isPresent()
-                    && nameOfDeclaration.getRange().isPresent()) {
-                lastAdded.setLink(nameOfCall.getRange().get());
-                lastAdded.setOutLink(nameOfDeclaration.getRange().get());
-            }
-            lastAdded.setOut(lastAdded.getParentIndex());
-
-            return true;
-        }
-
-         */
-
-
-
     }
 
     /**
@@ -363,11 +267,12 @@ public class TraceProcessor {
      * @param nextRangeToIgnore range of the next child tracenode, necessary in order to
      *                          skip it while adding ranges
      */
+    @SuppressWarnings("checkstyle:FinalParameters")
     private void fillRanges(final List<Node> childrenOfCurrent, Range nextRangeToIgnore) {
 
         boolean skipNext = false;
 
-        for (int i = 0; i < childrenOfCurrent.size(); ) {
+        for (int i = 0; i < childrenOfCurrent.size();) {
 
             Node currentNode = childrenOfCurrent.get(i);
 
@@ -398,7 +303,7 @@ public class TraceProcessor {
                     skipNext = false;
                 } else {
                     if (!current.getRanges().contains(currentNode.getRange().get())
-                        && !Stream.of(TracedCode.values()).map(TracedCode::getType)
+                            && !Stream.of(TracedCode.values()).map(TracedCode::getType)
                             .toList().contains(currentNode.getClass())) {
                         current.addRange(currentNode.getRange().get());
                     }
@@ -417,7 +322,8 @@ public class TraceProcessor {
      * private method used by {@link #fillRanges} to determine whether the current statement
      * is a child node in which certain codeblocks are always executed
      * (like the condition in an if statement) in order to mark it.
-     * @param currentNode Node currently being analyzed
+     *
+     * @param currentNode       Node currently being analyzed
      * @param nextRangeToIgnore next child in case it lies within the current Node
      */
     private void markStatementsInChild(final Node currentNode, final Range nextRangeToIgnore) {
@@ -486,51 +392,9 @@ public class TraceProcessor {
         return block;
     }
 
-
-    /**
-     * Recursively checks every parameter in a MethodCall for additional calls,
-     * including possible parameters of parameters, to ensure that the trace contains
-     * every call in the correct order of execution.
-     *
-     * @param expr The MethodCallExpression for which the parameter should
-     *             be checked.
-     * @param name The name of the Method to look for.
-     * @return The {@link MethodCallExpr} corresponding to the name, if one has been
-     * found in the parameters, null otherwise.
-     */
-    private MethodCallExpr checkCallInParameters(final MethodCallExpr expr, final SimpleName name) {
-        MethodCallExpr callExpr = null;
-
-        //check every argument of the call for a possible method call
-        for (Expression arg : expr.getArguments()) {
-            if (arg instanceof MethodCallExpr call) {
-                //recursively check all parameters
-                callExpr = checkCallInParameters(call, name);
-
-                if (callExpr != null) {
-
-                    if (callExpr.getName().equals(name)
-                            && !methodCallRanges.contains(callExpr.getRange().get())) {
-                        break;
-                    } else {
-                        callExpr = null;
-                    }
-                } else {
-                    if (call.getName().equals(name)
-                            && !methodCallRanges.contains(call.getRange().get())) {
-                        callExpr = call;
-                        break;
-                    }
-                }
-            }
-        }
-        return callExpr;
-    }
-
-
-    private boolean isValidCall(MethodCallExpr callExpr, SimpleName name){
-        if(methodCallRanges.contains(callExpr.getRange().get())) return false;
-        return callExpr.getName().equals(name);
+    private boolean isValidCall(final MethodCallExpr callExpr, final SimpleName name) {
+        return !methodCallRanges.contains(callExpr.getRange().get())
+                && callExpr.getName().equals(name);
     }
 
     /**
