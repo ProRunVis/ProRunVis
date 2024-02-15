@@ -56,7 +56,7 @@ public final class Instrumenter {
         pr.getSourceRoots().forEach(sr -> sr.saveAll(Paths.get(instrumentedOutPath)));
 
         File proRunVisClass = new File(instrumentedOutPath + "/prorunvis/ProRunVis.java");
-        proRunVisClass.mkdir();
+        proRunVisClass.mkdirs();
         if (proRunVisClass.exists()) {
             proRunVisClass.delete();
         }
