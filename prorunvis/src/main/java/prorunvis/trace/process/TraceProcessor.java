@@ -225,10 +225,13 @@ public class TraceProcessor {
         //if the current statement is a statement-block, search statements individually for calls
         if (nodeOfCurrent instanceof NodeWithStatements<?> block) {
             for (Statement statement : block.getStatements()) {
-                System.out.println(statement);
-                List<MethodCallExpr> foundCalls = statement.findAll(MethodCallExpr.class, Node.TreeTraversal.POSTORDER);
-                if(!foundCalls.isEmpty()) {
-                    callExprs.addAll(foundCalls);
+                if(!(statement instanceof ReturnStmt ret && ret.getExpression().isEmpty())
+                && !(statement instanceof BreakStmt)
+                && !(statement instanceof ContinueStmt cont)){
+                    List<MethodCallExpr> foundCalls = statement.findAll(MethodCallExpr.class, Node.TreeTraversal.POSTORDER);
+                    if(!foundCalls.isEmpty()) {
+                        callExprs.addAll(foundCalls);
+                    }
                 }
             }
         } else {
