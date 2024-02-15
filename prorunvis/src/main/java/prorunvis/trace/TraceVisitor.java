@@ -166,11 +166,11 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
      * @return a statement containing the call to the trace methode with the characteristics of the given statement
      */
     private Statement traceEntryCreator(final int id) {
-        return StaticJavaParser.parseStatement("proRunVisTrace(\"" + id + "\");");
+        return StaticJavaParser.parseStatement("prorunvis.ProRunVis.proRunVisTrace(\"" + id + "\");");
     }
 
     /**
-     * creates a map entry with a clone of the given node while preserving its range
+     * Creates a map entry with a clone of the given node while preserving its range.
      * @param id the key to map
      * @param map the map in which to put the entry
      * @param node the value to map
