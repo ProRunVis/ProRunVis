@@ -46,7 +46,7 @@ public final class Instrumenter {
     }
 
     /**
-     * Saves the given project to the given path.
+     * Saves the given project to the given path. And adds a package containing the ProRunVis class used for tracking.
      * @param pr Project root of the project to be saved
      * @param instrumentedOutPath relative path where project is to be saved to
      */
@@ -57,7 +57,6 @@ public final class Instrumenter {
 
         File proRunVisClass = new File(instrumentedOutPath + "/prorunvis/ProRunVis.java");
         proRunVisClass.mkdir();
-        proRunVisClass.mkdirs();
         if (proRunVisClass.exists()) {
             proRunVisClass.delete();
         }
