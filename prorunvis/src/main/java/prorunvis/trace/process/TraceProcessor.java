@@ -170,16 +170,10 @@ public class TraceProcessor {
         //save the current state
         current = traceNode;
         Node tempNodeOfCurrent = nodeOfCurrent;
-        List<Range> tempRanges = new ArrayList<>();
+        List<Range> tempRanges = methodCallRanges;
         nodeOfCurrent = traceMap.get(tokenValue);
-        //save executed ranges only if next node is a loop
-        if (nodeOfCurrent instanceof NodeWithBody<?>) {
-            tempRanges = methodCallRanges;
-            methodCallRanges = new ArrayList<>();
-        }
+        methodCallRanges = new ArrayList<>();
 
-        //add children to the created node, while there are still tokens
-        //on the stack and new nodes can be created
 
         fillRanges((getBlockStmt() == null)
                 ? nodeOfCurrent.getChildNodes()
@@ -196,14 +190,16 @@ public class TraceProcessor {
             current.setIteration(iteration);
         }
 
-        //restore ranges only if node of current was a loop
+        //if node was a loop, add the executed method calls from inside the loop to the
+        //executed calls of the previous node to prevent false positives in the
+        //deep search
         if (nodeOfCurrent instanceof NodeWithBody<?>) {
             tempRanges.addAll(methodCallRanges);
-            methodCallRanges = tempRanges;
         }
         //restore state
         current = nodeList.get(traceNode.getParentIndex());
         nodeOfCurrent = tempNodeOfCurrent;
+        methodCallRanges = tempRanges;
     }
 
 
@@ -222,15 +218,23 @@ public class TraceProcessor {
         SimpleName nameOfCall = null;
 
 
+        System.out.println(nodeOfCurrent);
+        System.out.println(nodeOfCurrent.getClass());
         List<MethodCallExpr> callExprs = new ArrayList<>();
+
         //if the current statement is a statement-block, search statements individually for calls
         if (nodeOfCurrent instanceof NodeWithStatements<?> block) {
             for (Statement statement : block.getStatements()) {
-                callExprs.addAll(statement.findAll(MethodCallExpr.class, Node.TreeTraversal.POSTORDER));
+                System.out.println(statement);
+                List<MethodCallExpr> foundCalls = statement.findAll(MethodCallExpr.class, Node.TreeTraversal.POSTORDER);
+                if(!foundCalls.isEmpty()) {
+                    callExprs.addAll(foundCalls);
+                }
             }
         } else {
             callExprs = nodeOfCurrent.findAll(MethodCallExpr.class, Node.TreeTraversal.POSTORDER);
         }
+        callExprs.forEach(System.out::println);
 
         for (MethodCallExpr expr : callExprs) {
             if (isValidCall(expr, nameOfDeclaration)) {
@@ -238,7 +242,7 @@ public class TraceProcessor {
                 methodCallRanges.add(expr.getRange().get());
                 nameOfCall = expr.getName();
                 createNewTraceNode();
-
+                System.out.println("Created for "+ nameOfCall);
                 //set link, out-link and index of out
                 int lastAddedIndex = current.getChildrenIndices()
                         .get(current.getChildrenIndices().size() - 1);
