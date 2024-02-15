@@ -1,22 +1,11 @@
 package prorunvis.instrument;
 
-import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.type.VoidType;
-import com.github.javaparser.ast.visitor.ModifierVisitor;
 import com.github.javaparser.utils.ProjectRoot;
 import prorunvis.trace.TraceVisitor;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Paths;
 import java.util.Map;
 
@@ -57,7 +46,7 @@ public final class Instrumenter {
     }
 
     /**
-     * Saves the given project to the given path.
+     * Saves the given project to the given path. And adds a package containing the ProRunVis class used for tracking.
      * @param pr Project root of the project to be saved
      * @param instrumentedOutPath relative path where project is to be saved to
      */
@@ -65,56 +54,65 @@ public final class Instrumenter {
         File instrumented = new File(instrumentedOutPath);
         instrumented.mkdir();
         pr.getSourceRoots().forEach(sr -> sr.saveAll(Paths.get(instrumentedOutPath)));
+
+        File proRunVisClass = new File(instrumentedOutPath + "/prorunvis/ProRunVis.java");
+        proRunVisClass.mkdirs();
+        if (proRunVisClass.exists()) {
+            proRunVisClass.delete();
+        }
+        try {
+            proRunVisClass.createNewFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        BufferedWriter bf = null;
+        try {
+            bf = new BufferedWriter(new FileWriter(proRunVisClass, true));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        String proRunVisClassContent = """
+                package prorunvis;
+                import java.io.BufferedWriter;
+                import java.io.FileWriter;
+                import java.io.IOException;
+                public final class ProRunVis {
+                    public static void proRunVisTrace(String trace) {
+                        try {
+                            BufferedWriter writer = new BufferedWriter(new FileWriter(
+                            """
+                            + "\"" + traceFile.getAbsolutePath() + "\"" + "\n"
+                            + """
+                            , true));
+                            writer.write(trace + System.lineSeparator());
+                            writer.close();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e.getMessage());
+                        }
+                    }
+                }
+                """;
+        try {
+            bf.write(proRunVisClassContent);
+            bf.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
-     * Runs this Instrumenter. The given {@link CompilationUnit} is modified by
-     * adding necessary imports before the {@link TraceVisitor} and {@link InstrumenterSetupVisitor}
-     * are executed.
+     * Runs this Instrumenter. The {@link TraceVisitor} iterates over the {@link CompilationUnit}s
+     * and modifies them accordingly.
      * @param cu The compilation unit which will be modified by this Instrumenter.
      * @param map the map where the Ids are mapped to the AST-Nodes
      */
     public static void run(final CompilationUnit cu, final Map<Integer, Node> map) {
-        cu.addImport(BufferedWriter.class).addImport(FileWriter.class).addImport(IOException.class);
         new TraceVisitor().visit(cu, map);
-        new InstrumenterSetupVisitor().visit(cu, traceFile.getAbsolutePath());
     }
 }
 
-/**
- * An inner class used by an {@link Instrumenter}.
- */
-class InstrumenterSetupVisitor extends ModifierVisitor<String> {
 
-    /**
-     * Adds a method to every class or interface which can be called to write
-     * a given String into the trace file.
-     * @param cfd The class or interface declaration which is modified.
-     * @param path The absolute path to the trace file for this Instrumenter.
-     * @return The modified <code>cfd</code>.
-     */
-    @Override
-    public ClassOrInterfaceDeclaration visit(final ClassOrInterfaceDeclaration cfd, final String path) {
-
-        MethodDeclaration method = new MethodDeclaration(new NodeList<>(
-                Modifier.privateModifier(), Modifier.staticModifier()),
-                "proRunVisTrace", new VoidType(),
-                new NodeList<>(new Parameter(StaticJavaParser.parseClassOrInterfaceType("String"), "trace")));
-
-        method.setBody(StaticJavaParser.parseBlock("{try {"
-                + "BufferedWriter writer = new BufferedWriter(new FileWriter(\""
-                + path.replace('\\', '/')
-                + "\", true));" + "writer.write("
-                + method.getParameter(0).getNameAsString()
-                + " + System.lineSeparator());"
-                + "writer.close();"
-                + "} catch (IOException e) {throw new RuntimeException(e.getMessage());}}")
-        );
-
-        cfd.addMember(method);
-        return cfd;
-    }
-}
 
 
 

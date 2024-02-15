@@ -31,7 +31,7 @@ class InstrumenterTest extends Tester {
      */
     @Test
     void test1(){
-        //instrument(testDir + "test1", testDir + "test1result", testDir + "test1solution");
+        instrument(testDir + "test1", testDir + "test1result", testDir + "test1solution");
     }
 
     /**
@@ -39,7 +39,7 @@ class InstrumenterTest extends Tester {
      */
     @Test
     void test2(){
-        //instrument(testDir + "test2", testDir + "test2result", testDir + "test2solution");
+        instrument(testDir + "test2", testDir + "test2result", testDir + "test2solution");
     }
 
     /**

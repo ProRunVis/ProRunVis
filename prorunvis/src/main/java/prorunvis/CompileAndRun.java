@@ -2,7 +2,6 @@ package prorunvis;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.utils.ProjectRoot;
 
 import java.io.*;
 import java.nio.file.Path;
