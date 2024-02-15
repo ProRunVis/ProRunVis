@@ -215,11 +215,9 @@ public class TraceProcessor {
     private boolean createMethodCallTraceNode() {
         MethodDeclaration node = (MethodDeclaration) traceMap.get(tokens.peek());
         SimpleName nameOfDeclaration = node.getName();
-        SimpleName nameOfCall = null;
+        SimpleName nameOfCall;
 
 
-        System.out.println(nodeOfCurrent);
-        System.out.println(nodeOfCurrent.getClass());
         List<MethodCallExpr> callExprs = new ArrayList<>();
 
         //if the current statement is a statement-block, search statements individually for calls
@@ -229,7 +227,7 @@ public class TraceProcessor {
                 //continue statements from method call deep search
                 if (!(statement instanceof ReturnStmt ret && ret.getExpression().isEmpty())
                         && !(statement instanceof BreakStmt)
-                        && !(statement instanceof ContinueStmt cont)) {
+                        && !(statement instanceof ContinueStmt)) {
                     List<MethodCallExpr> foundCalls = statement.findAll(MethodCallExpr.class,
                                                                         Node.TreeTraversal.POSTORDER);
                     if (!foundCalls.isEmpty()) {
@@ -240,7 +238,6 @@ public class TraceProcessor {
         } else {
             callExprs = nodeOfCurrent.findAll(MethodCallExpr.class, Node.TreeTraversal.POSTORDER);
         }
-        callExprs.forEach(System.out::println);
 
         for (MethodCallExpr expr : callExprs) {
             if (isValidCall(expr, nameOfDeclaration)) {
@@ -248,7 +245,6 @@ public class TraceProcessor {
                 methodCallRanges.add(expr.getRange().get());
                 nameOfCall = expr.getName();
                 createNewTraceNode();
-                System.out.println("Created for " + nameOfCall);
                 //set link, out-link and index of out
                 int lastAddedIndex = current.getChildrenIndices()
                         .get(current.getChildrenIndices().size() - 1);
