@@ -225,11 +225,14 @@ public class TraceProcessor {
         //if the current statement is a statement-block, search statements individually for calls
         if (nodeOfCurrent instanceof NodeWithStatements<?> block) {
             for (Statement statement : block.getStatements()) {
-                if(!(statement instanceof ReturnStmt ret && ret.getExpression().isEmpty())
-                && !(statement instanceof BreakStmt)
-                && !(statement instanceof ContinueStmt cont)){
-                    List<MethodCallExpr> foundCalls = statement.findAll(MethodCallExpr.class, Node.TreeTraversal.POSTORDER);
-                    if(!foundCalls.isEmpty()) {
+                //exempt return statements without expression, break and
+                //continue statements from method call deep search
+                if (!(statement instanceof ReturnStmt ret && ret.getExpression().isEmpty())
+                        && !(statement instanceof BreakStmt)
+                        && !(statement instanceof ContinueStmt cont)) {
+                    List<MethodCallExpr> foundCalls = statement.findAll(MethodCallExpr.class,
+                                                                        Node.TreeTraversal.POSTORDER);
+                    if (!foundCalls.isEmpty()) {
                         callExprs.addAll(foundCalls);
                     }
                 }
@@ -245,7 +248,7 @@ public class TraceProcessor {
                 methodCallRanges.add(expr.getRange().get());
                 nameOfCall = expr.getName();
                 createNewTraceNode();
-                System.out.println("Created for "+ nameOfCall);
+                System.out.println("Created for " + nameOfCall);
                 //set link, out-link and index of out
                 int lastAddedIndex = current.getChildrenIndices()
                         .get(current.getChildrenIndices().size() - 1);
