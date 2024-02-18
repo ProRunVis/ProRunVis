@@ -94,8 +94,12 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
         //check if stmt has an else-block
         if (stmt.getElseStmt().isPresent()) {
             id = map.size();
-            createMapEntry(id, map, stmt.getElseStmt().get());
-            stmt.getElseStmt().get().asBlockStmt().addStatement(0, traceEntryCreator(id));
+            //exclude cases with else-if statements since these will be visited by the
+            //if-stmt visitor separately
+            if(!stmt.getElseStmt().get().isIfStmt()){
+                createMapEntry(id, map, stmt.getElseStmt().get());
+                stmt.getElseStmt().get().asBlockStmt().addStatement(0, traceEntryCreator(id));
+            }
         }
 
         super.visit(stmt, map);
