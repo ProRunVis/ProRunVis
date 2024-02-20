@@ -7,7 +7,6 @@ import com.github.javaparser.utils.ProjectRoot;
 import org.junit.jupiter.api.Test;
 import prorunvis.CompileAndRun;
 import prorunvis.instrument.Instrumenter;
-import prorunvis.preprocess.Preprocessor;
 
 import java.io.*;
 import java.nio.file.Paths;
@@ -17,7 +16,6 @@ import java.util.Map;
 
 import prorunvis.Tester;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 /**
@@ -26,24 +24,29 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 class CompileAndRunTest extends Tester {
 
     /**
-     * A String to store the relative path to the directory where all the tests are stored, to use in the test functions.
+     * A String to store the relative path to the directory where all the tests are stored,
+     * to use in the test functions.
      */
-    String testDir = "src/test/testfiles/compileandrun/";
+    private String testDir = "src/test/testfiles/compileandrun/";
 
     /**
-     * Test 1
+     * Test 1.
      */
     @Test
-    void test1(){
-        compileAndRun(testDir + "test1", testDir + "test1result", testDir + "test1solution");
+    void test1() {
+        compileAndRun(testDir + "test1",
+                testDir + "test1result",
+                testDir + "test1solution");
     }
 
     /**
-     * Test 2
+     * Test 2.
      */
     @Test
-    void test2(){
-        compileAndRun(testDir + "test2", testDir + "test2result", testDir + "test2solution");
+    void test2() {
+        compileAndRun(testDir + "test2",
+                testDir + "test2result",
+                testDir + "test2solution");
     }
 
     /**
@@ -57,9 +60,10 @@ class CompileAndRunTest extends Tester {
      *                        the compiled test-project and the result trace file will be stored.
      * @param solutionPath the relative path of the directory where the solution trace-file is located.
      */
-    void compileAndRun(String preprocessedInPath, String compiledOutPath, String solutionPath){
+    void compileAndRun(final String preprocessedInPath, final String compiledOutPath, final String solutionPath) {
         //Setup CompilationUnits
-        ProjectRoot testProjectRoot = new SymbolSolverCollectionStrategy().collect(Paths.get(preprocessedInPath).toAbsolutePath());
+        ProjectRoot testProjectRoot =
+                new SymbolSolverCollectionStrategy().collect(Paths.get(preprocessedInPath).toAbsolutePath());
         List<CompilationUnit> cusResult = createCompilationUnits(testProjectRoot);
 
         //Run Instrumenter
@@ -86,7 +90,8 @@ class CompileAndRunTest extends Tester {
         }
 
         //Setup readers for trace-files and read
-        FileReader rSolution, rResult;
+        FileReader rSolution;
+        FileReader rResult;
         try {
             rSolution = new FileReader(solutionTrace);
             rResult = new FileReader(resultTrace);

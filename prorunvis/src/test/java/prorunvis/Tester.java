@@ -12,7 +12,8 @@ import java.util.List;
 
 /**
  * A class that extends all the other classes that are responsible for running tests.
- * It is responsible for creating a List of {@link CompilationUnit}s out of a {@link ProjectRoot} which is needed for every testcase.
+ * It is responsible for creating a List of {@link CompilationUnit}s
+ * out of a {@link ProjectRoot} which is needed for every testcase.
  */
 public class Tester {
     /**
@@ -20,7 +21,7 @@ public class Tester {
      * @param projectRoot the {@link ProjectRoot} to be processed.
      * @return the created List of {@link CompilationUnit}s.
      */
-    protected List<CompilationUnit> createCompilationUnits(ProjectRoot projectRoot){
+    protected List<CompilationUnit> createCompilationUnits(final ProjectRoot projectRoot) {
         StaticJavaParser.getParserConfiguration().setSymbolResolver(new JavaSymbolSolver(new CombinedTypeSolver()));
         List<CompilationUnit> cus = new ArrayList<>();
         projectRoot.getSourceRoots().forEach(sr -> {

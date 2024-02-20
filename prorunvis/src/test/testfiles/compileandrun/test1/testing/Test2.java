@@ -1,8 +1,7 @@
-import testing.Test2;
-class Test1 {
+package testing;
+public class Test2 {
 
-    public static void main(String[] args) {
-        Test2.foo();
+    public static void foo() {
         int x = 0;
         for (int i = 0; i < 7; i++) {
             x--;

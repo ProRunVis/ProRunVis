@@ -17,24 +17,29 @@ import static org.junit.jupiter.api.Assertions.*;
 class PreprocessorTest extends Tester {
 
     /**
-     * A String to store the relative path to the directory where all the tests are stored, to use in the test functions.
+     * A String to store the relative path to the directory where all the tests are stored,
+     * to use in the test functions.
      */
-    String testdir = "src/test/testfiles/preprocess/";
+    private String testdir = "src/test/testfiles/preprocess/";
 
     /**
-     * Test 1
+     * Test 1.
      */
     @Test
-    void test1(){
-        preprocess(testdir + "test1", testdir + "test1result", testdir + "test1solution");
+    void test1() {
+        preprocess(testdir + "test1",
+                testdir + "test1result",
+                testdir + "test1solution");
     }
 
     /**
-     * Test 2
+     * Test 2.
      */
     @Test
-    void test2(){
-        preprocess(testdir + "test2", testdir + "test2result", testdir + "test2solution");
+    void test2() {
+        preprocess(testdir + "test2",
+                testdir + "test2result",
+                testdir + "test2solution");
     }
 
     /**
@@ -45,10 +50,12 @@ class PreprocessorTest extends Tester {
      * @param preprocessedOutPath the relative path of the directory where the preprocessed test-project will be stored.
      * @param solutionPath the relative path of the directory where the solution-project is located.
      */
-    private void preprocess(String testInPath, String preprocessedOutPath, String solutionPath){
+    private void preprocess(final String testInPath, final String preprocessedOutPath, final String solutionPath) {
         //Setup CompilationUnits
-        ProjectRoot testProjectRoot = new SymbolSolverCollectionStrategy().collect(Paths.get(testInPath).toAbsolutePath());
-        ProjectRoot solutionProjectRoot = new SymbolSolverCollectionStrategy().collect(Paths.get(solutionPath).toAbsolutePath());
+        ProjectRoot testProjectRoot =
+                new SymbolSolverCollectionStrategy().collect(Paths.get(testInPath).toAbsolutePath());
+        ProjectRoot solutionProjectRoot =
+                new SymbolSolverCollectionStrategy().collect(Paths.get(solutionPath).toAbsolutePath());
         List<CompilationUnit> cusResult = createCompilationUnits(testProjectRoot);
         List<CompilationUnit> cusSolution = createCompilationUnits(solutionProjectRoot);
 

@@ -27,8 +27,12 @@ public final class Main {
     private Main() { }
 
     /**
-     * Main Method should not be called.
-     * @param args arguments of the main method
+     * Entry point. Gets called if program is stared via the terminal.
+     * @param args parameters (path of directory with project
+     *             and optional -i flag if project should only be instrumented,
+     *             in that case the project does not need a main method as an entry point since it is not compiled).
+     * @throws IOException
+     * @throws InterruptedException
      */
     public static void main(final String[]args) throws IOException, InterruptedException {
         boolean instrumentOnly = false;
@@ -69,6 +73,8 @@ public final class Main {
             CompileAndRun.run(cus, "resources/out/instrumented", "resources/out/compiled");
             TraceProcessor processor = new TraceProcessor(map, traceFile.getPath());
             processor.start();
+            System.out.println(processor);
         }
+
     }
 }
