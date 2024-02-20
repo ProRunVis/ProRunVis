@@ -4,8 +4,12 @@
 # Ignore Gradle build output directory
 build
 
-#Ignore IntelliJ specific files
+# Ignore IntelliJ specific files
 .idea
+
+# Ignore test result files
 /prorunvis/src/test/testfiles/preprocess/*result/
 /prorunvis/src/test/testfiles/compileandrun/*result/
 /prorunvis/src/test/testfiles/instrument/*result/
+/prorunvis/src/test/testfiles/traceprocessor/returntest/*
+!/prorunvis/src/test/testfiles/traceprocessor/returntest/resources/in/

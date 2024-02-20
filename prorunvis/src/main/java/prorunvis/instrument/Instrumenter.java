@@ -66,7 +66,7 @@ public final class Instrumenter {
             throw new RuntimeException(e);
         }
 
-        BufferedWriter bf = null;
+        BufferedWriter bf;
         try {
             bf = new BufferedWriter(new FileWriter(proRunVisClass, true));
         } catch (IOException e) {
