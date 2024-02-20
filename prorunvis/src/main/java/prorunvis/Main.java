@@ -31,7 +31,9 @@ public final class Main {
      * @param args arguments of the main method
      */
     public static void main(final String[]args) throws IOException, InterruptedException {
+
         boolean instrumentOnly = false;
+
         //check if an argument of sufficient length has been provided
         if (args.length == 0) {
             System.out.println("Missing input");
@@ -46,7 +48,10 @@ public final class Main {
         }
 
         StaticJavaParser.getParserConfiguration().setSymbolResolver(new JavaSymbolSolver(new CombinedTypeSolver()));
-        ProjectRoot projectRoot = new SymbolSolverCollectionStrategy().collect(Paths.get(args[0]).toAbsolutePath());
+        ProjectRoot projectRoot =
+                new SymbolSolverCollectionStrategy().collect(Paths.get(args[0]).toAbsolutePath());
+        File traceFile = new File("resources/TraceFile.tr");
+
         List<CompilationUnit> cus = new ArrayList<>();
         projectRoot.getSourceRoots().forEach(sr -> {
             try {
@@ -57,7 +62,6 @@ public final class Main {
         });
 
         Map<Integer, Node> map = new HashMap<>();
-        File traceFile = new File("resources/TraceFile.tr");
         Instrumenter.setupTrace(traceFile);
         cus.forEach(cu -> {
             Preprocessor.run(cu);

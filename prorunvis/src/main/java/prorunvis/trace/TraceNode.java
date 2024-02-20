@@ -35,9 +35,9 @@ public class TraceNode {
     private Range link;
 
     /**
-     * The Range of code which serves as link to access the out node.
+     * The Ranges of code which serve as links to access the out node.
      */
-    private Range outLink;
+    private List<Range> outLinks;
 
     /**
      * The TraceNode to select upon following the link in outLink.
@@ -62,6 +62,7 @@ public class TraceNode {
     public TraceNode(final Integer parentIndex, final String traceId) {
             this.ranges = new ArrayList<>();
             this.childrenIndices = new ArrayList<>();
+            this.outLinks = new ArrayList<>();
             this.parentIndex = parentIndex;
             this.traceId = traceId;
             this.iteration = null;
@@ -147,8 +148,8 @@ public class TraceNode {
      * @return The range of code which serves as outLink
      *         of this node.
      */
-    public Range getOutLink() {
-        return this.outLink;
+    public List<Range> getOutLinks() {
+        return this.outLinks;
     }
 
     /**
@@ -156,14 +157,14 @@ public class TraceNode {
      * @param newOutLink The Range of code to be used as outLink
      *                   for this node.
      */
-    public void setOutLink(final Range newOutLink) {
-        this.outLink = newOutLink;
+    public void addOutLink(final Range newOutLink) {
+        this.outLinks.add(newOutLink);
     }
 
     /**
      * Gets the index of the out node of this node.
      * @return The index of the node to be highlighted after using the
-     *         {@link #outLink} of this node.
+     *         {@link #outLinks} of this node.
      */
     public int getOutIndex() {
         return this.outIndex;
@@ -172,7 +173,7 @@ public class TraceNode {
     /**
      * Sets the index of the out node of this node.
      * @param outIndex The index of the node to be highlighted after using the
-     *        {@link #outLink} of this node.
+     *        {@link #outLinks} of this node.
      */
     public void setOut(final int outIndex) {
         this.outIndex = outIndex;
