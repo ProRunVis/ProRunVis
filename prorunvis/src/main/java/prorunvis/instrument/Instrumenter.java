@@ -72,6 +72,13 @@ public final class Instrumenter {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        // This replaces \'s in the path with /'s if on windows as the former
+        // causes problems with escaping characters in the string on that OS
+        String path = (File.separator.equals("\\"))
+                ? traceFile.getAbsolutePath().replace("\\", "/")
+                : traceFile.getAbsolutePath();
+
         String proRunVisClassContent = """
                 package prorunvis;
                 import java.io.BufferedWriter;
@@ -82,7 +89,7 @@ public final class Instrumenter {
                         try {
                             BufferedWriter writer = new BufferedWriter(new FileWriter(
                             """
-                            + "\"" + traceFile.getAbsolutePath() + "\"" + "\n"
+                            + "\"" + path + "\"" + "\n"
                             + """
                             , true));
                             writer.write(trace + System.lineSeparator());

@@ -320,6 +320,9 @@ public class TraceProcessor {
 
         //if the current node is a forStmt, and it has iteration steps, add them to the ranges
         if (nodeOfCurrent instanceof ForStmt forStmt) {
+            for (boolean cont = true; cont;) {
+                cont = !processChild();
+            }
             forStmt.getUpdate().forEach(node -> current.addRange(node.getRange().get()));
         }
     }

@@ -96,7 +96,7 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
             id = map.size();
             //exclude cases with else-if statements since these will be visited by the
             //if-stmt visitor separately
-            if(!stmt.getElseStmt().get().isIfStmt()){
+            if (!stmt.getElseStmt().get().isIfStmt()) {
                 createMapEntry(id, map, stmt.getElseStmt().get());
                 stmt.getElseStmt().get().asBlockStmt().addStatement(0, traceEntryCreator(id));
             }

@@ -31,7 +31,7 @@ public class IfStatementPreprocessor extends ModifierVisitor<Void> {
         //check and process else statement if one is present
         if (stmt.getElseStmt().isPresent()) {
             if (!stmt.getElseStmt().get().isBlockStmt()
-                && !stmt.getElseStmt().get().isIfStmt() ) {
+                && !stmt.getElseStmt().get().isIfStmt()) {
                 BlockStmt block = new BlockStmt(new NodeList<>(stmt.getElseStmt().get()));
                 block.setRange(stmt.getElseStmt().get().getRange().get());
                 stmt.setElseStmt(block);
