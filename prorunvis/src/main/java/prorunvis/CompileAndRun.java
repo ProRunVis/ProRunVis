@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * This is a utility class which is responsible for compiling {@link CompilationUnit}s.
+ * This is a utility class which is responsible for compiling a package of {@link CompilationUnit}s.
  */
 public final class CompileAndRun {
 
@@ -22,8 +22,8 @@ public final class CompileAndRun {
     }
 
     /**
-     * Take in a List of {@link CompilationUnit}s.
-     * Then the list is compiled into another new folder. The compiled program is then executed.
+     * Take in a List of its {@link CompilationUnit}s.
+     * The code is compiled into a new folder. The compiled program is then executed.
      * @param cus an easily accessible List of the <code>projectRoot</code>s {@link CompilationUnit}s
      * @param instrumentedInPath the relative Path of the directory where the instrumented project lies
      * @param compiledOutPath the relative Path of the directory where the compiled project will be saved

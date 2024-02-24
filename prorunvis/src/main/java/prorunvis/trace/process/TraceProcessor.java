@@ -134,14 +134,14 @@ public class TraceProcessor {
     private boolean processChild() {
 
         if (tokens.empty()) {
-            return true;
+            return false;
         }
 
         Node node = traceMap.get(tokens.peek());
 
         //check if the node is a method declaration or not
         if (node instanceof MethodDeclaration) {
-            return !createMethodCallTraceNode();
+            return createMethodCallTraceNode();
         } else {
 
             Optional<Range> range = node.getRange();
@@ -153,12 +153,12 @@ public class TraceProcessor {
                 if (currentRange.get().strictlyContains(range.get())) {
                     //create the new trace node
                     createNewTraceNode();
-                    return false;
+                    return true;
                 }
             }
         }
 
-        return true;
+        return false;
     }
 
     /**
@@ -303,15 +303,14 @@ public class TraceProcessor {
             //determine the range of the next child
             if (nextRangeToIgnore == null) {
                 if (processChild()) {
-                    nextRangeToIgnore = new Range(nodeOfCurrent.getRange().get().end.nextLine(),
-                                                  nodeOfCurrent.getRange().get().end.nextLine());
-                } else {
                     TraceNode nextChild = nodeList.get(Iterables.getLast(current.getChildrenIndices()));
-
                     nextRangeToIgnore =
                             (traceMap.get(Integer.parseInt(nextChild.getTraceID())) instanceof MethodDeclaration)
-                            ? nextChild.getLink()
-                            : traceMap.get(Integer.parseInt(nextChild.getTraceID())).getRange().get();
+                                    ? nextChild.getLink()
+                                    : traceMap.get(Integer.parseInt(nextChild.getTraceID())).getRange().get();
+                } else {
+                    nextRangeToIgnore = new Range(nodeOfCurrent.getRange().get().end.nextLine(),
+                                                  nodeOfCurrent.getRange().get().end.nextLine());
                 }
             }
 
@@ -326,7 +325,11 @@ public class TraceProcessor {
             //current range is a child, let it resolve and wait for the next child
             if (currentNode.getRange().get().contains(nextRangeToIgnore)) {
                 nextRangeToIgnore = null;
-                skipNext = true;
+                if (!(traceMap.get(
+                        Integer.valueOf(nodeList.get(Iterables.getLast(current.getChildrenIndices())).getTraceID()))
+                        instanceof MethodDeclaration)) {
+                    skipNext = true;
+                }
             } else {
                 //if the next child lies ahead, advance and save current range in ranges if
                 //the skip flag isn't set (i.e. the current range isn't a child)
@@ -350,7 +353,7 @@ public class TraceProcessor {
         //if the current node is a forStmt, and it has iteration steps, add them to the ranges
         if (nodeOfCurrent instanceof ForStmt forStmt) {
             for (boolean cont = true; cont;) {
-                cont = !processChild();
+                cont = processChild();
             }
             forStmt.getUpdate().forEach(node -> current.addRange(node.getRange().get()));
         }
@@ -387,6 +390,16 @@ public class TraceProcessor {
             jumpPackage = new JumpPackage(List.of(MethodDeclaration.class),
                                           new Range(returnStmt.getBegin().get(),
                                                     returnStmt.getBegin().get().right("return".length())));
+            return true;
+        } else if (currentNode instanceof ContinueStmt continueStmt) {
+            jumpPackage = new JumpPackage(List.of(ForStmt.class, WhileStmt.class,
+                                                  DoStmt.class, ForEachStmt.class),
+                                                  continueStmt.getRange().get());
+            return true;
+        } else if (currentNode instanceof BreakStmt breakStmt) {
+            jumpPackage = new JumpPackage(List.of(ForStmt.class, WhileStmt.class,
+                                                  DoStmt.class, ForEachStmt.class, SwitchEntry.class),
+                                                  breakStmt.getRange().get());
             return true;
         }
         return false;
@@ -471,6 +484,11 @@ public class TraceProcessor {
         return builder.toString();
     }
 
+    /**
+     * Converts a given {@link TraceNode} to a string.
+     * @param builder used to convert the {@link TraceNode}
+     * @param node The {@link TraceNode} to be converted
+     */
     private void nodeToString(final StringBuilder builder, final TraceNode node) {
         builder.append("TraceID: ").append(node.getTraceID())
                .append("\nChildren: ").append(node.getChildrenIndices())

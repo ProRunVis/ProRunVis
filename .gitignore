@@ -13,3 +13,5 @@ build
 /prorunvis/src/test/testfiles/instrument/*result/
 /prorunvis/src/test/testfiles/traceprocessor/returntest/*
 !/prorunvis/src/test/testfiles/traceprocessor/returntest/resources/in/
+/prorunvis/src/test/testfiles/traceprocessor/breakcontinuetest/*
+!/prorunvis/src/test/testfiles/traceprocessor/breakcontinuetest/resources/in/
