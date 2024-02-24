@@ -37,6 +37,17 @@ class TraceProcessorTest extends Tester {
     }
 
     /**
+     * Tests to test the functionality of trace breaks and continues.
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Test
+    void breakContinueTest() throws IOException, InterruptedException {
+        process(testDir + "breakcontinuetest/resources",
+                testDir + "breakcontinuetestsolution/expectedTracenodes.tr");
+    }
+
+    /**
      * Runs the program normally with the given input and compares the output to a
      * given expected result.
      * @param resourcePath the path in the testdirectory to the test-inputs to use
