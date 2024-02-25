@@ -2,6 +2,8 @@ package prorunvis.trace.process;
 
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.Node;
+import prorunvis.trace.TraceNode;
+
 import java.util.List;
 
 /**
@@ -21,14 +23,17 @@ public class JumpPackage {
      */
     private final Range jumpFrom;
 
+    private final int start;
+
     /**
      * Creates a new {@link JumpPackage}, signaling that a jump has started.
      * @param targets list of {@link Node}Types this jump closes.
      * @param start {@link Range} of the keyword which triggered the jump.
      */
-    public JumpPackage(final List<Class<? extends Node>> targets, final Range start) {
+    public JumpPackage(final List<Class<? extends Node>> targets, final Range link, final int start) {
         jumpTo = targets;
-        jumpFrom = start;
+        jumpFrom = link;
+        this.start = start;
     }
 
     /**
@@ -40,10 +45,18 @@ public class JumpPackage {
         return jumpTo.contains(node.getClass());
     }
 
+    public List<Class<? extends Node>> getTarget() {
+        return jumpTo;
+    }
+
     /**
      * @return the range of the keyword which triggered the jump.
      */
     public Range getJumpFrom() {
         return jumpFrom;
+    }
+
+    public int getStart() {
+        return start;
     }
 }

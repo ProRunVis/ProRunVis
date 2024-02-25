@@ -184,7 +184,6 @@ public class TraceProcessor {
         nodeOfCurrent = traceMap.get(tokenValue);
         methodCallRanges = new ArrayList<>();
 
-
         fillRanges((getBlockStmt() == null)
                 ? nodeOfCurrent.getChildNodes()
                 : getBlockStmt().getChildNodes(), null);
@@ -319,7 +318,16 @@ public class TraceProcessor {
             }
 
             if (jumpPackage != null && currentNode.getRange().get().contains(nextRangeToIgnore)) {
-                return;
+                if (jumpPackage.getTarget().contains(ThrowStmt.class) && processChild()) {
+                    TraceNode tryNode = nodeList.get(current.getChildrenIndices().get(
+                            current.getChildrenIndices().size() - 2));
+                    nextRangeToIgnore = traceMap.get(Integer.valueOf(nodeList.get(Iterables.getLast(
+                            current.getChildrenIndices())).getTraceID())).getRange().get();
+                    nodeList.get(jumpPackage.getStart()).addOutLink(jumpPackage.getJumpFrom());
+                    nodeList.get(jumpPackage.getStart()).setOut(nodeList.indexOf(tryNode));
+                    jumpPackage = null;
+
+                } else {return;}
             }
 
             //current range is a child, let it resolve and wait for the next child
@@ -382,6 +390,8 @@ public class TraceProcessor {
             current.addRange(forEachStmt.getIterable().getRange().get());
         } else if (currentNode instanceof DoStmt doStmt) {
             current.addRange(doStmt.getCondition().getRange().get());
+        } else if (currentNode instanceof TryStmt tryStmt) {
+            tryStmt.getResources().forEach(resource -> current.addRange(resource.getRange().get()));
         }
     }
 
@@ -389,17 +399,26 @@ public class TraceProcessor {
         if (currentNode instanceof ReturnStmt returnStmt) {
             jumpPackage = new JumpPackage(List.of(MethodDeclaration.class),
                                           new Range(returnStmt.getBegin().get(),
-                                                    returnStmt.getBegin().get().right("return".length())));
+                                                    returnStmt.getBegin().get().right("return".length())),
+                                          nodeList.indexOf(current));
             return true;
         } else if (currentNode instanceof ContinueStmt continueStmt) {
             jumpPackage = new JumpPackage(List.of(ForStmt.class, WhileStmt.class,
                                                   DoStmt.class, ForEachStmt.class),
-                                                  continueStmt.getRange().get());
+                                          continueStmt.getRange().get(),
+                                          nodeList.indexOf(current));
             return true;
         } else if (currentNode instanceof BreakStmt breakStmt) {
             jumpPackage = new JumpPackage(List.of(ForStmt.class, WhileStmt.class,
                                                   DoStmt.class, ForEachStmt.class, SwitchEntry.class),
-                                                  breakStmt.getRange().get());
+                                          breakStmt.getRange().get(),
+                                          nodeList.indexOf(current));
+            return true;
+        } else if (currentNode instanceof ThrowStmt throwStmt) {
+            jumpPackage = new JumpPackage(List.of(ThrowStmt.class),
+                                          new Range(throwStmt.getBegin().get(),
+                                                    throwStmt.getBegin().get().right("throw".length())),
+                                          nodeList.indexOf(current));
             return true;
         }
         return false;
