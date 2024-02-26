@@ -47,6 +47,12 @@ class TraceProcessorTest extends Tester {
                 testDir + "breakcontinuetestsolution/expectedTracenodes.tr");
     }
 
+    @Test
+    void throwTest() throws IOException, InterruptedException {
+        process(testDir + "ThrowTest.java/resources",
+                testDir + "throwtestsolution/expectedTracenodes.tr");
+    }
+
     /**
      * Runs the program normally with the given input and compares the output to a
      * given expected result.

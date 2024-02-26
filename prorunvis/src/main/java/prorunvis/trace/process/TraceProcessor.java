@@ -169,9 +169,9 @@ public class TraceProcessor {
     private void createNewTraceNode() {
         //create a new node and remove the token from the stack
         int tokenValue = tokens.pop();
-        String name = String.valueOf(tokenValue);
+        String traceID = String.valueOf(tokenValue);
         int parentIndex = nodeList.indexOf(current);
-        TraceNode traceNode = new TraceNode(parentIndex, name);
+        TraceNode traceNode = new TraceNode(parentIndex, traceID);
 
         //add the node to the list and it's index as child of current
         nodeList.add(traceNode);
@@ -318,7 +318,7 @@ public class TraceProcessor {
             }
 
             if (jumpPackage != null && currentNode.getRange().get().contains(nextRangeToIgnore)) {
-                if (jumpPackage.getTarget().contains(ThrowStmt.class) && processChild()) {
+                if (jumpPackage.getTarget().contains(TryStmt.class) && processChild()) {
                     TraceNode tryNode = nodeList.get(current.getChildrenIndices().get(
                             current.getChildrenIndices().size() - 2));
                     nextRangeToIgnore = traceMap.get(Integer.valueOf(nodeList.get(Iterables.getLast(
@@ -328,10 +328,8 @@ public class TraceProcessor {
                     jumpPackage = null;
 
                 } else {return;}
-            }
-
-            //current range is a child, let it resolve and wait for the next child
-            if (currentNode.getRange().get().contains(nextRangeToIgnore)) {
+            } else if (currentNode.getRange().get().contains(nextRangeToIgnore)) {
+                //current range is a child, let it resolve and wait for the next child
                 nextRangeToIgnore = null;
                 if (!(traceMap.get(
                         Integer.valueOf(nodeList.get(Iterables.getLast(current.getChildrenIndices())).getTraceID()))
@@ -415,7 +413,7 @@ public class TraceProcessor {
                                           nodeList.indexOf(current));
             return true;
         } else if (currentNode instanceof ThrowStmt throwStmt) {
-            jumpPackage = new JumpPackage(List.of(ThrowStmt.class),
+            jumpPackage = new JumpPackage(List.of(TryStmt.class),
                                           new Range(throwStmt.getBegin().get(),
                                                     throwStmt.getBegin().get().right("throw".length())),
                                           nodeList.indexOf(current));
