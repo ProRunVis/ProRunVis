@@ -204,7 +204,8 @@ public class TraceProcessor {
                 current.addOutLink(jumpPackage.getJumpFrom());
             }
             if (nodeOfCurrent instanceof TryStmt) {
-                if (!tokens.empty() && nodeOfCurrent.getRange().get().contains(traceMap.get(tokens.peek()).getRange().get())) {
+                if (!tokens.empty()
+                        && nodeOfCurrent.getRange().get().contains(traceMap.get(tokens.peek()).getRange().get())) {
                     nodeList.get(jumpPackage.getStart()).addOutLink(jumpPackage.getJumpFrom());
                     nodeList.get(jumpPackage.getStart()).setOut(nodeList.size());
                     jumpPackage = null;
@@ -332,7 +333,8 @@ public class TraceProcessor {
                     Integer.valueOf(nodeList.get(Iterables.getLast(current.getChildrenIndices())).getTraceID()))
                     instanceof MethodDeclaration) && !current.getRanges().contains(currentNode.getRange().get())) {
                     current.addRange(currentNode.getRange().get());
-                } if (jumpPackage != null) {
+                }
+                if (jumpPackage != null) {
                     return;
                 }
                 skipNext = true;
