@@ -27,13 +27,8 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
     public TryStmt visit(final TryStmt stmt, final Map<Integer, Node> map) {
 
         int id = map.size();
-        TryStmt mappedStmt = stmt.clone();
+        createMapEntry(id, map, stmt);
         stmt.getTryBlock().addStatement(0, traceEntryCreator(id));
-
-        mappedStmt.removeFinallyBlock();
-        mappedStmt.setCatchClauses(new NodeList<>());
-        mappedStmt.setRange(new Range(stmt.getBegin().get(), stmt.getTryBlock().getEnd().get()));
-        createMapEntry(id, map, mappedStmt);
 
         for (CatchClause clause : stmt.getCatchClauses()) {
             id = map.size();

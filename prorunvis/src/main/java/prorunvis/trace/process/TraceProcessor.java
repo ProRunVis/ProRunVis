@@ -204,9 +204,9 @@ public class TraceProcessor {
                 current.addOutLink(jumpPackage.getJumpFrom());
             }
             if (nodeOfCurrent instanceof TryStmt) {
-                if (!tokens.empty() && traceMap.get(tokens.peek()) instanceof CatchClause) {
+                if (!tokens.empty() && nodeOfCurrent.getRange().get().contains(traceMap.get(tokens.peek()).getRange().get())) {
                     nodeList.get(jumpPackage.getStart()).addOutLink(jumpPackage.getJumpFrom());
-                    nodeList.get(jumpPackage.getStart()).setOut(nodeList.indexOf(current));
+                    nodeList.get(jumpPackage.getStart()).setOut(nodeList.size());
                     jumpPackage = null;
                 }
             } else {
@@ -465,6 +465,10 @@ public class TraceProcessor {
         //check if call is in a catch clause
         if (nodeOfCurrent instanceof NodeWithBlockStmt<?> catchClause) {
             block = catchClause.getBody();
+        }
+
+        if (nodeOfCurrent instanceof TryStmt tryStmt) {
+            block = tryStmt.getTryBlock();
         }
 
         return block;

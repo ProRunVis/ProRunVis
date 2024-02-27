@@ -12,7 +12,9 @@ public class ThrowTest2 {
             } else if (i == 2){
                 throw new IllegalStateException();
             }
+            l = 5;
         } catch (IndexOutOfBoundsException e) {}
         l = 10;
+        return;
     }
 }
