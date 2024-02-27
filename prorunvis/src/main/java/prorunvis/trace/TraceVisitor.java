@@ -1,7 +1,9 @@
 package prorunvis.trace;
 
+import com.github.javaparser.Range;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
@@ -25,8 +27,13 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
     public TryStmt visit(final TryStmt stmt, final Map<Integer, Node> map) {
 
         int id = map.size();
-        createMapEntry(id, map, stmt.getTryBlock());
+        TryStmt mappedStmt = stmt.clone();
         stmt.getTryBlock().addStatement(0, traceEntryCreator(id));
+
+        mappedStmt.removeFinallyBlock();
+        mappedStmt.setCatchClauses(new NodeList<>());
+        mappedStmt.setRange(new Range(stmt.getBegin().get(), stmt.getTryBlock().getEnd().get()));
+        createMapEntry(id, map, mappedStmt);
 
         for (CatchClause clause : stmt.getCatchClauses()) {
             id = map.size();

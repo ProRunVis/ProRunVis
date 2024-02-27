@@ -203,7 +203,15 @@ public class TraceProcessor {
             if (nodeOfCurrent instanceof MethodDeclaration) {
                 current.addOutLink(jumpPackage.getJumpFrom());
             }
-            jumpPackage = null;
+            if (nodeOfCurrent instanceof TryStmt) {
+                if (!tokens.empty() && traceMap.get(tokens.peek()) instanceof CatchClause) {
+                    nodeList.get(jumpPackage.getStart()).addOutLink(jumpPackage.getJumpFrom());
+                    nodeList.get(jumpPackage.getStart()).setOut(nodeList.indexOf(current));
+                    jumpPackage = null;
+                }
+            } else {
+                jumpPackage = null;
+            }
         }
 
         //if node was a loop, add the executed method calls from inside the loop to the
@@ -317,25 +325,17 @@ public class TraceProcessor {
                 markStatementsInChild(currentNode);
             }
 
-            if (jumpPackage != null && currentNode.getRange().get().contains(nextRangeToIgnore)) {
-                if (jumpPackage.getTarget().contains(TryStmt.class) && processChild()) {
-                    TraceNode tryNode = nodeList.get(current.getChildrenIndices().get(
-                            current.getChildrenIndices().size() - 2));
-                    nextRangeToIgnore = traceMap.get(Integer.valueOf(nodeList.get(Iterables.getLast(
-                            current.getChildrenIndices())).getTraceID())).getRange().get();
-                    nodeList.get(jumpPackage.getStart()).addOutLink(jumpPackage.getJumpFrom());
-                    nodeList.get(jumpPackage.getStart()).setOut(nodeList.indexOf(tryNode));
-                    jumpPackage = null;
-
-                } else {return;}
-            } else if (currentNode.getRange().get().contains(nextRangeToIgnore)) {
+            if (currentNode.getRange().get().contains(nextRangeToIgnore)) {
                 //current range is a child, let it resolve and wait for the next child
                 nextRangeToIgnore = null;
-                if (!(traceMap.get(
-                        Integer.valueOf(nodeList.get(Iterables.getLast(current.getChildrenIndices())).getTraceID()))
-                        instanceof MethodDeclaration)) {
-                    skipNext = true;
+                if ((traceMap.get(
+                    Integer.valueOf(nodeList.get(Iterables.getLast(current.getChildrenIndices())).getTraceID()))
+                    instanceof MethodDeclaration) && !current.getRanges().contains(currentNode.getRange().get())) {
+                    current.addRange(currentNode.getRange().get());
+                } if (jumpPackage != null) {
+                    return;
                 }
+                skipNext = true;
             } else {
                 //if the next child lies ahead, advance and save current range in ranges if
                 //the skip flag isn't set (i.e. the current range isn't a child)
