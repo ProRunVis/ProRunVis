@@ -15,3 +15,5 @@ build
 !/prorunvis/src/test/testfiles/traceprocessor/returntest/resources/in/
 /prorunvis/src/test/testfiles/traceprocessor/breakcontinuetest/*
 !/prorunvis/src/test/testfiles/traceprocessor/breakcontinuetest/resources/in/
+/prorunvis/src/test/testfiles/traceprocessor/throwtest/*
+!/prorunvis/src/test/testfiles/traceprocessor/throwtest/resources/in/

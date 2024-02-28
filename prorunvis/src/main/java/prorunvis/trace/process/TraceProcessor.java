@@ -169,9 +169,9 @@ public class TraceProcessor {
     private void createNewTraceNode() {
         //create a new node and remove the token from the stack
         int tokenValue = tokens.pop();
-        String name = String.valueOf(tokenValue);
+        String traceID = String.valueOf(tokenValue);
         int parentIndex = nodeList.indexOf(current);
-        TraceNode traceNode = new TraceNode(parentIndex, name);
+        TraceNode traceNode = new TraceNode(parentIndex, traceID);
 
         //add the node to the list and it's index as child of current
         nodeList.add(traceNode);
@@ -183,7 +183,6 @@ public class TraceProcessor {
         List<Range> tempRanges = methodCallRanges;
         nodeOfCurrent = traceMap.get(tokenValue);
         methodCallRanges = new ArrayList<>();
-
 
         fillRanges((getBlockStmt() == null)
                 ? nodeOfCurrent.getChildNodes()
@@ -204,7 +203,16 @@ public class TraceProcessor {
             if (nodeOfCurrent instanceof MethodDeclaration) {
                 current.addOutLink(jumpPackage.getJumpFrom());
             }
-            jumpPackage = null;
+            if (nodeOfCurrent instanceof TryStmt) {
+                if (!tokens.empty()
+                        && nodeOfCurrent.getRange().get().contains(traceMap.get(tokens.peek()).getRange().get())) {
+                    nodeList.get(jumpPackage.getStart()).addOutLink(jumpPackage.getJumpFrom());
+                    nodeList.get(jumpPackage.getStart()).setOut(nodeList.size());
+                    jumpPackage = null;
+                }
+            } else {
+                jumpPackage = null;
+            }
         }
 
         //if node was a loop, add the executed method calls from inside the loop to the
@@ -318,18 +326,18 @@ public class TraceProcessor {
                 markStatementsInChild(currentNode);
             }
 
-            if (jumpPackage != null && currentNode.getRange().get().contains(nextRangeToIgnore)) {
-                return;
-            }
-
-            //current range is a child, let it resolve and wait for the next child
             if (currentNode.getRange().get().contains(nextRangeToIgnore)) {
+                //current range is a child, let it resolve and wait for the next child
                 nextRangeToIgnore = null;
-                if (!(traceMap.get(
-                        Integer.valueOf(nodeList.get(Iterables.getLast(current.getChildrenIndices())).getTraceID()))
-                        instanceof MethodDeclaration)) {
-                    skipNext = true;
+                if ((traceMap.get(
+                    Integer.valueOf(nodeList.get(Iterables.getLast(current.getChildrenIndices())).getTraceID()))
+                    instanceof MethodDeclaration) && !current.getRanges().contains(currentNode.getRange().get())) {
+                    current.addRange(currentNode.getRange().get());
                 }
+                if (jumpPackage != null) {
+                    return;
+                }
+                skipNext = true;
             } else {
                 //if the next child lies ahead, advance and save current range in ranges if
                 //the skip flag isn't set (i.e. the current range isn't a child)
@@ -382,6 +390,8 @@ public class TraceProcessor {
             current.addRange(forEachStmt.getIterable().getRange().get());
         } else if (currentNode instanceof DoStmt doStmt) {
             current.addRange(doStmt.getCondition().getRange().get());
+        } else if (currentNode instanceof TryStmt tryStmt) {
+            tryStmt.getResources().forEach(resource -> current.addRange(resource.getRange().get()));
         }
     }
 
@@ -389,17 +399,26 @@ public class TraceProcessor {
         if (currentNode instanceof ReturnStmt returnStmt) {
             jumpPackage = new JumpPackage(List.of(MethodDeclaration.class),
                                           new Range(returnStmt.getBegin().get(),
-                                                    returnStmt.getBegin().get().right("return".length())));
+                                                    returnStmt.getBegin().get().right("return".length())),
+                                          nodeList.indexOf(current));
             return true;
         } else if (currentNode instanceof ContinueStmt continueStmt) {
             jumpPackage = new JumpPackage(List.of(ForStmt.class, WhileStmt.class,
                                                   DoStmt.class, ForEachStmt.class),
-                                                  continueStmt.getRange().get());
+                                          continueStmt.getRange().get(),
+                                          nodeList.indexOf(current));
             return true;
         } else if (currentNode instanceof BreakStmt breakStmt) {
             jumpPackage = new JumpPackage(List.of(ForStmt.class, WhileStmt.class,
                                                   DoStmt.class, ForEachStmt.class, SwitchEntry.class),
-                                                  breakStmt.getRange().get());
+                                          breakStmt.getRange().get(),
+                                          nodeList.indexOf(current));
+            return true;
+        } else if (currentNode instanceof ThrowStmt throwStmt) {
+            jumpPackage = new JumpPackage(List.of(TryStmt.class),
+                                          new Range(throwStmt.getBegin().get(),
+                                                    throwStmt.getBegin().get().right("throw".length())),
+                                          nodeList.indexOf(current));
             return true;
         }
         return false;
@@ -448,6 +467,10 @@ public class TraceProcessor {
         //check if call is in a catch clause
         if (nodeOfCurrent instanceof NodeWithBlockStmt<?> catchClause) {
             block = catchClause.getBody();
+        }
+
+        if (nodeOfCurrent instanceof TryStmt tryStmt) {
+            block = tryStmt.getTryBlock();
         }
 
         return block;

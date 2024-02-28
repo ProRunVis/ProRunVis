@@ -47,6 +47,12 @@ class TraceProcessorTest extends Tester {
                 testDir + "breakcontinuetestsolution/expectedTracenodes.tr");
     }
 
+    @Test
+    void throwTest() throws IOException, InterruptedException {
+        process(testDir + "throwtest/resources",
+                testDir + "throwtestsolution/expectedTracenodes.tr");
+    }
+
     /**
      * Runs the program normally with the given input and compares the output to a
      * given expected result.
@@ -60,7 +66,6 @@ class TraceProcessorTest extends Tester {
 
         ProjectRoot projectRoot = new SymbolSolverCollectionStrategy().
                 collect(Paths.get(resourcePath + "/in").toAbsolutePath());
-        System.out.println(resourcePath + "/in");
         List<CompilationUnit> cus = createCompilationUnits(projectRoot);
         File traceFile = new File(resourcePath + "/traceFile.tr");
 
