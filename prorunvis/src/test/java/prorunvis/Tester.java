@@ -24,6 +24,7 @@ import java.util.Objects;
 public class Tester {
     /**
      * Take in a {@link ProjectRoot} and create a List of its {@link CompilationUnit}s.
+     *
      * @param projectRoot the {@link ProjectRoot} to be processed.
      * @return the created List of {@link CompilationUnit}s.
      */
@@ -75,8 +76,10 @@ public class Tester {
          * @param o1 the first object to be compared.
          * @param o2 the second object to be compared.
          * @return 1 if o1 comes lexically before o2, -1 otherwise.
+         * If the paths are exactly identical the return value is 0, however
+         * this should never happen for any given combination of o1 and o2, where
+         * o1 and o2 aren't the exact same object.
          */
-        @SuppressWarnings("ComparatorMethodParameterNotUsed")
         @Override
         public int compare(final CompilationUnit o1, final CompilationUnit o2) {
             String name1 = o1.getStorage().get().getFileName();
@@ -96,6 +99,11 @@ public class Tester {
                         throw new RuntimeException(e);
                     }
                 }
+            }
+
+            //Return 0 for equivalent paths
+            if (name1.equals(name2)) {
+                return 0;
             }
 
             int length = Math.min(name1.length(), name2.length());
