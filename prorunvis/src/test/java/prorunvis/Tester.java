@@ -45,6 +45,11 @@ public class Tester {
         return cus;
     }
 
+    /**
+     * This comparator can be used to compare {@link CompilationUnit} objects.
+     * The ordering is determined by the lexical order of the corresponding file name, resulting
+     * in an absolute ordering.
+     */
     static class CompilationUnitComparator implements Comparator<CompilationUnit> {
 
         /**
@@ -53,6 +58,12 @@ public class Tester {
          */
         private final Path root;
 
+        /**
+         * Constructs an object of CompilationUnitComparator based on a root location.
+         *
+         * @param root The path to the root directory in which the files for the compilation
+         *             are contained.
+         */
         CompilationUnitComparator(final Path root) {
             this.root = root;
         }
