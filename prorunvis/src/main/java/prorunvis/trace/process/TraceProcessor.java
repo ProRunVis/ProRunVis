@@ -16,6 +16,7 @@ import prorunvis.trace.TraceNode;
 import prorunvis.trace.TracedCode;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -281,6 +282,7 @@ public class TraceProcessor {
                 methodCallRanges.add(expr.getRange().get());
                 nameOfCall = expr.getName();
                 createNewTraceNode();
+
                 //set link, out-link and index of out
                 int lastAddedIndex = current.getChildrenIndices()
                         .get(current.getChildrenIndices().size() - 1);
@@ -289,6 +291,15 @@ public class TraceProcessor {
                 //check if ranges are present, should always be true due to preprocessing
                 if (nameOfCall.getRange().isPresent()
                         && nameOfDeclaration.getRange().isPresent()) {
+
+                    Path targetPath = traceMap.get(Integer.valueOf(lastAdded.getTraceID()))
+                            .findCompilationUnit().get().getStorage().get().getPath();
+                    JumpLink link = new JumpLink(nameOfCall.getRange().get(), targetPath);
+
+                    Path sourcePath = traceMap.get(Integer.valueOf(nodeList.get(lastAdded.getParentIndex()).getTraceID()))
+                                    .findCompilationUnit().get().getStorage().get().getPath();
+                    JumpLink outLink = new JumpLink(nameOfDeclaration.getRange().get(), sourcePath);
+
                     lastAdded.setLink(nameOfCall.getRange().get());
                     lastAdded.addOutLink(nameOfDeclaration.getRange().get());
                 }
