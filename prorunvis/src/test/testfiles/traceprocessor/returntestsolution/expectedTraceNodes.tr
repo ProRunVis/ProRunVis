@@ -28,7 +28,7 @@ Iteration: null
 TraceID: 3
 Children: [4]
 Ranges: [(line 18,col 17)-(line 18,col 21), (line 27,col 13)-(line 27,col 22), (line 16,col 32)-(line 16,col 34)]
-Link: null
+Link: (line 16,col 9)-(line 16,col 12)
 Outlink: []
 Out: 0
 Parent: 2
@@ -46,7 +46,7 @@ Iteration: null
 TraceID: 3
 Children: [6]
 Ranges: [(line 18,col 17)-(line 18,col 21), (line 27,col 13)-(line 27,col 22), (line 16,col 32)-(line 16,col 34)]
-Link: null
+Link: (line 16,col 9)-(line 16,col 12)
 Outlink: []
 Out: 0
 Parent: 2
@@ -64,7 +64,7 @@ Iteration: null
 TraceID: 3
 Children: [8]
 Ranges: [(line 18,col 17)-(line 18,col 21), (line 27,col 13)-(line 27,col 22), (line 16,col 32)-(line 16,col 34)]
-Link: null
+Link: (line 16,col 9)-(line 16,col 12)
 Outlink: []
 Out: 0
 Parent: 2
@@ -82,7 +82,7 @@ Iteration: null
 TraceID: 3
 Children: [10]
 Ranges: [(line 18,col 17)-(line 18,col 21)]
-Link: null
+Link: (line 16,col 9)-(line 16,col 12)
 Outlink: []
 Out: 0
 Parent: 2
