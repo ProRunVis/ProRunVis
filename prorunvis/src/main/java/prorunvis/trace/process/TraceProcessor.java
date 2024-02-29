@@ -201,13 +201,19 @@ public class TraceProcessor {
         }
 
         if (jumpPackage != null && jumpPackage.isTarget(nodeOfCurrent)) {
+            //construct the out link
+            Path targetPath = nodeOfCurrent.findCompilationUnit().get()
+                    .getStorage().get().getPath();
+            JumpLink outLink = new JumpLink(jumpPackage.getJumpFrom(), targetPath);
+
             if (nodeOfCurrent instanceof MethodDeclaration) {
-                current.addOutLink(jumpPackage.getJumpFrom());
+
+                current.addOutLink(outLink);
             }
             if (nodeOfCurrent instanceof TryStmt) {
                 if (!tokens.empty()
                         && nodeOfCurrent.getRange().get().contains(traceMap.get(tokens.peek()).getRange().get())) {
-                    nodeList.get(jumpPackage.getStart()).addOutLink(jumpPackage.getJumpFrom());
+                    nodeList.get(jumpPackage.getStart()).addOutLink(outLink);
                     nodeList.get(jumpPackage.getStart()).setOut(nodeList.size());
                     jumpPackage = null;
                 }
@@ -300,8 +306,8 @@ public class TraceProcessor {
                                     .findCompilationUnit().get().getStorage().get().getPath();
                     JumpLink outLink = new JumpLink(nameOfDeclaration.getRange().get(), sourcePath);
 
-                    lastAdded.setLink(nameOfCall.getRange().get());
-                    lastAdded.addOutLink(nameOfDeclaration.getRange().get());
+                    lastAdded.setLink(link);
+                    lastAdded.addOutLink(outLink);
                 }
                 lastAdded.setOut(lastAdded.getParentIndex());
 
