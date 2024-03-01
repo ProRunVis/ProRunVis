@@ -225,10 +225,14 @@ public class TraceProcessor {
                 current.setLink(new Range(nodeOfCurrent.getRange().get().begin,
                         new Position(nodeOfCurrent.getRange().get().begin.line,
                                 nodeOfCurrent.getRange().get().begin.column + ("for").length())));
-            } else if (nodeOfCurrent instanceof WhileStmt || nodeOfCurrent instanceof DoStmt) {
+            } else if (nodeOfCurrent instanceof WhileStmt) {
                 current.setLink(new Range(nodeOfCurrent.getRange().get().begin,
                         new Position(nodeOfCurrent.getRange().get().begin.line,
                                 nodeOfCurrent.getRange().get().begin.column + ("while").length())));
+            } else if (nodeOfCurrent instanceof DoStmt) {
+                current.setLink(new Range(nodeOfCurrent.getRange().get().begin,
+                        new Position(nodeOfCurrent.getRange().get().begin.line,
+                                nodeOfCurrent.getRange().get().begin.column + ("do").length())));
             }
         }
 
