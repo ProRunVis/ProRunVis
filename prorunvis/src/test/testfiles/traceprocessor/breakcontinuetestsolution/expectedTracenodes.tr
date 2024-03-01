@@ -9,7 +9,7 @@ Iteration: null
 
 TraceID: 0
 Children: [2, 4, 5, 6, 8]
-Ranges: [(line 5,col 9)-(line 5,col 18), (line 7,col 15)-(line 7,col 20)]
+Ranges: [(line 5,col 9)-(line 5,col 18), (line 7,col 15)-(line 7,col 20), (line 20,col 17)-(line 20,col 17)]
 Link: null
 Outlink: []
 Out: 0
@@ -19,7 +19,7 @@ Iteration: null
 TraceID: 1
 Children: [3]
 Ranges: [(line 8,col 17)-(line 8,col 26)]
-Link: (line 7,col 9)-(line 7,col 14)
+Link: ((line 7,col 9)-(line 7,col 13),null)
 Outlink: []
 Out: 0
 Parent: 1
@@ -37,7 +37,7 @@ Iteration: null
 TraceID: 1
 Children: []
 Ranges: [(line 8,col 17)-(line 8,col 26), (line 12,col 13)-(line 12,col 16), (line 13,col 17)-(line 13,col 26), (line 17,col 13)-(line 17,col 16)]
-Link: (line 7,col 9)-(line 7,col 14)
+Link: ((line 7,col 9)-(line 7,col 13),null)
 Outlink: []
 Out: 0
 Parent: 1
@@ -46,7 +46,7 @@ Iteration: 2
 TraceID: 1
 Children: []
 Ranges: [(line 8,col 17)-(line 8,col 26), (line 12,col 13)-(line 12,col 16), (line 13,col 17)-(line 13,col 26), (line 17,col 13)-(line 17,col 16)]
-Link: (line 7,col 9)-(line 7,col 14)
+Link: ((line 7,col 9)-(line 7,col 13),null)
 Outlink: []
 Out: 0
 Parent: 1
@@ -55,7 +55,7 @@ Iteration: 3
 TraceID: 1
 Children: [7]
 Ranges: [(line 8,col 17)-(line 8,col 26), (line 12,col 13)-(line 12,col 16), (line 13,col 17)-(line 13,col 26)]
-Link: (line 7,col 9)-(line 7,col 14)
+Link: ((line 7,col 9)-(line 7,col 13),null)
 Outlink: []
 Out: 0
 Parent: 1
