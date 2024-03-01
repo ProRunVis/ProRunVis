@@ -1,6 +1,5 @@
 package prorunvis.trace.process;
 
-import com.github.javaparser.Position;
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
@@ -221,19 +220,16 @@ public class TraceProcessor {
         //deep search
         if (nodeOfCurrent instanceof NodeWithBody<?>) {
             tempRanges.addAll(methodCallRanges);
-            if (nodeOfCurrent instanceof ForStmt || nodeOfCurrent instanceof ForEachStmt) {
-                current.setLink(new Range(nodeOfCurrent.getRange().get().begin,
-                        new Position(nodeOfCurrent.getRange().get().begin.line,
-                                nodeOfCurrent.getRange().get().begin.column + ("for").length())));
-            } else if (nodeOfCurrent instanceof WhileStmt) {
-                current.setLink(new Range(nodeOfCurrent.getRange().get().begin,
-                        new Position(nodeOfCurrent.getRange().get().begin.line,
-                                nodeOfCurrent.getRange().get().begin.column + ("while").length())));
+            String loopLink;
+            if (nodeOfCurrent instanceof WhileStmt) {
+                loopLink = "while";
             } else if (nodeOfCurrent instanceof DoStmt) {
-                current.setLink(new Range(nodeOfCurrent.getRange().get().begin,
-                        new Position(nodeOfCurrent.getRange().get().begin.line,
-                                nodeOfCurrent.getRange().get().begin.column + ("do").length())));
+                loopLink = "do";
+            } else {
+                loopLink = "for";
             }
+            current.setLink(new Range(nodeOfCurrent.getBegin().get(),
+                    nodeOfCurrent.getBegin().get().right(loopLink.length())));
         }
 
         //restore state
