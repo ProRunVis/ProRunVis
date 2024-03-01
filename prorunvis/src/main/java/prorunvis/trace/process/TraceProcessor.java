@@ -220,6 +220,16 @@ public class TraceProcessor {
         //deep search
         if (nodeOfCurrent instanceof NodeWithBody<?>) {
             tempRanges.addAll(methodCallRanges);
+            String loopLink;
+            if (nodeOfCurrent instanceof WhileStmt) {
+                loopLink = "while";
+            } else if (nodeOfCurrent instanceof DoStmt) {
+                loopLink = "do";
+            } else {
+                loopLink = "for";
+            }
+            current.setLink(new Range(nodeOfCurrent.getBegin().get(),
+                    nodeOfCurrent.getBegin().get().right(loopLink.length())));
         }
 
         //restore state
