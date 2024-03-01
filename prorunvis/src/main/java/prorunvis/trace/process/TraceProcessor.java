@@ -244,8 +244,10 @@ public class TraceProcessor {
             } else {
                 loopLink = "for";
             }
-            current.setLink(new Range(nodeOfCurrent.getBegin().get(),
-                    nodeOfCurrent.getBegin().get().right(loopLink.length() - 1)));
+            Range linkRange = new Range(nodeOfCurrent.getBegin().get(),
+                    nodeOfCurrent.getBegin().get().right(loopLink.length() - 1));
+            JumpLink link = new JumpLink(linkRange, null);
+            current.setLink(link);
         }
 
         //restore state
