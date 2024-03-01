@@ -392,6 +392,8 @@ public class TraceProcessor {
             current.addRange(doStmt.getCondition().getRange().get());
         } else if (currentNode instanceof TryStmt tryStmt) {
             tryStmt.getResources().forEach(resource -> current.addRange(resource.getRange().get()));
+        } else if (currentNode instanceof SwitchStmt switchStmt) {
+            current.addRange(switchStmt.getSelector().getRange().get());
         }
     }
 
