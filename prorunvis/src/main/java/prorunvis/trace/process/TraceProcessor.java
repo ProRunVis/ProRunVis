@@ -229,7 +229,7 @@ public class TraceProcessor {
                 loopLink = "for";
             }
             current.setLink(new Range(nodeOfCurrent.getBegin().get(),
-                    nodeOfCurrent.getBegin().get().right(loopLink.length())));
+                    nodeOfCurrent.getBegin().get().right(loopLink.length() - 1)));
         }
 
         //restore state
