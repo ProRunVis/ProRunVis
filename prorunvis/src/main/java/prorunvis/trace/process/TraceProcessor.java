@@ -212,8 +212,6 @@ public class TraceProcessor {
             //construct the out link
             Path targetPath = nodeOfCurrent.findCompilationUnit().get()
                     .getStorage().get().getPath();
-            System.out.println(targetPath);
-            System.out.println(rootDir);
             targetPath = rootDir.relativize(targetPath);
             JumpLink outLink = new JumpLink(jumpPackage.getJumpFrom(), targetPath);
 
