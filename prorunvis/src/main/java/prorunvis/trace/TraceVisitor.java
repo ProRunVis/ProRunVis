@@ -6,6 +6,7 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
 
+import java.nio.file.Paths;
 import java.util.Map;
 
 
@@ -18,8 +19,9 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
     /**
      * Add a trace call to every try statement. Trace call is added as the first line of the try statement body and to
      * the first line of the body of every corresponding catch statement.
+     *
      * @param stmt the statement to be instrumented
-     * @param map maps the current ID to this node
+     * @param map  maps the current ID to this node
      * @return the modified statement
      */
     public TryStmt visit(final TryStmt stmt, final Map<Integer, Node> map) {
@@ -46,8 +48,9 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
 
     /**
      * Add a trace call to every do loop body. Trace call is added as the first line of the loop body.
+     *
      * @param stmt the statement to be instrumented
-     * @param map maps the current ID to this node
+     * @param map  maps the current ID to this node
      * @return the modified statement
      */
     @Override
@@ -62,8 +65,9 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
 
     /**
      * Add a trace call to every for loop body. Trace call is added as the first line of the loop body.
+     *
      * @param stmt the statement to be instrumented
-     * @param map maps the current ID to this node
+     * @param map  maps the current ID to this node
      * @return the modified statement
      */
     @Override
@@ -78,9 +82,10 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
 
     /**
      * Add a trace call to every then and else block of an if-statement. Trace call is added as the first line of
-     * the if body and else body if present.
+     * the if-body and else-body if present.
+     *
      * @param stmt the statement to be instrumented
-     * @param map maps the current ID to this node
+     * @param map  maps the current ID to this node
      * @return the modified statement
      */
     @Override
@@ -109,8 +114,9 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
     /**
      * Add a trace call to every method declaration body (if not a forward declaration).
      * Trace call is added as the first line of the method body.
+     *
      * @param decl the declaration to be instrumented
-     * @param map maps the current ID to this node
+     * @param map  maps the current ID to this node
      * @return the modified method
      */
     @Override
@@ -129,8 +135,9 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
     /**
      * Add a trace call to every case in a switch statement.
      * Trace call is added as the first line of the body of every case in the switch statement.
+     *
      * @param stmt the statement to be instrumented
-     * @param map maps the current ID to this node
+     * @param map  maps the current ID to this node
      * @return the modified statement
      */
     @Override
@@ -148,8 +155,9 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
 
     /**
      * Add a trace call to every while loop body. Trace call is added as the first line of the loop body.
+     *
      * @param stmt the statement to be instrumented
-     * @param map maps the current ID to this node
+     * @param map  maps the current ID to this node
      * @return the modified statement
      */
     @Override
@@ -166,6 +174,7 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
     /**
      * A private method which collects the characteristics of the given statement into a new statement
      * containing the trace call, which can then be added to the original code.
+     *
      * @param id the current id to be printed
      * @return a statement containing the call to the trace methode with the characteristics of the given statement
      */
@@ -175,11 +184,14 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
 
     /**
      * Creates a map entry with a clone of the given node while preserving its range.
-     * @param id the key to map
-     * @param map the map in which to put the entry
+     *
+     * @param id   the key to map
+     * @param map  the map in which to put the entry
      * @param node the value to map
      */
     private void createMapEntry(final int id, final Map<Integer, Node> map, final Node node) {
-        map.put(id, node.clone().setRange(node.getRange().get()));
+        Node entry = node.clone().setRange(node.getRange().get());
+        entry.setParentNode(node.findCompilationUnit().get().clone());
+        map.put(id, entry);
     }
 }

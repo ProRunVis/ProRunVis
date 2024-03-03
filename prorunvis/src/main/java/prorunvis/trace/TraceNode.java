@@ -1,6 +1,7 @@
 package prorunvis.trace;
 
 import com.github.javaparser.Range;
+import prorunvis.trace.process.JumpLink;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,12 +33,12 @@ public class TraceNode {
     /**
      * The Range of code which serves as link to access this node.
      */
-    private Range link;
+    private JumpLink link;
 
     /**
      * The Ranges of code which serve as links to access the out node.
      */
-    private List<Range> outLinks;
+    private List<JumpLink> outLinks;
 
     /**
      * The TraceNode to select upon following the link in outLink.
@@ -139,7 +140,7 @@ public class TraceNode {
      * @param newLink The Range of code to be used as link for
      *                this node.
      */
-    public void setLink(final Range newLink) {
+    public void setLink(final JumpLink newLink) {
         this.link = newLink;
     }
 
@@ -148,7 +149,7 @@ public class TraceNode {
      * @return The range of code which serves as outLink
      *         of this node.
      */
-    public List<Range> getOutLinks() {
+    public List<JumpLink> getOutLinks() {
         return this.outLinks;
     }
 
@@ -157,7 +158,7 @@ public class TraceNode {
      * @param newOutLink The Range of code to be used as outLink
      *                   for this node.
      */
-    public void addOutLink(final Range newOutLink) {
+    public void addOutLink(final JumpLink newOutLink) {
         this.outLinks.add(newOutLink);
     }
 

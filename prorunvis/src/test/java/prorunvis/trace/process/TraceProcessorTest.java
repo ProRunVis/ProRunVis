@@ -11,6 +11,7 @@ import prorunvis.instrument.Instrumenter;
 import prorunvis.preprocess.Preprocessor;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -64,8 +65,9 @@ class TraceProcessorTest extends Tester {
     private void process(final String resourcePath, final String solutionPath)
             throws IOException, InterruptedException {
 
+        Path rootDir = Paths.get(resourcePath+"/in");
         ProjectRoot projectRoot = new SymbolSolverCollectionStrategy().
-                collect(Paths.get(resourcePath + "/in").toAbsolutePath());
+                collect(rootDir.toAbsolutePath());
         List<CompilationUnit> cus = createCompilationUnits(projectRoot);
         File traceFile = new File(resourcePath + "/traceFile.tr");
 
@@ -79,7 +81,7 @@ class TraceProcessorTest extends Tester {
 
         Instrumenter.safeInstrumented(projectRoot, resourcePath + "/out/instrumented");
         CompileAndRun.run(cus, resourcePath + "/out/instrumented", resourcePath + "/out/compiled");
-        TraceProcessor processor = new TraceProcessor(map, traceFile.getPath());
+        TraceProcessor processor = new TraceProcessor(map, traceFile.getPath(), rootDir);
         processor.start();
 
         BufferedReader solutionReader = new BufferedReader(new FileReader(solutionPath));

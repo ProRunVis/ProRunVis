@@ -16,6 +16,7 @@ import prorunvis.trace.TraceNode;
 import prorunvis.trace.TracedCode;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -77,6 +78,12 @@ public class TraceProcessor {
     private JumpPackage jumpPackage;
 
     /**
+     * A Path pointing to the root directory of the original project
+     * that can be used to get the relative paths of the files to each other.
+     */
+    private final Path rootDir;
+
+    /**
      * Constructs a TraceProcessor for the given parameters.
      *
      * @param trace         A map containing all the possible trace-id's
@@ -84,12 +91,14 @@ public class TraceProcessor {
      * @param traceFilePath A string representation of the path to
      *                      the trace file containing the actual
      *                      recorded trace.
+     * @param rootDir       The path to the root directory of the original project.
      */
-    public TraceProcessor(final Map<Integer, Node> trace, final String traceFilePath) {
+    public TraceProcessor(final Map<Integer, Node> trace, final String traceFilePath, final Path rootDir) {
         this.nodeList = new LinkedList<>();
         this.traceMap = trace;
         this.scanner = new Scanner(traceFilePath);
         this.methodCallRanges = new ArrayList<>();
+        this.rootDir = rootDir.toAbsolutePath();
     }
 
     /**
@@ -200,13 +209,20 @@ public class TraceProcessor {
         }
 
         if (jumpPackage != null && jumpPackage.isTarget(nodeOfCurrent)) {
+            //construct the out link
+            Path targetPath = nodeOfCurrent.findCompilationUnit().get()
+                    .getStorage().get().getPath();
+            targetPath = rootDir.relativize(targetPath);
+            JumpLink outLink = new JumpLink(jumpPackage.getJumpFrom(), targetPath);
+
             if (nodeOfCurrent instanceof MethodDeclaration) {
-                current.addOutLink(jumpPackage.getJumpFrom());
+
+                current.addOutLink(outLink);
             }
             if (nodeOfCurrent instanceof TryStmt) {
                 if (!tokens.empty()
                         && nodeOfCurrent.getRange().get().contains(traceMap.get(tokens.peek()).getRange().get())) {
-                    nodeList.get(jumpPackage.getStart()).addOutLink(jumpPackage.getJumpFrom());
+                    nodeList.get(jumpPackage.getStart()).addOutLink(outLink);
                     nodeList.get(jumpPackage.getStart()).setOut(nodeList.size());
                     jumpPackage = null;
                 }
@@ -228,8 +244,10 @@ public class TraceProcessor {
             } else {
                 loopLink = "for";
             }
-            current.setLink(new Range(nodeOfCurrent.getBegin().get(),
-                    nodeOfCurrent.getBegin().get().right(loopLink.length() - 1)));
+            Range linkRange = new Range(nodeOfCurrent.getBegin().get(),
+                    nodeOfCurrent.getBegin().get().right(loopLink.length() - 1));
+            JumpLink link = new JumpLink(linkRange, null);
+            current.setLink(link);
         }
 
         //restore state
@@ -265,7 +283,7 @@ public class TraceProcessor {
                         && !(statement instanceof BreakStmt)
                         && !(statement instanceof ContinueStmt)) {
                     List<MethodCallExpr> foundCalls = statement.findAll(MethodCallExpr.class,
-                                                                        Node.TreeTraversal.POSTORDER);
+                            Node.TreeTraversal.POSTORDER);
                     if (!foundCalls.isEmpty()) {
                         callExprs.addAll(foundCalls);
                     }
@@ -281,6 +299,7 @@ public class TraceProcessor {
                 methodCallRanges.add(expr.getRange().get());
                 nameOfCall = expr.getName();
                 createNewTraceNode();
+
                 //set link, out-link and index of out
                 int lastAddedIndex = current.getChildrenIndices()
                         .get(current.getChildrenIndices().size() - 1);
@@ -289,8 +308,19 @@ public class TraceProcessor {
                 //check if ranges are present, should always be true due to preprocessing
                 if (nameOfCall.getRange().isPresent()
                         && nameOfDeclaration.getRange().isPresent()) {
-                    lastAdded.setLink(nameOfCall.getRange().get());
-                    lastAdded.addOutLink(nameOfDeclaration.getRange().get());
+
+                    Path targetPath = traceMap.get(Integer.valueOf(lastAdded.getTraceID()))
+                            .findCompilationUnit().get().getStorage().get().getPath();
+                    targetPath = rootDir.relativize(targetPath);
+                    JumpLink link = new JumpLink(nameOfCall.getRange().get(), targetPath);
+
+                    Path sourcePath = traceMap.get(Integer.valueOf(nodeList.get(lastAdded.getParentIndex()).getTraceID()))
+                            .findCompilationUnit().get().getStorage().get().getPath();
+                    sourcePath = rootDir.relativize(sourcePath);
+                    JumpLink outLink = new JumpLink(nameOfDeclaration.getRange().get(), sourcePath);
+
+                    lastAdded.setLink(link);
+                    lastAdded.addOutLink(outLink);
                 }
                 lastAdded.setOut(lastAdded.getParentIndex());
 
@@ -314,7 +344,7 @@ public class TraceProcessor {
 
         boolean skipNext = false;
 
-        for (int i = 0; i < childrenOfCurrent.size();) {
+        for (int i = 0; i < childrenOfCurrent.size(); ) {
 
             Node currentNode = childrenOfCurrent.get(i);
 
@@ -328,7 +358,7 @@ public class TraceProcessor {
                                     : traceMap.get(Integer.parseInt(nextChild.getTraceID())).getRange().get();
                 } else {
                     nextRangeToIgnore = new Range(nodeOfCurrent.getRange().get().end.nextLine(),
-                                                  nodeOfCurrent.getRange().get().end.nextLine());
+                            nodeOfCurrent.getRange().get().end.nextLine());
                 }
             }
 
@@ -340,8 +370,8 @@ public class TraceProcessor {
                 //current range is a child, let it resolve and wait for the next child
                 nextRangeToIgnore = null;
                 if ((traceMap.get(
-                    Integer.valueOf(nodeList.get(Iterables.getLast(current.getChildrenIndices())).getTraceID()))
-                    instanceof MethodDeclaration) && !current.getRanges().contains(currentNode.getRange().get())) {
+                        Integer.valueOf(nodeList.get(Iterables.getLast(current.getChildrenIndices())).getTraceID()))
+                        instanceof MethodDeclaration) && !current.getRanges().contains(currentNode.getRange().get())) {
                     current.addRange(currentNode.getRange().get());
                 }
                 if (jumpPackage != null) {
@@ -355,7 +385,7 @@ public class TraceProcessor {
                     skipNext = false;
                 } else {
                     if (!current.getRanges().contains(currentNode.getRange().get())
-                        && !Stream.of(TracedCode.values()).map(TracedCode::getType)
+                            && !Stream.of(TracedCode.values()).map(TracedCode::getType)
                             .toList().contains(currentNode.getClass())) {
                         current.addRange(currentNode.getRange().get());
 
@@ -370,7 +400,7 @@ public class TraceProcessor {
 
         //if the current node is a forStmt, and it has iteration steps, add them to the ranges
         if (nodeOfCurrent instanceof ForStmt forStmt) {
-            for (boolean cont = true; cont;) {
+            for (boolean cont = true; cont; ) {
                 cont = processChild();
             }
             forStmt.getUpdate().forEach(node -> current.addRange(node.getRange().get()));
@@ -410,27 +440,27 @@ public class TraceProcessor {
     private boolean checkForJumpOut(final Node currentNode) {
         if (currentNode instanceof ReturnStmt returnStmt) {
             jumpPackage = new JumpPackage(List.of(MethodDeclaration.class),
-                                          new Range(returnStmt.getBegin().get(),
-                                                    returnStmt.getBegin().get().right("return".length())),
-                                          nodeList.indexOf(current));
+                    new Range(returnStmt.getBegin().get(),
+                            returnStmt.getBegin().get().right("return".length())),
+                    nodeList.indexOf(current));
             return true;
         } else if (currentNode instanceof ContinueStmt continueStmt) {
             jumpPackage = new JumpPackage(List.of(ForStmt.class, WhileStmt.class,
-                                                  DoStmt.class, ForEachStmt.class),
-                                          continueStmt.getRange().get(),
-                                          nodeList.indexOf(current));
+                    DoStmt.class, ForEachStmt.class),
+                    continueStmt.getRange().get(),
+                    nodeList.indexOf(current));
             return true;
         } else if (currentNode instanceof BreakStmt breakStmt) {
             jumpPackage = new JumpPackage(List.of(ForStmt.class, WhileStmt.class,
-                                                  DoStmt.class, ForEachStmt.class, SwitchEntry.class),
-                                          breakStmt.getRange().get(),
-                                          nodeList.indexOf(current));
+                    DoStmt.class, ForEachStmt.class, SwitchEntry.class),
+                    breakStmt.getRange().get(),
+                    nodeList.indexOf(current));
             return true;
         } else if (currentNode instanceof ThrowStmt throwStmt) {
             jumpPackage = new JumpPackage(List.of(TryStmt.class),
-                                          new Range(throwStmt.getBegin().get(),
-                                                    throwStmt.getBegin().get().right("throw".length())),
-                                          nodeList.indexOf(current));
+                    new Range(throwStmt.getBegin().get(),
+                            throwStmt.getBegin().get().right("throw".length())),
+                    nodeList.indexOf(current));
             return true;
         }
         return false;
@@ -521,17 +551,18 @@ public class TraceProcessor {
 
     /**
      * Converts a given {@link TraceNode} to a string.
+     *
      * @param builder used to convert the {@link TraceNode}
-     * @param node The {@link TraceNode} to be converted
+     * @param node    The {@link TraceNode} to be converted
      */
     private void nodeToString(final StringBuilder builder, final TraceNode node) {
         builder.append("TraceID: ").append(node.getTraceID())
-               .append("\nChildren: ").append(node.getChildrenIndices())
-               .append("\nRanges: ").append(node.getRanges())
-               .append("\nLink: ").append(node.getLink())
-               .append("\nOutlink: ").append(node.getOutLinks())
-               .append("\nOut: ").append(node.getOutIndex())
-               .append("\nParent: ").append(node.getParentIndex())
-               .append("\nIteration: ").append(node.getIteration());
+                .append("\nChildren: ").append(node.getChildrenIndices())
+                .append("\nRanges: ").append(node.getRanges())
+                .append("\nLink: ").append(node.getLink())
+                .append("\nOutlink: ").append(node.getOutLinks())
+                .append("\nOut: ").append(node.getOutIndex())
+                .append("\nParent: ").append(node.getParentIndex())
+                .append("\nIteration: ").append(node.getIteration());
     }
 }

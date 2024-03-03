@@ -17,3 +17,6 @@ build
 !/prorunvis/src/test/testfiles/traceprocessor/breakcontinuetest/resources/in/
 /prorunvis/src/test/testfiles/traceprocessor/throwtest/*
 !/prorunvis/src/test/testfiles/traceprocessor/throwtest/resources/in/
+
+# Ignore temporary folders for testing
+resources
