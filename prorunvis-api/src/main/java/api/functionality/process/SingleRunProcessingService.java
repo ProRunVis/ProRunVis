@@ -53,6 +53,9 @@ public class SingleRunProcessingService implements ProcessingService{
         ProjectRoot projectRoot =
                 new SymbolSolverCollectionStrategy().collect(inLocation);
 
+        traceFile = new File(outLocation.toString() +"/Trace.tr");
+        Instrumenter.setupTrace(traceFile);
+
         //run parser and collect compilation units
         cus = new ArrayList<>();
         projectRoot.getSourceRoots().forEach(sr -> {
@@ -72,8 +75,6 @@ public class SingleRunProcessingService implements ProcessingService{
     }
 
     public void trace(){
-        traceFile = new File(outLocation.toString() +"/Trace.tr");
-        Instrumenter.setupTrace(traceFile);
         try {
             CompileAndRun.run(cus,outLocation.toString() +"/instrumented",
                 outLocation.toString() +"/compiled");
