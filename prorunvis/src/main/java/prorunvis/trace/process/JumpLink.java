@@ -2,7 +2,6 @@ package prorunvis.trace.process;
 
 import com.github.javaparser.Range;
 
-import java.nio.file.Path;
 
 /**
  * This class is used for links in {@link prorunvis.trace.TraceNode} objects, providing
