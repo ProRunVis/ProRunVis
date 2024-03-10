@@ -213,7 +213,7 @@ public class TraceProcessor {
             Path targetPath = nodeOfCurrent.findCompilationUnit().get()
                     .getStorage().get().getPath();
             targetPath = rootDir.relativize(targetPath);
-            JumpLink outLink = new JumpLink(jumpPackage.getJumpFrom(), targetPath);
+            JumpLink outLink = new JumpLink(jumpPackage.getJumpFrom(), targetPath.toString());
 
             if (nodeOfCurrent instanceof MethodDeclaration) {
 
@@ -312,12 +312,14 @@ public class TraceProcessor {
                     Path targetPath = traceMap.get(Integer.valueOf(lastAdded.getTraceID()))
                             .findCompilationUnit().get().getStorage().get().getPath();
                     targetPath = rootDir.relativize(targetPath);
-                    JumpLink link = new JumpLink(nameOfCall.getRange().get(), targetPath);
+                    JumpLink link = new JumpLink(nameOfCall.getRange().get(), targetPath.toString());
 
-                    Path sourcePath = traceMap.get(Integer.valueOf(nodeList.get(lastAdded.getParentIndex()).getTraceID()))
-                            .findCompilationUnit().get().getStorage().get().getPath();
+                    Path sourcePath = traceMap.get(Integer.valueOf(nodeList.get(lastAdded.getParentIndex())
+                                    .getTraceID()))
+                                    .findCompilationUnit().get().getStorage().get().getPath();
+
                     sourcePath = rootDir.relativize(sourcePath);
-                    JumpLink outLink = new JumpLink(nameOfDeclaration.getRange().get(), sourcePath);
+                    JumpLink outLink = new JumpLink(nameOfDeclaration.getRange().get(), sourcePath.toString());
 
                     lastAdded.setLink(link);
                     lastAdded.addOutLink(outLink);
@@ -344,7 +346,7 @@ public class TraceProcessor {
 
         boolean skipNext = false;
 
-        for (int i = 0; i < childrenOfCurrent.size(); ) {
+        for (int i = 0; i < childrenOfCurrent.size();) {
 
             Node currentNode = childrenOfCurrent.get(i);
 
@@ -400,7 +402,7 @@ public class TraceProcessor {
 
         //if the current node is a forStmt, and it has iteration steps, add them to the ranges
         if (nodeOfCurrent instanceof ForStmt forStmt) {
-            for (boolean cont = true; cont; ) {
+            for (boolean cont = true; cont;) {
                 cont = processChild();
             }
             forStmt.getUpdate().forEach(node -> current.addRange(node.getRange().get()));
