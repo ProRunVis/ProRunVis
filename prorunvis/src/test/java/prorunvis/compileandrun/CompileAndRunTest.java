@@ -71,7 +71,7 @@ class CompileAndRunTest extends Tester {
         File resultTrace = new File(compiledOutPath + "/TraceFile.tr");
         Instrumenter.setupTrace(resultTrace);
         cusResult.forEach(cu -> Instrumenter.run(cu, map));
-        Instrumenter.safeInstrumented(testProjectRoot, compiledOutPath);
+        Instrumenter.saveInstrumented(testProjectRoot, compiledOutPath);
         File solutionTrace = new File(solutionPath + "/TraceFile.tr");
 
 

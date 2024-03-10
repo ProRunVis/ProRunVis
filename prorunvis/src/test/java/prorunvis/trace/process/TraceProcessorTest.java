@@ -79,7 +79,7 @@ class TraceProcessorTest extends Tester {
             Instrumenter.run(cu, map);
         });
 
-        Instrumenter.safeInstrumented(projectRoot, resourcePath + "/out/instrumented");
+        Instrumenter.saveInstrumented(projectRoot, resourcePath + "/out/instrumented");
         CompileAndRun.run(cus, resourcePath + "/out/instrumented", resourcePath + "/out/compiled");
         TraceProcessor processor = new TraceProcessor(map, traceFile.getPath(), rootDir);
         processor.start();
