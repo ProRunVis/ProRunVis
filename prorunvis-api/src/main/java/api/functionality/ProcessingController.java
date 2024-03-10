@@ -13,28 +13,26 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class ProcessingController {
 
     /**
-     * The storage service used by this controller.
+     * The processing service used by this controller.
      */
-    private final StorageService storageService;
-
     private final ProcessingService processingService;
 
     /**
-     * @param storageService The storage service which this controller
-     *                       will use for handling file storage for
-     *                       uploaded files.
+     * @param processingService The processing service which this controller
+     *                          will use for handling the processing of the
+     *                          given input.
      */
     @Autowired
-    public ProcessingController(final StorageService storageService, final ProcessingService processingService) {
-        this.storageService = storageService;
+    public ProcessingController(final ProcessingService processingService) {
         this.processingService = processingService;
     }
 
 
     @GetMapping("api/process")
     @ResponseBody
-    public String getProcessingData(){
-        if(!processingService.isReady()) throw new ProcessingException("No Data has been uploaded!");
+    public String getProcessingData() {
+        if (!processingService.isReady()) throw new ProcessingException("No Data has been uploaded!");
+        processingService.instrument();
         processingService.trace();
         processingService.process();
         return processingService.toJSON();
