@@ -11,7 +11,9 @@ public class StorageProperties {
     /**
      * The location where newly uploaded files will be stored.
      */
-    private String location = "resources/in";
+    private String inLocation = "resources/in";
+
+    private String outLocation = "resources/out";
 
     /**
      * Gets the {@code location} field of this property object.
@@ -19,7 +21,7 @@ public class StorageProperties {
      *         location.
      */
     public String getLocation() {
-        return this.location;
+        return this.inLocation;
     }
 
     /**
@@ -27,6 +29,14 @@ public class StorageProperties {
      * @param location The String to set as location.
      */
     public void setLocation(final String location) {
-        this.location = location;
+        this.inLocation = location;
+    }
+
+    public String getOutLocation(){
+        return this.outLocation;
+    }
+
+    public void setOutLocation(final String location){
+        this.outLocation = location;
     }
 }
