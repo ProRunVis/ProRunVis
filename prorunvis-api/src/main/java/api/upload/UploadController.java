@@ -7,8 +7,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.Part;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
 
@@ -66,5 +68,16 @@ public class UploadController {
         } catch (IOException | ServletException e) {
             throw new StorageException("One or more files from the directory could not be stored.");
         }
+    }
+
+    @ExceptionHandler(StorageException.class)
+    @ResponseBody
+    public String handleException(StorageException e){
+        String error = e.getMessage()+"\n";
+        if(e.getCause() != null){
+            error += "\n"+e.getCause()+"\n";
+        }
+
+        return error;
     }
 }

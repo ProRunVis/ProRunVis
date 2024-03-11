@@ -78,8 +78,8 @@ public class SingleRunProcessingService implements ProcessingService{
         try {
             CompileAndRun.run(cus,outLocation.toString() +"/instrumented",
                 outLocation.toString() +"/compiled");
-        }catch(IOException | InterruptedException e){
-            throw  new ProcessingException("An error occurred during compiling and executing the program.", e);
+        }catch(IOException | InterruptedException | ArrayIndexOutOfBoundsException e){
+            throw new ProcessingException(e.getMessage());
         }
     }
 

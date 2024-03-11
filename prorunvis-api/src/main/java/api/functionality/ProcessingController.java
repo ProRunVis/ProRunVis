@@ -6,6 +6,7 @@ import api.functionality.process.ProcessingService;
 import api.upload.storage.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -30,11 +31,22 @@ public class ProcessingController {
 
     @GetMapping("api/process")
     @ResponseBody
-    public String getProcessingData() {
+    public String getProcessingData() throws ProcessingException{
         if (!processingService.isReady()) throw new ProcessingException("No Data has been uploaded!");
         processingService.instrument();
         processingService.trace();
         processingService.process();
         return processingService.toJSON();
+    }
+
+    @ExceptionHandler(ProcessingException.class)
+    @ResponseBody
+    public String handleException(ProcessingException e){
+        String error = e.getMessage()+"\n";
+        if(e.getCause() != null){
+            error += "\n"+e.getCause()+"\n";
+        }
+
+        return error;
     }
 }
