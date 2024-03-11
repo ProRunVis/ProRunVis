@@ -53,8 +53,7 @@ public final class CompileAndRun {
         String compileError = new BufferedReader(new InputStreamReader(compileProc.getErrorStream()))
                 .lines().collect(Collectors.joining("\n"));
         if (!compileError.isEmpty()) {
-            System.out.println("An error occurred during compilation:\n" + compileError);
-            return;
+            throw new InterruptedException("An error occurred during compilation.\n"+compileError);
         }
 
         String rootPath = new StringBuilder(String.valueOf(path)).delete(
@@ -66,7 +65,7 @@ public final class CompileAndRun {
         String runError = new BufferedReader(new InputStreamReader(runProc.getErrorStream())).lines().
                 collect(Collectors.joining("\n"));
         if (!runError.isEmpty()) {
-            System.out.println("There was an error running the input code:\n" + runError);
+            throw new InterruptedException("There was an error running the input code.\n" + runError);
         }
     }
 }
