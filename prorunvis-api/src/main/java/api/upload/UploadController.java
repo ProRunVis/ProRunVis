@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * A {@link Controller} used for handling files, that are uploaded
@@ -61,12 +62,11 @@ public class UploadController {
     public void handleUpload(final HttpServletRequest request) {
 
         try {
-
             for (Part part : request.getParts()) {
                 storageService.store(part);
             }
         } catch (IOException | ServletException e) {
-            throw new StorageException("One or more files from the directory could not be stored.");
+            throw new StorageException("No files for upload selected.");
         }
     }
 
