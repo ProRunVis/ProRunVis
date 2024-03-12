@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * A {@link Controller} used for handling files, that are uploaded
@@ -43,7 +42,7 @@ public class UploadController {
      * index.html on the default path "/".
      *
      * @return A String representing the file to be hosted, which can
-     *         be used by the thymeleaf plugin
+     * be used by the thymeleaf plugin
      */
     @GetMapping("/")
     public String getIndex() {
@@ -70,12 +69,20 @@ public class UploadController {
         }
     }
 
+    /**
+     * An ExceptionHandler for handling {@link StorageException}s.
+     * If an exceptions occurs, this handler returns a string representation of
+     * the message and cause.
+     *
+     * @param e The thrown exception.
+     * @return The message and cause of the exception as String.
+     */
     @ExceptionHandler(StorageException.class)
     @ResponseBody
-    public String handleException(StorageException e){
-        String error = e.getMessage()+"\n";
-        if(e.getCause() != null){
-            error += "\n"+e.getCause()+"\n";
+    public String handleException(final StorageException e) {
+        String error = e.getMessage() + "\n";
+        if (e.getCause() != null) {
+            error += "\n" + e.getCause() + "\n";
         }
 
         return error;

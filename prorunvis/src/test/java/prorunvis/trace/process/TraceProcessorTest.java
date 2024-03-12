@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class TraceProcessorTest extends Tester {
@@ -28,6 +29,7 @@ class TraceProcessorTest extends Tester {
 
     /**
      * Tests to test the functionality of traced returns.
+     *
      * @throws IOException
      * @throws InterruptedException
      */
@@ -39,6 +41,7 @@ class TraceProcessorTest extends Tester {
 
     /**
      * Tests to test the functionality of trace breaks and continues.
+     *
      * @throws IOException
      * @throws InterruptedException
      */
@@ -57,6 +60,7 @@ class TraceProcessorTest extends Tester {
     /**
      * Runs the program normally with the given input and compares the output to a
      * given expected result.
+     *
      * @param resourcePath the path in the testdirectory to the test-inputs to use
      * @param solutionPath the path in the testdirectory to the expected solution
      * @throws IOException
@@ -65,7 +69,7 @@ class TraceProcessorTest extends Tester {
     private void process(final String resourcePath, final String solutionPath)
             throws IOException, InterruptedException {
 
-        Path rootDir = Paths.get(resourcePath+"/in");
+        Path rootDir = Paths.get(resourcePath + "/in");
         ProjectRoot projectRoot = new SymbolSolverCollectionStrategy().
                 collect(rootDir.toAbsolutePath());
         List<CompilationUnit> cus = createCompilationUnits(projectRoot);
@@ -82,7 +86,8 @@ class TraceProcessorTest extends Tester {
         Instrumenter.saveInstrumented(projectRoot, resourcePath + "/out/instrumented");
         try {
             CompileAndRun.run(cus, resourcePath + "/out/instrumented", resourcePath + "/out/compiled");
-        }catch(InterruptedException ignored){}
+        } catch (InterruptedException ignored) {
+        }
 
         TraceProcessor processor = new TraceProcessor(map, traceFile.getPath(), rootDir);
         processor.start();
