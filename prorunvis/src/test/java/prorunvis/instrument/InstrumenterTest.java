@@ -73,7 +73,7 @@ class InstrumenterTest extends Tester {
         cusResult.forEach(cu -> Instrumenter.run(cu, map));
 
         //Safe result
-        Instrumenter.safeInstrumented(testProjectRoot, instrumentedOutPath);
+        Instrumenter.saveInstrumented(testProjectRoot, instrumentedOutPath);
 
         //Evaluate result
         assertIterableEquals(cusSolution, cusResult);

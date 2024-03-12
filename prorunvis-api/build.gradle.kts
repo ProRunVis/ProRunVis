@@ -22,6 +22,7 @@ dependencies {
     //commons
     implementation("commons-io:commons-io:2.15.1")
 
+    implementation(project(":prorunvis"))
     //frontend submodule
     implementation(project(":frontend"))
 }

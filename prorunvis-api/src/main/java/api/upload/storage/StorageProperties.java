@@ -11,22 +11,48 @@ public class StorageProperties {
     /**
      * The location where newly uploaded files will be stored.
      */
-    private String location = "resources/in";
+    private String inLocation = "resources/in";
 
     /**
-     * Gets the {@code location} field of this property object.
+     * The location to use as storage for temporary output files.
+     */
+    private String outLocation = "resources/out";
+
+    /**
+     * Gets the {@code inLocation} field of this property object.
+     *
      * @return The String representing the relative path to the
-     *         location.
+     * inLocation.
      */
     public String getLocation() {
-        return this.location;
+        return this.inLocation;
     }
 
     /**
-     * Sets the {@code location} field of this property element.
-     * @param location The String to set as location.
+     * Sets the {@code inLocation} field of this property element.
+     *
+     * @param location The String to set as inLocation.
      */
     public void setLocation(final String location) {
-        this.location = location;
+        this.inLocation = location;
+    }
+
+    /**
+     * Gets the {@code outLocation} field of this property object.
+     *
+     * @return The String representing the relative path to the
+     * outLocation.
+     */
+    public String getOutLocation() {
+        return this.outLocation;
+    }
+
+    /**
+     * Sets the {@code outLocation} field of this property element.
+     *
+     * @param location The String to set as outLocation.
+     */
+    public void setOutLocation(final String location) {
+        this.outLocation = location;
     }
 }

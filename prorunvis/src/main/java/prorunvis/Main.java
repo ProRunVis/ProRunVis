@@ -71,7 +71,7 @@ public final class Main {
             Preprocessor.run(cu);
             Instrumenter.run(cu, map);
         });
-        Instrumenter.safeInstrumented(projectRoot, "resources/out/instrumented");
+        Instrumenter.saveInstrumented(projectRoot, "resources/out/instrumented");
 
         if (!instrumentOnly) {
             CompileAndRun.run(cus, "resources/out/instrumented", "resources/out/compiled");

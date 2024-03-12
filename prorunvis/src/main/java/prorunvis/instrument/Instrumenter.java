@@ -50,7 +50,7 @@ public final class Instrumenter {
      * @param pr Project root of the project to be saved
      * @param instrumentedOutPath relative path where project is to be saved to
      */
-    public static void safeInstrumented(final ProjectRoot pr, final String instrumentedOutPath) {
+    public static void saveInstrumented(final ProjectRoot pr, final String instrumentedOutPath) {
         File instrumented = new File(instrumentedOutPath);
         instrumented.mkdir();
         pr.getSourceRoots().forEach(sr -> sr.saveAll(Paths.get(instrumentedOutPath)));

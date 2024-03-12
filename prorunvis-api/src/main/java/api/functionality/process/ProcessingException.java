@@ -1,22 +1,19 @@
-package api.upload.storage;
+package api.functionality.process;
 
-/**
- * Signals that a storage exception has occurred.
- */
-public class StorageException extends RuntimeException {
+public class ProcessingException extends RuntimeException {
 
     /**
-     * Constructs a StorageException with the specified detail message.
+     * Constructs a ProcessingException with the specified detail message.
      *
      * @param message The detail message (which is saved for later retrieval
      *                by the {@link #getMessage()} method)
      */
-    public StorageException(final String message) {
+    public ProcessingException(final String message) {
         super(message);
     }
 
     /**
-     * Constructs a StorageException with the specified detail message
+     * Constructs a ProcessingException with the specified detail message
      * and cause.
      *
      * @param message The detail message (which is saved for later retrieval
@@ -25,7 +22,7 @@ public class StorageException extends RuntimeException {
      *                {@link #getCause()} method).  (A null value is permitted,
      *                and indicates that the cause is nonexistent or unknown.)
      */
-    public StorageException(final String message, final Throwable cause) {
+    public ProcessingException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }

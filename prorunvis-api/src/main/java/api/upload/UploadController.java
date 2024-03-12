@@ -7,8 +7,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.Part;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
 
@@ -40,7 +42,7 @@ public class UploadController {
      * index.html on the default path "/".
      *
      * @return A String representing the file to be hosted, which can
-     *         be used by the thymeleaf plugin
+     * be used by the thymeleaf plugin
      */
     @GetMapping("/")
     public String getIndex() {
@@ -59,12 +61,30 @@ public class UploadController {
     public void handleUpload(final HttpServletRequest request) {
 
         try {
-
             for (Part part : request.getParts()) {
                 storageService.store(part);
             }
         } catch (IOException | ServletException e) {
-            throw new StorageException("One or more files from the directory could not be stored.");
+            throw new StorageException("No files for upload selected.");
         }
+    }
+
+    /**
+     * An ExceptionHandler for handling {@link StorageException}s.
+     * If an exceptions occurs, this handler returns a string representation of
+     * the message and cause.
+     *
+     * @param e The thrown exception.
+     * @return The message and cause of the exception as String.
+     */
+    @ExceptionHandler(StorageException.class)
+    @ResponseBody
+    public String handleException(final StorageException e) {
+        String error = e.getMessage() + "\n";
+        if (e.getCause() != null) {
+            error += "\n" + e.getCause() + "\n";
+        }
+
+        return error;
     }
 }
