@@ -1,5 +1,6 @@
 package prorunvis.trace.process;
 
+import com.github.javaparser.Position;
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
@@ -131,6 +132,10 @@ public class TraceProcessor {
 
         //add the first node as child to root
         createNewTraceNode();
+
+        nodeList.get(1).setLink(new JumpLink(new Range(new Position(0, 0), new Position(0, 0)),
+                traceMap.get(Integer.parseInt(nodeList.get(1).getTraceID())).findCompilationUnit().get()
+                        .getStorage().get().getFileName()));
     }
 
     /**
@@ -419,6 +424,15 @@ public class TraceProcessor {
     private void markStatementsInChild(final Node currentNode) {
         if (currentNode instanceof IfStmt ifStmt) {
             current.addRange(ifStmt.getCondition().getRange().get());
+            for (IfStmt innerIf = new IfStmt();
+                 ifStmt.getElseStmt().isPresent() && ifStmt.getElseStmt().get().isIfStmt();
+                 innerIf = ifStmt.getElseStmt().get().asIfStmt()) {
+                current.addRange(innerIf.getCondition().getRange().get());
+                if (!tokens.empty()
+                    && innerIf.getThenStmt().getRange().get().contains(traceMap.get(tokens.peek()).getRange().get())) {
+                    return;
+                }
+            }
         } else if (currentNode instanceof ForStmt forStmt) {
             List<Node> inits = new ArrayList<>(forStmt.getInitialization());
             inits.forEach(init -> current.addRange(init.getRange().get()));
