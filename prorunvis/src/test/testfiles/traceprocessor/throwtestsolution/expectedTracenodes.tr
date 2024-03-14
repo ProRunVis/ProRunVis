@@ -10,7 +10,7 @@ Iteration: null
 TraceID: 6
 Children: [2, 6, 10]
 Ranges: [(line 16,col 9)-(line 16,col 26)]
-Link: null
+Link: ((line 0,col 0)-(line 0,col 0),ThrowTest.java)
 Outlink: []
 Out: 0
 Parent: 0
