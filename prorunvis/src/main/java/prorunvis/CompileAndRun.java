@@ -65,7 +65,7 @@ public final class CompileAndRun {
         String runError = new BufferedReader(new InputStreamReader(runProc.getErrorStream())).lines().
                 collect(Collectors.joining("\n"));
         if (!runError.isEmpty()) {
-            throw new InterruptedException("There was an error running the input code.\n" + runError);
+            System.out.println("There was an error running the input code.\n" + runError);
         }
     }
 }

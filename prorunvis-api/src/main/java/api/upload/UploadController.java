@@ -58,6 +58,7 @@ public class UploadController {
      *                provided {@link #storageService}.
      */
     @PostMapping("/api/upload")
+    @ResponseBody
     public void handleUpload(final HttpServletRequest request) {
 
         try {
