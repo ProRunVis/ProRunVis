@@ -38,15 +38,15 @@ public class FileSystemStorageService implements StorageService {
         }
 
         this.rootLocation = Paths.get(properties.getLocation());
-        if(properties.getOutLocation().trim().isEmpty()){
+        if (properties.getOutLocation().trim().isEmpty()) {
             this.outLocation = Paths.get("resources/out");
-        } else{
+        } else {
             this.outLocation = Paths.get(properties.getOutLocation());
         }
     }
 
     /**
-     * Initializes the storage service by creating the folders
+     * Initializes the storage service by creating the folders.
      * specified by <code>rootLocation</code> and <code>outLocation</code>
      */
     @Override

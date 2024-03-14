@@ -2,7 +2,6 @@ package prorunvis.trace.process;
 
 import com.github.javaparser.Position;
 import com.github.javaparser.Range;
-import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -14,7 +13,6 @@ import com.github.javaparser.ast.nodeTypes.NodeWithOptionalBlockStmt;
 import com.github.javaparser.ast.nodeTypes.NodeWithBlockStmt;
 import com.github.javaparser.ast.stmt.*;
 import com.google.common.collect.Iterables;
-import com.ibm.jvm.Trace;
 import prorunvis.trace.TraceNode;
 import prorunvis.trace.TracedCode;
 
@@ -142,8 +140,8 @@ public class TraceProcessor {
                 .getStorage().get().getPath();
         String file = rootDir.relativize(path).toString();
         JumpLink link = new JumpLink(new Range(
-                new Position(0,0),
-                new Position(0,0)),
+                new Position(0, 0),
+                new Position(0, 0)),
                 file
         );
         main.setLink(link);
