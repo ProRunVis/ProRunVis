@@ -10,7 +10,7 @@ Iteration: null
 TraceID: 0
 Children: [2, 11]
 Ranges: [(line 5,col 9)-(line 5,col 14), (line 6,col 9)-(line 6,col 18), (line 7,col 9)-(line 7,col 18), (line 8,col 13)-(line 8,col 18)]
-Link: null
+Link: ((line 0,col 0)-(line 0,col 0),ReturnTest.java)
 Outlink: [((line 8,col 21)-(line 8,col 27),ReturnTest.java)]
 Out: 0
 Parent: 0

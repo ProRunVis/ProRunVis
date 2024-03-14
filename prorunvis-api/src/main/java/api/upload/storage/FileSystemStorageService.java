@@ -25,6 +25,11 @@ public class FileSystemStorageService implements StorageService {
     private final Path rootLocation;
 
     /**
+     * Path to out location.
+     */
+    private final Path outLocation;
+
+    /**
      * @param properties The storage properties for the storage service
      */
     public FileSystemStorageService(final StorageProperties properties) {
@@ -33,16 +38,22 @@ public class FileSystemStorageService implements StorageService {
         }
 
         this.rootLocation = Paths.get(properties.getLocation());
+        if (properties.getOutLocation().trim().isEmpty()) {
+            this.outLocation = Paths.get("resources/out");
+        } else {
+            this.outLocation = Paths.get(properties.getOutLocation());
+        }
     }
 
     /**
-     * Initializes the storage service by creating the folder
-     * specified by <code>rootLocation</code>.
+     * Initializes the storage service by creating the folders.
+     * specified by <code>rootLocation</code> and <code>outLocation</code>
      */
     @Override
     public void init() {
         try {
             Files.createDirectories(rootLocation);
+            Files.createDirectories(outLocation);
         } catch (IOException e) {
             throw new StorageException("Could not create directory.", e);
         }
@@ -75,10 +86,12 @@ public class FileSystemStorageService implements StorageService {
 
     /**
      * Recursively deletes all files in the directory specified by
-     * <code>rootLocation</code> using {@link FileSystemUtils}.
+     * <code>rootLocation</code> and <code>outLocation</code>
+     * using {@link FileSystemUtils}.
      */
     @Override
     public void deleteAll() {
         FileSystemUtils.deleteRecursively(rootLocation.toFile());
+        FileSystemUtils.deleteRecursively(outLocation.toFile());
     }
 }

@@ -58,7 +58,11 @@ public class UploadController {
      *                provided {@link #storageService}.
      */
     @PostMapping("/api/upload")
+    @ResponseBody
     public void handleUpload(final HttpServletRequest request) {
+
+        //ensure that no other files are contained within in/out
+        storageService.deleteAll();
 
         try {
             for (Part part : request.getParts()) {
