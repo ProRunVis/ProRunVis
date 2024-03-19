@@ -131,6 +131,8 @@ public final class SingleRunProcessingService implements ProcessingService {
     @Override
     public String toJSON() {
         Gson gson = new Gson();
-        return gson.toJson(nodes);
+        String response = gson.toJson(nodes);
+        //replace \\ from windows paths with / for webkit directory
+        return response.replace("\\\\", "/");
     }
 }
