@@ -133,9 +133,18 @@ public class TraceProcessor {
         //add the first node as child to root
         createNewTraceNode();
 
-        nodeList.get(1).setLink(new JumpLink(new Range(new Position(0, 0), new Position(0, 0)),
-                traceMap.get(Integer.parseInt(nodeList.get(1).getTraceID())).findCompilationUnit().get()
-                        .getStorage().get().getFileName()));
+        //add a default link to the first trace node for identifying the entry point
+        TraceNode main = nodeList.get(current.getChildrenIndices().get(0));
+        Node mainNode = traceMap.get(Integer.parseInt(main.getTraceID()));
+        Path path = mainNode.findCompilationUnit().get()
+                .getStorage().get().getPath();
+        String file = rootDir.relativize(path).toString();
+        JumpLink link = new JumpLink(new Range(
+                new Position(0, 0),
+                new Position(0, 0)),
+                file
+        );
+        main.setLink(link);
     }
 
     /**
@@ -370,7 +379,7 @@ public class TraceProcessor {
             }
 
             if (!skipNext) {
-                markStatementsInChild(currentNode);
+                markStatementsInChild(currentNode, nextRangeToIgnore);
             }
 
             if (currentNode.getRange().get().contains(nextRangeToIgnore)) {
@@ -421,16 +430,16 @@ public class TraceProcessor {
      *
      * @param currentNode Node currently being analyzed
      */
-    private void markStatementsInChild(final Node currentNode) {
+    private void markStatementsInChild(final Node currentNode, Range ifCheck) {
         if (currentNode instanceof IfStmt ifStmt) {
             current.addRange(ifStmt.getCondition().getRange().get());
-            for (IfStmt innerIf = new IfStmt();
-                 ifStmt.getElseStmt().isPresent() && ifStmt.getElseStmt().get().isIfStmt();
-                 innerIf = ifStmt.getElseStmt().get().asIfStmt()) {
-                current.addRange(innerIf.getCondition().getRange().get());
-                if (!tokens.empty()
-                    && innerIf.getThenStmt().getRange().get().contains(traceMap.get(tokens.peek()).getRange().get())) {
-                    return;
+            if (ifStmt.getRange().get().contains(ifCheck)) {
+                while (ifStmt.getElseStmt().isPresent() && ifStmt.getElseStmt().get().isIfStmt() &&
+                       !ifStmt.getElseStmt().get().asIfStmt().getThenStmt().getRange().get().isAfter(ifCheck)) {
+                    ifStmt = ifStmt.getElseStmt().get().asIfStmt();
+                    if (ifStmt.getCondition().getRange().isPresent()) {
+                        current.addRange(ifStmt.getCondition().getRange().get());
+                    }
                 }
             }
         } else if (currentNode instanceof ForStmt forStmt) {

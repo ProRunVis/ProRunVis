@@ -77,6 +77,7 @@ public final class Main {
             CompileAndRun.run(cus, "resources/out/instrumented", "resources/out/compiled");
             TraceProcessor processor = new TraceProcessor(map, traceFile.getPath(), Paths.get(args[0]));
             processor.start();
+            System.out.println(processor);
         }
     }
 }

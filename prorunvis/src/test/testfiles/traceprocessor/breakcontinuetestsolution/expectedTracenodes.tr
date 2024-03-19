@@ -10,7 +10,7 @@ Iteration: null
 TraceID: 0
 Children: [2, 4, 5, 6, 8]
 Ranges: [(line 5,col 9)-(line 5,col 18), (line 7,col 15)-(line 7,col 20), (line 20,col 17)-(line 20,col 17)]
-Link: null
+Link: ((line 0,col 0)-(line 0,col 0),BreakContinueTest.java)
 Outlink: []
 Out: 0
 Parent: 0
