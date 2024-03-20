@@ -50,6 +50,8 @@ public class Scanner {
             //reverse the list before pushing on the stack to get the correct order
             Collections.reverse(temp);
             temp.forEach(x -> tokens.push(Integer.parseInt(x)));
+            //close reader
+            reader.close();
         } catch (FileNotFoundException e) {
             throw new IOException("Could not read file.", e);
         }
