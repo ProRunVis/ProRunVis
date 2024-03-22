@@ -1,6 +1,5 @@
 package prorunvis.trace.process;
 
-import com.github.javaparser.Position;
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
@@ -139,11 +138,8 @@ public class TraceProcessor {
         Path path = mainNode.findCompilationUnit().get()
                 .getStorage().get().getPath();
         String file = rootDir.relativize(path).toString();
-        JumpLink link = new JumpLink(new Range(
-                new Position(0, 0),
-                new Position(0, 0)),
-                file
-        );
+        Range range = ((MethodDeclaration) mainNode).getName().getRange().get();
+        JumpLink link = new JumpLink(range, file);
         main.setLink(link);
     }
 
