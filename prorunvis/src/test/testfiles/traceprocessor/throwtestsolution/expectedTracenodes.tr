@@ -72,7 +72,7 @@ Iteration: null
 
 TraceID: 1
 Children: [9]
-Ranges: [(line 8,col 17)-(line 8,col 22)]
+Ranges: [(line 8,col 17)-(line 8,col 22), (line 10,col 24)-(line 10,col 29)]
 Link: null
 Outlink: []
 Out: 0
@@ -108,7 +108,7 @@ Iteration: null
 
 TraceID: 1
 Children: [13]
-Ranges: [(line 8,col 17)-(line 8,col 22)]
+Ranges: [(line 8,col 17)-(line 8,col 22), (line 10,col 24)-(line 10,col 29), (line 12,col 24)-(line 12,col 29)]
 Link: null
 Outlink: []
 Out: 0
