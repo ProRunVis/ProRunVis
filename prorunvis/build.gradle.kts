@@ -19,15 +19,12 @@ repositories {
 dependencies {
     // Use JUnit Jupiter for testing.
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.3")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     implementation("com.google.code.gson:gson:2.10.1")
-
-    // This dependency is used by the application.
     implementation("com.google.guava:guava:32.1.1-jre")
+    implementation("commons-cli:commons-cli:1.4")
 
     // Dependency for the java parser used in this project
     implementation ("com.github.javaparser:javaparser-symbol-solver-core:3.25.6")
@@ -42,7 +39,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass.set("prorunvis.Main")
+    mainClass.set("prorunvis.ProRunVis")
 }
 
 tasks.named<Test>("test") {
@@ -52,6 +49,7 @@ tasks.named<Test>("test") {
 
 tasks.jar{
     archiveBaseName.set("prorunvis")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE;
     manifest{
         attributes["Main-Class"] = application.mainClass
     }
