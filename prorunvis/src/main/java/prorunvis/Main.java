@@ -35,7 +35,11 @@ public final class Main {
      * @throws IOException
      * @throws InterruptedException
      */
-    public static void main(final String[]args) throws IOException, InterruptedException {
+    public static void main(final String[]args) {
+
+        boolean instrumentOnly = false;
+        String inputPath;
+        String outputPath = "resources/out";
 
         Options options = new Options();
         options.addOption(Option.builder("h")
@@ -66,11 +70,15 @@ public final class Main {
             if(positionalArgs.length < 1){
                 throw new ParseException("Input file is required.");
             }
-            
-            String inputPath = positionalArgs[0];
-            String outputPath = "resources/out";
+
+            inputPath = positionalArgs[0];
+            outputPath = "resources/out";
+
             if(cmd.hasOption("o")){
                 outputPath = cmd.getOptionValue("o");
+            }
+            if(cmd.hasOption("i")){
+                instrumentOnly = true;
             }
             if(!Paths.get(inputPath).toFile().exists() ||
                !Paths.get(inputPath).toFile().isDirectory()){
@@ -84,30 +92,15 @@ public final class Main {
         } catch (ParseException e){
             System.err.println(e.getMessage());
             formatter.printHelp("java -jar <prorunvis.jar> <input_path> [options] \n\nWith options: \n", options);
+            System.exit(1);
         }
 
-        /*
-        boolean instrumentOnly = false;
 
-        //check if an argument of sufficient length has been provided
-        if (args.length == 0) {
-            System.out.println("Missing input");
-            return;
-        }
-        if (args.length == 2 && args[1].equals("-i")) {
-            instrumentOnly = true;
-        }
-        if (!Files.isDirectory(Paths.get(args[0]))) {
-            System.out.println("Folder not found");
-            return;
-        }
-
-         */
 
         StaticJavaParser.getParserConfiguration().setSymbolResolver(new JavaSymbolSolver(new CombinedTypeSolver()));
         ProjectRoot projectRoot =
                 new SymbolSolverCollectionStrategy().collect(Paths.get(args[0]).toAbsolutePath());
-        File traceFile = new File("resources/TraceFile.tr");
+        File traceFile = new File(outputPath+"/Trace.tr");
 
         List<CompilationUnit> cus = new ArrayList<>();
         projectRoot.getSourceRoots().forEach(sr -> {
@@ -124,13 +117,16 @@ public final class Main {
             Preprocessor.run(cu);
             Instrumenter.run(cu, map);
         });
-        Instrumenter.saveInstrumented(projectRoot, "resources/out/instrumented");
+        Instrumenter.saveInstrumented(projectRoot, outputPath+"/instrumented");
 
         if (!instrumentOnly) {
-            CompileAndRun.run(cus, "resources/out/instrumented", "resources/out/compiled");
-            TraceProcessor processor = new TraceProcessor(map, traceFile.getPath(), Paths.get(args[0]));
-            processor.start();
-            System.out.println(processor);
+            try {
+                CompileAndRun.run(cus, outputPath + "/instrumented", outputPath + "/compiled");
+                TraceProcessor processor = new TraceProcessor(map, traceFile.getPath(), Paths.get(args[0]));
+                processor.start();
+            }catch (IOException | InterruptedException e) {
+                System.err.println(e.getMessage());
+            }
         }
 
     }
