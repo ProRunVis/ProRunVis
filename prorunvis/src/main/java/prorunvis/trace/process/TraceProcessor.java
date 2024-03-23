@@ -168,7 +168,9 @@ public class TraceProcessor {
 
             //check if the next traced node is located within the node
             //of current
-            if (range.isPresent() && currentRange.isPresent()) {
+            if (range.isPresent() && currentRange.isPresent()
+                && node.findCompilationUnit().get().getStorage().get().getFileName().equals(
+                   nodeOfCurrent.findCompilationUnit().get().getStorage().get().getFileName())) {
                 if (currentRange.get().strictlyContains(range.get())) {
                     //create the new trace node
                     createNewTraceNode();
