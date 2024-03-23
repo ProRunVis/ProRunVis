@@ -24,11 +24,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class Main {
+public final class ProRunVis {
     /**
      * Private constructor for main is never called.
      */
-    private Main() {
+    private ProRunVis() {
     }
 
     /**

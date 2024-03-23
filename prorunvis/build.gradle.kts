@@ -39,7 +39,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass.set("prorunvis.Main")
+    mainClass.set("prorunvis.ProRunVis")
 }
 
 tasks.named<Test>("test") {
