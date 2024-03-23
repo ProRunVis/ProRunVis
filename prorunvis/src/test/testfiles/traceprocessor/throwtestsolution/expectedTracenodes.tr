@@ -9,7 +9,7 @@ Iteration: null
 
 TraceID: 6
 Children: [2, 6, 10]
-Ranges: [(line 16,col 9)-(line 16,col 26)]
+Ranges: [(line 15,col 9)-(line 15,col 26)]
 Link: ((line 3,col 24)-(line 3,col 27),ThrowTest.java)
 Outlink: []
 Out: 0
@@ -19,7 +19,7 @@ Iteration: null
 TraceID: 0
 Children: [3, 5]
 Ranges: [(line 5,col 9)-(line 5,col 22), (line 17,col 9)-(line 17,col 15), (line 18,col 9)-(line 18,col 15)]
-Link: ((line 16,col 20)-(line 16,col 22),ThrowTest2.java)
+Link: ((line 15,col 20)-(line 15,col 22),ThrowTest2.java)
 Outlink: [((line 18,col 9)-(line 18,col 15),ThrowTest2.java), ((line 3,col 24)-(line 3,col 26),ThrowTest.java)]
 Out: 1
 Parent: 1
@@ -54,7 +54,7 @@ Iteration: null
 
 TraceID: 7
 Children: [7]
-Ranges: [(line 18,col 12)-(line 18,col 29)]
+Ranges: [(line 17,col 12)-(line 17,col 29)]
 Link: null
 Outlink: []
 Out: 0
@@ -64,7 +64,7 @@ Iteration: null
 TraceID: 0
 Children: [8]
 Ranges: [(line 5,col 9)-(line 5,col 22)]
-Link: ((line 18,col 23)-(line 18,col 25),ThrowTest2.java)
+Link: ((line 17,col 23)-(line 17,col 25),ThrowTest2.java)
 Outlink: [((line 3,col 24)-(line 3,col 26),ThrowTest.java)]
 Out: 6
 Parent: 6
@@ -90,7 +90,7 @@ Iteration: null
 
 TraceID: 8
 Children: [11]
-Ranges: [(line 20,col 13)-(line 20,col 30)]
+Ranges: [(line 19,col 13)-(line 19,col 30)]
 Link: null
 Outlink: []
 Out: 0
@@ -100,7 +100,7 @@ Iteration: null
 TraceID: 0
 Children: [12]
 Ranges: [(line 5,col 9)-(line 5,col 22)]
-Link: ((line 20,col 24)-(line 20,col 26),ThrowTest2.java)
+Link: ((line 19,col 24)-(line 19,col 26),ThrowTest2.java)
 Outlink: [((line 3,col 24)-(line 3,col 26),ThrowTest.java)]
 Out: 10
 Parent: 10
