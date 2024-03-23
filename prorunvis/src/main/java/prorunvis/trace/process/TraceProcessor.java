@@ -375,7 +375,7 @@ public class TraceProcessor {
             }
 
             if (!skipNext) {
-                markStatementsInChild(currentNode);
+                markStatementsInChild(currentNode, nextRangeToIgnore);
             }
 
             if (currentNode.getRange().get().contains(nextRangeToIgnore)) {
@@ -425,10 +425,21 @@ public class TraceProcessor {
      * (like the condition in an if statement) in order to mark it.
      *
      * @param currentNode Node currently being analyzed
+     * @param ifCheck used to determine which elif in an elif cascade is executed so that the conditions up to that
+     *                elif can be backfilled into the parents ranges
      */
-    private void markStatementsInChild(final Node currentNode) {
+    private void markStatementsInChild(final Node currentNode, final Range ifCheck) {
         if (currentNode instanceof IfStmt ifStmt) {
             current.addRange(ifStmt.getCondition().getRange().get());
+            if (ifStmt.getRange().get().contains(ifCheck)) {
+                while (ifStmt.getElseStmt().isPresent() && ifStmt.getElseStmt().get().isIfStmt()
+                       && !ifStmt.getElseStmt().get().asIfStmt().getThenStmt().getRange().get().isAfter(ifCheck)) {
+                    ifStmt = ifStmt.getElseStmt().get().asIfStmt();
+                    if (ifStmt.getCondition().getRange().isPresent()) {
+                        current.addRange(ifStmt.getCondition().getRange().get());
+                    }
+                }
+            }
         } else if (currentNode instanceof ForStmt forStmt) {
             List<Node> inits = new ArrayList<>(forStmt.getInitialization());
             inits.forEach(init -> current.addRange(init.getRange().get()));
