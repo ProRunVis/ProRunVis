@@ -25,9 +25,8 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     implementation("com.google.code.gson:gson:2.10.1")
-
-    // This dependency is used by the application.
     implementation("com.google.guava:guava:32.1.1-jre")
+    implementation("commons-cli:commons-cli:1.4")
 
     // Dependency for the java parser used in this project
     implementation ("com.github.javaparser:javaparser-symbol-solver-core:3.25.6")
@@ -52,6 +51,7 @@ tasks.named<Test>("test") {
 
 tasks.jar{
     archiveBaseName.set("prorunvis")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE;
     manifest{
         attributes["Main-Class"] = application.mainClass
     }
