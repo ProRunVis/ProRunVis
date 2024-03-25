@@ -81,7 +81,7 @@ The GET endpoint "/api/process" is responsible for processing an uploaded projec
 It does not accept any kind of payload and solely works on previously uploaded data, utilizing the prorunvis
 backend library to instrument and trace the program.  
 The response contains a JSON string representing the complete traced information. For additional information
-about the structure of the trace, you can refer to the TraceNode documentation.
+about the structure of the trace, you can refer to the [TraceNode documentation](TraceNodes.md).
 
 ### Customization
 
