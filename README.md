@@ -1,84 +1,81 @@
-# Program Run Visualizer
+# Program Run Visualizer 
 
-An interactive, visual debugging tool for Java, allowing the user to freely traverse the flow of a program and quickly analyse the programs behaviour. In Addition, the provided commandline interface allows to instrument code without ecplicitly tracing or visualizing the control flow.  
+An interactive, visual debugging tool for Java, allowing the user to freely traverse the flow of a program and quickly analyse the programs behaviour. In Addition, the provided command line interface allows to instrument code without explicitly tracing or visualizing the control flow. 
 
-**Note:** In the current version it is not possible to analyze the values of program variables or define an entry point for the visualization.
+**Note:** In the current version it is not possible to analyse the values of program variables or define an entry point for the visualization. 
 
-## Table of Contents
-
+## Table of Contents 
 - [Installation](#installation)
   - [Prerequisites](#prerequisites)
   - [Repository](#repository)
-  - [Commandline](#commandline)
-  - [Webforontend](#webfrontend)
+  - [Command line](#commandline)
+  - [Web frontend](#webfrontend)
 - [Usage](#usage)
   - [CLI](#cli)
-  - [Webinterface](#webinterface)
+  - [Web interface](#webinterface)
 - [License](#license)
 
+## Installation 
 
-## Installation
+### Prerequisites 
 
-### Prerequisites
+Since the tool is a Java application you need to have Java installed, the minimum requirement is Java 17. 
 
-Since the tool is a Java application you need to have Java installed, the minimum requirement is Java 17.  
+We use Gradle as primary build tool and since a Gradle wrapper is provided no local installation of Gradle is required, however if you want to use a local version, make sure to use Gradle 8.3 or newer. 
 
-We use Gradle as primary build tool and since a Gradle wrapper is provided no local installation of Gradle is required, however if you want to use a local version, make sure to use Gradle 8.3 or newer.
+### Repository 
 
-### Repository
+You can clone the repository with 
 
-You can clone the repository with  
+`git clone https://git.key-project.org/prorunvis23/prorunvis.git `
 
-`git clone https://git.key-project.org/prorunvis23/prorunvis.git`  
-
-or any other common way, ie. via SSH or through an IDE like VS Code or IntelliJ.  
-After cloning the repository, make sure to also clone the frontend submodule. This can be done with:  
+or any other common way, i.e. via SSH or through an IDE like VS Code or IntelliJ. 
+After cloning the repository, make sure to also clone the frontend submodule. This can be done with: 
 
 `git submodule update --init --recursive`  
 
-This will clone the frontend submodule into a folder called frontend, which will be necessary if you want to use the webinterface.
+This will clone the frontend submodule into a folder called frontend, which will be necessary if you want to use the web interface. 
 
-### Commandline
+### Commandline 
 
-To build the commandline application you will only need to build the prorunvis package. For this, using the gradle wrapper, type  
+To build the command line application you will only need to build the prorunvis package. For this, using the Gradle wrapper, type: 
 
-`./gradlew prorunvis:build`  
+`./gradlew prorunvis:build `
 
-This will generate a .jar archive in prorunvis/build/libs/prorunvis.jar  
+This will generate a .jar archive in prorunvis/build/libs/prorunvis.jar 
 
-### Webfrontend
-  
-For the web interface, the process is basically the same as for the commandline interface.  
-You can build it using  
+### Webfrontend 
+
+For the web interface, the process is the same as for the command line interface. 
+You can build it using: 
 
 `./gradlew prorunvis-api:build`  
 
-and the jar will be placed in prorunvis-api/build/libs/prorunvis-api.jar  
-There will also be a plain jar, however that is not needed for running the service.  
+and the jar will be placed in prorunvis-api/build/libs/prorunvis-api.jar 
+There will also be a plain jar, however that is not needed for running the service. 
 
-## Usage
+## Usage 
 
-### Cli
+### Cli 
 
-To use the commandline interface, you need the prorunvis.jar  
-As every JAR it can be executed with  
+To use the command line interface, you need the prorunvis.jar 
+As every JAR it can be executed with 
 
 `java -jar prorunvis.jar`  
 
-For information on arguments and input parameters, you can use the -h flag or have a look at the [documentation](Documentation.md).
+For information on arguments and input parameters, you can use the -h flag or have a look at the [documentation](Documentation.md). 
 
-### Webinterface
+### Webinterface 
 
-For using the webinterface you need the prorunvis-api.jar  
-Again, this JAR can be executed with  
+For using the web interface you need the prorunvis-api.jar 
+Again, this JAR can be executed with 
 
 `java -jar prorunvis-api.jar`  
 
-This will start a spring service in an embeded tomcat server locally and you can now access the webinterface by navigating to localhost:8080/ in your browser.  
-For additional information on implemented endpoints or how to customize the port the service is hosted on, have a look at the [documentation](Documentation.md).
+This will start a spring service in an embedded tomcat server locally and you can now access the web interface by navigating to localhost:8080/ in your browser. 
+For more information on implemented endpoints or how to customize the port the service is hosted on, have a look at the [documentation](Documentation.md).
 
 ## License
-
-<a href="LICENSE">
+ <a href="LICENSE">
   <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT">
-</a>
+</a> 
