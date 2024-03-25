@@ -1,6 +1,6 @@
 # Program Run Visualizer 
 
-An interactive, visual debugging tool for Java, allowing the user to freely traverse the flow of a program and quickly analyse the programs behaviour. In Addition, the provided command line interface allows to instrument code without explicitly tracing or visualizing the control flow. 
+An interactive, visual debugging tool for Java, allowing the user to freely traverse the flow of a program and quickly analyse the programs behaviour. In addition, the provided command line interface allows to instrument code without explicitly tracing or visualizing the control flow. 
 
 **Note:** In the current version it is not possible to analyse the values of program variables or define an entry point for the visualization. 
 
@@ -8,11 +8,11 @@ An interactive, visual debugging tool for Java, allowing the user to freely trav
 - [Installation](#installation)
   - [Prerequisites](#prerequisites)
   - [Repository](#repository)
-  - [Command line](#commandline)
-  - [Web frontend](#webfrontend)
+  - [Command line](#command-line)
+  - [Web frontend](#web-frontend)
 - [Usage](#usage)
   - [CLI](#cli)
-  - [Web interface](#webinterface)
+  - [Web interface](#web-interface)
 - [License](#license)
 
 ## Installation 
@@ -21,7 +21,7 @@ An interactive, visual debugging tool for Java, allowing the user to freely trav
 
 Since the tool is a Java application you need to have Java installed, the minimum requirement is Java 17. 
 
-We use Gradle as primary build tool and since a Gradle wrapper is provided no local installation of Gradle is required, however if you want to use a local version, make sure to use Gradle 8.3 or newer. 
+We use Gradle as primary build tool and since a Gradle wrapper is provided no local installation of Gradle is required. However if you want to use a local version, make sure to use Gradle 8.3 or newer. 
 
 ### Repository 
 
@@ -36,7 +36,7 @@ After cloning the repository, make sure to also clone the frontend submodule. Th
 
 This will clone the frontend submodule into a folder called frontend, which will be necessary if you want to use the web interface. 
 
-### Commandline 
+### Command Line 
 
 To build the command line application you will only need to build the prorunvis package. For this, using the Gradle wrapper, type: 
 
@@ -44,7 +44,7 @@ To build the command line application you will only need to build the prorunvis 
 
 This will generate a .jar archive in prorunvis/build/libs/prorunvis.jar 
 
-### Webfrontend 
+### Web Frontend 
 
 For the web interface, the process is the same as for the command line interface. 
 You can build it using: 
@@ -56,7 +56,7 @@ There will also be a plain jar, however that is not needed for running the servi
 
 ## Usage 
 
-### Cli 
+### CLI
 
 To use the command line interface, you need the prorunvis.jar 
 As every JAR it can be executed with 
@@ -65,7 +65,7 @@ As every JAR it can be executed with
 
 For information on arguments and input parameters, you can use the -h flag or have a look at the [documentation](Documentation.md). 
 
-### Webinterface 
+### Web Interface 
 
 For using the web interface you need the prorunvis-api.jar 
 Again, this JAR can be executed with 
