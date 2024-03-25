@@ -1,8 +1,8 @@
-# Programm Run Visualizer
+# Program Run Visualizer
 
-An interactive, visual debugging tool for Java, allowing the user to freely traverse the flow of a programm and quickly analyse the programms behaviour. In Addition, the provided commandline interface allows to instrumment code without ecplicitely tracing or visualizing the control flow.  
+An interactive, visual debugging tool for Java, allowing the user to freely traverse the flow of a program and quickly analyse the programs behaviour. In Addition, the provided commandline interface allows to instrument code without ecplicitly tracing or visualizing the control flow.  
 
-**Note:** In the current version it is not possible to analyze the values of programm variables or define an entry point for the visualization.
+**Note:** In the current version it is not possible to analyze the values of program variables or define an entry point for the visualization.
 
 ## Table of Contents
 
@@ -47,8 +47,7 @@ To build the commandline application you will only need to build the prorunvis p
 This will generate a .jar archive in prorunvis/build/libs/prorunvis.jar  
 
 ### Webfrontend
-
-prorunvis-api:build, jar, endpoint/port für access  
+  
 For the web interface, the process is basically the same as for the commandline interface.  
 You can build it using  
 
@@ -66,7 +65,7 @@ As every JAR it can be executed with
 
 `java -jar prorunvis.jar`  
 
-For information on arguments and input parameters, you can use the -h flag or have a look at the dokumentation (insert link here)
+For information on arguments and input parameters, you can use the -h flag or have a look at the [documentation](Documentation.md).
 
 ### Webinterface
 
@@ -76,7 +75,7 @@ Again, this JAR can be executed with
 `java -jar prorunvis-api.jar`  
 
 This will start a spring service in an embeded tomcat server locally and you can now access the webinterface by navigating to localhost:8080/ in your browser.  
-For additional information on implemented endpoints or how to customise the port the service is hosted on, have a look at the api documentation (insert link here)
+For additional information on implemented endpoints or how to customize the port the service is hosted on, have a look at the [documentation](Documentation.md).
 
 ## License
 
