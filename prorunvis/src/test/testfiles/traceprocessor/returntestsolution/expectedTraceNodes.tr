@@ -1,0 +1,107 @@
+TraceID: root
+Children: [1]
+Ranges: []
+Link: null
+Outlink: []
+Out: 0
+Parent: null
+Iteration: null
+
+TraceID: 0
+Children: [2, 11]
+Ranges: [(line 5,col 9)-(line 5,col 14), (line 6,col 9)-(line 6,col 18), (line 7,col 9)-(line 7,col 18), (line 8,col 13)-(line 8,col 18)]
+Link: ((line 3,col 24)-(line 3,col 27),ReturnTest.java)
+Outlink: [((line 8,col 21)-(line 8,col 27),ReturnTest.java)]
+Out: 0
+Parent: 0
+Iteration: null
+
+TraceID: 2
+Children: [3, 5, 7, 9]
+Ranges: [(line 14,col 9)-(line 14,col 18), (line 16,col 14)-(line 16,col 22), (line 16,col 25)-(line 16,col 29)]
+Link: ((line 5,col 9)-(line 5,col 11),ReturnTest.java)
+Outlink: [((line 23,col 17)-(line 23,col 23),ReturnTest.java), ((line 12,col 24)-(line 12,col 26),ReturnTest.java)]
+Out: 1
+Parent: 1
+Iteration: null
+
+TraceID: 3
+Children: [4]
+Ranges: [(line 18,col 17)-(line 18,col 21), (line 21,col 24)-(line 21,col 29), (line 27,col 13)-(line 27,col 22), (line 16,col 32)-(line 16,col 34)]
+Link: ((line 16,col 9)-(line 16,col 11),null)
+Outlink: []
+Out: 0
+Parent: 2
+Iteration: 1
+
+TraceID: 6
+Children: []
+Ranges: [(line 25,col 17)-(line 25,col 26)]
+Link: null
+Outlink: []
+Out: 0
+Parent: 3
+Iteration: null
+
+TraceID: 3
+Children: [6]
+Ranges: [(line 18,col 17)-(line 18,col 21), (line 21,col 24)-(line 21,col 29), (line 27,col 13)-(line 27,col 22), (line 16,col 32)-(line 16,col 34)]
+Link: ((line 16,col 9)-(line 16,col 11),null)
+Outlink: []
+Out: 0
+Parent: 2
+Iteration: 2
+
+TraceID: 6
+Children: []
+Ranges: [(line 25,col 17)-(line 25,col 26)]
+Link: null
+Outlink: []
+Out: 0
+Parent: 5
+Iteration: null
+
+TraceID: 3
+Children: [8]
+Ranges: [(line 18,col 17)-(line 18,col 21), (line 21,col 24)-(line 21,col 29), (line 27,col 13)-(line 27,col 22), (line 16,col 32)-(line 16,col 34)]
+Link: ((line 16,col 9)-(line 16,col 11),null)
+Outlink: []
+Out: 0
+Parent: 2
+Iteration: 3
+
+TraceID: 6
+Children: []
+Ranges: [(line 25,col 17)-(line 25,col 26)]
+Link: null
+Outlink: []
+Out: 0
+Parent: 7
+Iteration: null
+
+TraceID: 3
+Children: [10]
+Ranges: [(line 18,col 17)-(line 18,col 21), (line 21,col 24)-(line 21,col 29)]
+Link: ((line 16,col 9)-(line 16,col 11),null)
+Outlink: []
+Out: 0
+Parent: 2
+Iteration: 4
+
+TraceID: 5
+Children: []
+Ranges: [(line 22,col 17)-(line 22,col 20), (line 23,col 17)-(line 23,col 23)]
+Link: null
+Outlink: []
+Out: 0
+Parent: 9
+Iteration: null
+
+TraceID: 1
+Children: []
+Ranges: [(line 8,col 21)-(line 8,col 27)]
+Link: null
+Outlink: []
+Out: 0
+Parent: 1
+Iteration: null

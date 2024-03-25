@@ -1,0 +1,80 @@
+TraceID: root
+Children: [1]
+Ranges: []
+Link: null
+Outlink: []
+Out: 0
+Parent: null
+Iteration: null
+
+TraceID: 0
+Children: [2, 4, 5, 6, 8]
+Ranges: [(line 5,col 9)-(line 5,col 18), (line 7,col 15)-(line 7,col 20), (line 20,col 17)-(line 20,col 17)]
+Link: ((line 3,col 24)-(line 3,col 27),BreakContinueTest.java)
+Outlink: []
+Out: 0
+Parent: 0
+Iteration: null
+
+TraceID: 1
+Children: [3]
+Ranges: [(line 8,col 17)-(line 8,col 26)]
+Link: ((line 7,col 9)-(line 7,col 13),null)
+Outlink: []
+Out: 0
+Parent: 1
+Iteration: 1
+
+TraceID: 2
+Children: []
+Ranges: [(line 9,col 17)-(line 9,col 20), (line 10,col 17)-(line 10,col 25)]
+Link: null
+Outlink: []
+Out: 0
+Parent: 2
+Iteration: null
+
+TraceID: 1
+Children: []
+Ranges: [(line 8,col 17)-(line 8,col 26), (line 12,col 13)-(line 12,col 16), (line 13,col 17)-(line 13,col 26), (line 17,col 13)-(line 17,col 16)]
+Link: ((line 7,col 9)-(line 7,col 13),null)
+Outlink: []
+Out: 0
+Parent: 1
+Iteration: 2
+
+TraceID: 1
+Children: []
+Ranges: [(line 8,col 17)-(line 8,col 26), (line 12,col 13)-(line 12,col 16), (line 13,col 17)-(line 13,col 26), (line 17,col 13)-(line 17,col 16)]
+Link: ((line 7,col 9)-(line 7,col 13),null)
+Outlink: []
+Out: 0
+Parent: 1
+Iteration: 3
+
+TraceID: 1
+Children: [7]
+Ranges: [(line 8,col 17)-(line 8,col 26), (line 12,col 13)-(line 12,col 16), (line 13,col 17)-(line 13,col 26)]
+Link: ((line 7,col 9)-(line 7,col 13),null)
+Outlink: []
+Out: 0
+Parent: 1
+Iteration: 4
+
+TraceID: 3
+Children: []
+Ranges: [(line 14,col 17)-(line 14,col 23), (line 15,col 17)-(line 15,col 22)]
+Link: null
+Outlink: []
+Out: 0
+Parent: 6
+Iteration: null
+
+TraceID: 7
+Children: []
+Ranges: [(line 31,col 17)-(line 31,col 22)]
+Link: null
+Outlink: []
+Out: 0
+Parent: 1
+Iteration: null
