@@ -31,7 +31,7 @@ You can clone the repository with
 
 `git clone https://git.key-project.org/prorunvis23/prorunvis.git`  
 
-or any other common way, ie. via SSH or thrugh an IDE like VS Code or IntelliJ.  
+or any other common way, ie. via SSH or through an IDE like VS Code or IntelliJ.  
 After cloning the repository, make sure to also clone the frontend submodule. This can be done with:  
 
 `git submodule update --init --recursive`  
