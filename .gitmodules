@@ -1,3 +1,3 @@
 [submodule "frontend"]
 	path = frontend
-	url = ../../prorunvis23/prorunvis23-frontend.git
+	url = ../prorunvis23-frontend.git
