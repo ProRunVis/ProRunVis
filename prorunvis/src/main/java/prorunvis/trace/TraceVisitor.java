@@ -178,7 +178,7 @@ public class TraceVisitor extends ModifierVisitor<Map<Integer, Node>> {
      * @return a statement containing the call to the trace methode with the characteristics of the given statement
      */
     private Statement traceEntryCreator(final int id) {
-        return StaticJavaParser.parseStatement("prorunvis.ProRunVis.proRunVisTrace(\"" + id + "\");");
+        return StaticJavaParser.parseStatement("prorunvis.Trace.next_elem(" + id + ");");
     }
 
     /**

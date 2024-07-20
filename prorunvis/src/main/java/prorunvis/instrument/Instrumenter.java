@@ -55,7 +55,7 @@ public final class Instrumenter {
         instrumented.mkdir();
         pr.getSourceRoots().forEach(sr -> sr.saveAll(Paths.get(instrumentedOutPath)));
 
-        File proRunVisClass = new File(instrumentedOutPath + "/prorunvis/ProRunVis.java");
+        File proRunVisClass = new File(instrumentedOutPath + "/prorunvis/Trace.java");
         proRunVisClass.mkdirs();
         if (proRunVisClass.exists()) {
             proRunVisClass.delete();
@@ -84,15 +84,15 @@ public final class Instrumenter {
                 import java.io.BufferedWriter;
                 import java.io.FileWriter;
                 import java.io.IOException;
-                public final class ProRunVis {
-                    public static void proRunVisTrace(String trace) {
+                public final class Trace {
+                    public static void next_elem(int num) {
                         try {
                             BufferedWriter writer = new BufferedWriter(new FileWriter(
                             """
                             + "\"" + path + "\"" + "\n"
                             + """
                             , true));
-                            writer.write(trace + System.lineSeparator());
+                            writer.write("" + num + System.lineSeparator());
                             writer.close();
                         } catch (IOException e) {
                             throw new RuntimeException(e.getMessage());
