@@ -13,6 +13,7 @@ An interactive, visual debugging tool for Java, allowing the user to freely trav
 - [Usage](#usage)
   - [CLI](#cli)
   - [Web interface](#web-interface)
+  - [Examples](#examples)
 - [License](#license)
 
 ## Installation 
@@ -74,6 +75,10 @@ Again, this JAR can be executed with
 
 This will start a spring service in an embedded tomcat server locally and you can now access the web interface by navigating to localhost:8080/ in your browser. 
 For more information on implemented endpoints or how to customize the port the service is hosted on, have a look at the [documentation](Documentation.md).
+
+### Examples
+
+There is a separete [repository with a collection of examples](https://github.com/ProRunVis/ProRunVis-examples) (currently one).
 
 ## License
  <a href="LICENSE">
