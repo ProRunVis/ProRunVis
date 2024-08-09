@@ -14,6 +14,7 @@ An interactive, visual debugging tool for Java, allowing the user to freely trav
   - [CLI](#cli)
   - [Web interface](#web-interface)
   - [Examples](#examples)
+- [Credit](#credit)
 - [License](#license)
 
 ## Installation 
@@ -78,7 +79,11 @@ For more information on implemented endpoints or how to customize the port the s
 
 ### Examples
 
-There is a separete [repository with a collection of examples](https://github.com/ProRunVis/ProRunVis-examples) (currently one).
+There is a separete [repository with a collection of examples](https://github.com/ProRunVis/ProRunVis-examples).
+
+## Credit
+
+This was developed as student software project in winter 2023/2024 at Technical University Darmstadt.
 
 ## License
  <a href="LICENSE">
