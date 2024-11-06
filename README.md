@@ -74,7 +74,7 @@ Again, this JAR can be executed with:
 ```
 java -jar prorunvis-api/build/libs/prorunvis-api.jar
 ```
-This will start a spring service in an embedded tomcat server locally and you can now access the web interface by navigating to https://localhost:8080/ in your browser.
+This will start a spring service in an embedded tomcat server locally and you can now access the web interface by navigating to http://localhost:8080/ in your browser.
 For more information on implemented endpoints or how to customize the port the service is hosted on, have a look at the [documentation](Documentation.md).
 
 ### Examples
