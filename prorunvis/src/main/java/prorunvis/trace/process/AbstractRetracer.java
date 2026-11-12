@@ -6,8 +6,7 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.*;
-import com.github.javaparser.ast.visitor.ModifierVisitor;
-import com.github.javaparser.ast.visitor.Visitable;
+import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -353,23 +352,19 @@ public class AbstractRetracer {
         int[] nextId = {1};
 
         for (CompilationUnit cu : cus) {
-            cu.accept(new ModifierVisitor<Void>() {
+            cu.accept(new VoidVisitorAdapter<Void>() {
                 @Override
-                public Visitable visit(final MethodDeclaration md, final Void arg) {
+                public void visit(final MethodDeclaration md, final Void arg) {
                     super.visit(md, arg);
                     if (md.getBody().isPresent()) {
                         map.put(nextId[0]++, md);
                     }
-                    return md;
                 }
 
                 @Override
-                public Visitable visit(final ConstructorDeclaration cd, final Void arg) {
+                public void visit(final ConstructorDeclaration cd, final Void arg) {
                     super.visit(cd, arg);
-                    // src-tracer assigns funcIds to constructors too,
-                    // but ProRunVis doesn't instrument them — skip mapping
                     nextId[0]++;
-                    return cd;
                 }
             }, null);
         }
