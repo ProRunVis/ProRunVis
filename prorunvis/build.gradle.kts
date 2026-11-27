@@ -27,7 +27,8 @@ dependencies {
     implementation("commons-cli:commons-cli:1.4")
 
     // Dependency for the java parser used in this project
-    implementation ("com.github.javaparser:javaparser-symbol-solver-core:3.25.6")
+    // Must match the version bundled in srctracer-instrumenter.jar (3.26.4)
+    implementation ("com.github.javaparser:javaparser-symbol-solver-core:3.26.4")
 
     // SrcTracer instrumenter and runtime (local JARs)
     implementation(files("libs/srctracer-instrumenter.jar"))

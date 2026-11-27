@@ -28,7 +28,13 @@ public class AbstractRetracer {
         FUNC, IN, OUT, RETURN, TRY, TRY_END, CATCH, END
     }
 
-    private record Token(TokenType type, int value) {}
+    private record Token(TokenType type, int value) {
+        @Override
+        public String toString() {
+            return type == TokenType.FUNC || type == TokenType.CATCH
+                    ? type + "(" + value + ")" : type.toString();
+        }
+    }
 
     private enum ControlFlow {
         NORMAL, RETURN, BREAK, CONTINUE
@@ -85,7 +91,9 @@ public class AbstractRetracer {
         MethodDeclaration mainMethod = funcIdToMethod.get(first.value());
         if (mainMethod == null) {
             throw new IllegalStateException(
-                    "No method found for funcId " + first.value());
+                    "No method found for funcId " + first.value()
+                            + ". Known funcIds: " + funcIdToMethod.keySet()
+                            + ". Tokens: " + tokens);
         }
         emitBlockId(mainMethod);
         retraceMethodBody(mainMethod);
@@ -608,9 +616,13 @@ public class AbstractRetracer {
         }
         if (hasMore()) {
             int remaining = tokens.size() - pos;
+            List<Token> unconsumed = tokens.subList(pos, tokens.size());
             throw new IllegalStateException(
                     "Trace/source mismatch: " + remaining
-                            + " unconsumed token(s) after retracing. "
+                            + " unconsumed token(s) after retracing (pos=" + pos
+                            + ", total=" + tokens.size() + "). "
+                            + "Remaining: " + unconsumed + ". "
+                            + "Output so far: " + output + ". "
                             + "The trace file may not match the provided source code.");
         }
     }
@@ -634,7 +646,8 @@ public class AbstractRetracer {
         if (t.type() != expected) {
             throw new IllegalStateException(
                     "Expected " + expected + " but got " + t.type()
-                            + " at token position " + (pos - 1));
+                            + " at token position " + (pos - 1)
+                            + ". Tokens: " + tokens);
         }
         return t;
     }
