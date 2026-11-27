@@ -14,56 +14,27 @@ import prorunvis.CompileAndRun;
 import prorunvis.instrument.Instrumenter;
 import prorunvis.preprocess.Preprocessor;
 import prorunvis.trace.TraceNode;
+import prorunvis.trace.process.AbstractRetracer;
 import prorunvis.trace.process.TraceProcessor;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Stream;
 
 @Service
 public final class SingleRunProcessingService implements ProcessingService {
 
-    /**
-     * The location where input data is stored.
-     */
     private final Path inLocation;
-
-    /**
-     * The location for storing temporary output data.
-     */
     private final Path outLocation;
-
-    /**
-     * A List of {@link CompilationUnit}s.
-     */
     private List<CompilationUnit> cus;
-
-    /**
-     * A File containing the trace of a program run.
-     */
     private File traceFile;
-
-    /**
-     * A HashMap containing {@link Node} objects mapped to
-     * their trace IDs.
-     */
     private HashMap<Integer, Node> traceMap;
-
-    /**
-     * A List of {@link TraceNode} objects as provided by the
-     * {@link TraceProcessor} of the ProRunVis library.
-     */
     private List<TraceNode> nodes;
 
-    /**
-     * Constructs a ProcessingService for processing a single program
-     * run.
-     *
-     * @param properties The StorageProperties for input and output
-     *                   locations.
-     */
     public SingleRunProcessingService(final StorageProperties properties) {
         if (properties.getLocation().trim().isEmpty()) {
             throw new ProcessingException("Cannot process empty directory.");
@@ -72,6 +43,7 @@ public final class SingleRunProcessingService implements ProcessingService {
         inLocation = Paths.get(properties.getLocation());
         outLocation = Paths.get(properties.getOutLocation());
     }
+
     @Override
     public boolean isReady() {
         return inLocation.toFile().exists()
@@ -81,7 +53,7 @@ public final class SingleRunProcessingService implements ProcessingService {
 
     @Override
     public void instrument() {
-        //setup parser and trace file
+        long startTime = System.nanoTime();
         StaticJavaParser.getParserConfiguration().setSymbolResolver(new JavaSymbolSolver(new CombinedTypeSolver()));
         ProjectRoot projectRoot =
                 new SymbolSolverCollectionStrategy().collect(inLocation);
@@ -89,7 +61,6 @@ public final class SingleRunProcessingService implements ProcessingService {
         traceFile = new File(outLocation.toString() + "/Trace.tr");
         Instrumenter.setupTrace(traceFile);
 
-        //run parser and collect compilation units
         cus = new ArrayList<>();
         projectRoot.getSourceRoots().forEach(sr -> {
             try {
@@ -105,34 +76,84 @@ public final class SingleRunProcessingService implements ProcessingService {
             Instrumenter.run(cu, traceMap);
         });
         Instrumenter.saveInstrumented(projectRoot, outLocation.toString() + "/instrumented");
+        long elapsed = System.nanoTime() - startTime;
+        System.out.printf("[ProRunVis] Instrument phase: %.2f ms%n", elapsed / 1_000_000.0);
     }
 
     @Override
     public void trace() {
+        if (findSrcTracerTrace() != null) {
+            System.out.println("[ProRunVis] Trace phase: skipped (SrcTracer trace found)");
+            return;
+        }
+
+        long startTime = System.nanoTime();
         try {
             CompileAndRun.run(cus, outLocation.toString() + "/instrumented",
                     outLocation.toString() + "/compiled");
         } catch (IOException | InterruptedException | ArrayIndexOutOfBoundsException e) {
             throw new ProcessingException(e.getMessage());
         }
+        long elapsed = System.nanoTime() - startTime;
+        System.out.printf("[ProRunVis] Trace phase (compile+run): %.2f ms%n", elapsed / 1_000_000.0);
     }
 
     @Override
     public void process() {
-        TraceProcessor processor = new TraceProcessor(traceMap, traceFile.getPath(), inLocation);
+        long startTime = System.nanoTime();
+        TraceProcessor processor;
+        String srcTracerTrace = findSrcTracerTrace();
+
+        if (srcTracerTrace != null) {
+            System.out.println("[ProRunVis] Using SrcTracer path: " + srcTracerTrace);
+            try {
+                long retStart = System.nanoTime();
+                AbstractRetracer retracer = new AbstractRetracer(
+                        cus, traceMap, srcTracerTrace, inLocation);
+                Stack<Integer> retraced = retracer.retrace();
+                long retElapsed = System.nanoTime() - retStart;
+                System.out.printf("[ProRunVis] AbstractRetracer: %.2f ms%n", retElapsed / 1_000_000.0);
+                processor = new TraceProcessor(traceMap, retraced, inLocation);
+            } catch (IOException e) {
+                throw new ProcessingException("Failed to read SrcTracer trace file.", e);
+            } catch (IllegalStateException e) {
+                throw new ProcessingException(e.getMessage(), e);
+            }
+        } else {
+            System.out.println("[ProRunVis] Using original compile-and-run path");
+            processor = new TraceProcessor(traceMap, traceFile.getPath(), inLocation);
+        }
+
         try {
+            long tpStart = System.nanoTime();
             processor.start();
+            long tpElapsed = System.nanoTime() - tpStart;
+            System.out.printf("[ProRunVis] TraceProcessor: %.2f ms%n", tpElapsed / 1_000_000.0);
         } catch (IOException e) {
             throw new ProcessingException("An error occurred during processing of the trace.", e);
         }
         nodes = processor.getNodeList();
+        long totalElapsed = System.nanoTime() - startTime;
+        System.out.printf("[ProRunVis] Process phase total: %.2f ms%n", totalElapsed / 1_000_000.0);
     }
 
     @Override
     public String toJSON() {
         Gson gson = new Gson();
         String response = gson.toJson(nodes);
-        //replace \\ from windows paths with / for webkit directory
         return response.replace("\\\\", "/");
+    }
+
+    private String findSrcTracerTrace() {
+        try (Stream<Path> paths = Files.walk(inLocation)) {
+            return paths
+                    .filter(p -> p.toString().endsWith(".trace.txt")
+                            || p.toString().endsWith(".trace"))
+                    .map(Path::toString)
+                    .findFirst()
+                    .orElse(null);
+        } catch (IOException e) {
+            return null;
+        }
     }
 }

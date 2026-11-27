@@ -102,6 +102,23 @@ public class TraceProcessor {
     }
 
     /**
+     * Constructs a TraceProcessor with pre-computed tokens (e.g. from {@link AbstractRetracer}).
+     *
+     * @param trace          A map containing all the possible trace-id's
+     *                       and their corresponding nodes in the AST.
+     * @param precomputedTokens A stack of block IDs with the first ID on top.
+     * @param rootDir        The path to the root directory of the original project.
+     */
+    public TraceProcessor(final Map<Integer, Node> trace, final Stack<Integer> precomputedTokens, final Path rootDir) {
+        this.nodeList = new LinkedList<>();
+        this.traceMap = trace;
+        this.scanner = null;
+        this.tokens = precomputedTokens;
+        this.methodCallRanges = new ArrayList<>();
+        this.rootDir = rootDir.toAbsolutePath();
+    }
+
+    /**
      * Start the processor by creating the token stack and
      * the root for the tree.
      *
@@ -110,11 +127,13 @@ public class TraceProcessor {
      */
     public void start() throws IOException {
 
-        //read tokens to stack
-        try {
-            tokens = scanner.readFile();
-        } catch (IOException e) {
-            throw new IOException("Could not read trace file.", e);
+        if (tokens == null) {
+            //read tokens to stack
+            try {
+                tokens = scanner.readFile();
+            } catch (IOException e) {
+                throw new IOException("Could not read trace file.", e);
+            }
         }
 
         createRoot();

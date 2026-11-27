@@ -1,0 +1,26 @@
+TraceID: root
+Children: [1]
+Ranges: []
+Link: null
+Outlink: []
+Out: 0
+Parent: null
+Iteration: null
+
+TraceID: 0
+Children: [2]
+Ranges: [(line 4,col 9)-(line 4,col 18), (line 5,col 13)-(line 5,col 18)]
+Link: ((line 3,col 24)-(line 3,col 27),IfElseTest.java)
+Outlink: []
+Out: 0
+Parent: 0
+Iteration: null
+
+TraceID: 2
+Children: []
+Ranges: [(line 8,col 13)-(line 8,col 22)]
+Link: null
+Outlink: []
+Out: 0
+Parent: 1
+Iteration: null

@@ -1,0 +1,63 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.2.0)
+
+2026-08-28T14:25:51.820+01:00  INFO 26996 --- [           main] api.ProRunVisAPI                         : Starting ProRunVisAPI using Java 17.0.19 with PID 26996 (/Users/salma/ProRunVis/prorunvis-api/build/libs/prorunvis-api.jar started by salma in /Users/salma/ProRunVis)
+2026-08-28T14:25:51.824+01:00  INFO 26996 --- [           main] api.ProRunVisAPI                         : No active profile set, falling back to 1 default profile: "default"
+2026-08-28T14:25:52.480+01:00  INFO 26996 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-08-28T14:25:52.485+01:00  INFO 26996 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-08-28T14:25:52.486+01:00  INFO 26996 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.16]
+2026-08-28T14:25:52.510+01:00  INFO 26996 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-08-28T14:25:52.511+01:00  INFO 26996 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 638 ms
+2026-08-28T14:25:52.630+01:00  INFO 26996 --- [           main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2026-08-28T14:25:52.863+01:00  INFO 26996 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint(s) beneath base path '/actuator'
+2026-08-28T14:25:52.901+01:00  INFO 26996 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path ''
+2026-08-28T14:25:52.910+01:00  INFO 26996 --- [           main] api.ProRunVisAPI                         : Started ProRunVisAPI in 1.328 seconds (process running for 1.58)
+2026-08-28T14:26:01.365+01:00  INFO 26996 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-08-28T14:26:01.365+01:00  INFO 26996 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-08-28T14:26:01.366+01:00  INFO 26996 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+[ProRunVis] Instrument phase: 110,75 ms
+[ProRunVis] Trace phase: skipped (SrcTracer trace found)
+[ProRunVis] Using SrcTracer path: resources/in/trace_len_10_text/TraceLen_2026-08-28_14.18.40.200302000.trace.txt
+[ProRunVis] AbstractRetracer: 4,88 ms
+[ProRunVis] TraceProcessor: 3,87 ms
+[ProRunVis] Process phase total: 9,74 ms
+[ProRunVis] Instrument phase: 10,59 ms
+[ProRunVis] Trace phase: skipped (SrcTracer trace found)
+[ProRunVis] Using SrcTracer path: resources/in/trace_len_10_binary/TraceLen_2026-08-28_13.56.43.577980000.trace
+[ProRunVis] AbstractRetracer: 1,52 ms
+[ProRunVis] TraceProcessor: 0,63 ms
+[ProRunVis] Process phase total: 2,69 ms
+[ProRunVis] Instrument phase: 9,14 ms
+[ProRunVis] Trace phase: skipped (SrcTracer trace found)
+[ProRunVis] Using SrcTracer path: resources/in/trace_len_100_text/TraceLen_2026-08-28_14.18.39.777351000.trace.txt
+[ProRunVis] AbstractRetracer: 6,42 ms
+[ProRunVis] TraceProcessor: 4,05 ms
+[ProRunVis] Process phase total: 10,90 ms
+[ProRunVis] Instrument phase: 7,66 ms
+[ProRunVis] Trace phase: skipped (SrcTracer trace found)
+[ProRunVis] Using SrcTracer path: resources/in/trace_len_100_binary/TraceLen_2026-08-28_13.56.45.199464000.trace
+[ProRunVis] AbstractRetracer: 5,68 ms
+[ProRunVis] TraceProcessor: 2,19 ms
+[ProRunVis] Process phase total: 8,34 ms
+[ProRunVis] Instrument phase: 9,99 ms
+[ProRunVis] Trace phase: skipped (SrcTracer trace found)
+[ProRunVis] Using SrcTracer path: resources/in/trace_len_1000_text/TraceLen_2026-08-28_14.18.39.317222000.trace.txt
+[ProRunVis] AbstractRetracer: 33,91 ms
+[ProRunVis] TraceProcessor: 333,79 ms
+[ProRunVis] Process phase total: 368,38 ms
+[ProRunVis] Instrument phase: 7,35 ms
+[ProRunVis] Trace phase: skipped (SrcTracer trace found)
+[ProRunVis] Using SrcTracer path: resources/in/trace_len_1000_binary/TraceLen_2026-08-28_13.56.46.782200000.trace
+[ProRunVis] AbstractRetracer: 17,31 ms
+[ProRunVis] TraceProcessor: 310,62 ms
+[ProRunVis] Process phase total: 328,53 ms
+[ProRunVis] Instrument phase: 5,42 ms
+[ProRunVis] Trace phase: skipped (SrcTracer trace found)
+[ProRunVis] Using SrcTracer path: resources/in/trace_len_10000_text/TraceLen_2026-08-28_14.18.38.868002000.trace.txt
+[ProRunVis] AbstractRetracer: 109,55 ms

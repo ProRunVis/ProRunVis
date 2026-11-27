@@ -19,4 +19,8 @@ build
 !/prorunvis/src/test/testfiles/traceprocessor/throwtest/resources/in/
 
 # Ignore temporary folders for testing
-resources
+/resources
+thesis-benchmark-methodology.md
+thesis-chapter2-background.md
+thesis-chapter3-methodology.md
+thesis-evaluation-rq2.md

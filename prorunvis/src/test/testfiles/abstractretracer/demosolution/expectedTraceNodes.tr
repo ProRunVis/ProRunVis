@@ -1,0 +1,53 @@
+TraceID: root
+Children: [1]
+Ranges: []
+Link: null
+Outlink: []
+Out: 0
+Parent: null
+Iteration: null
+
+TraceID: 3
+Children: [2]
+Ranges: [(line 17,col 9)-(line 17,col 29), (line 18,col 9)-(line 18,col 49)]
+Link: ((line 16,col 24)-(line 16,col 27),Demo.java)
+Outlink: []
+Out: 0
+Parent: 0
+Iteration: null
+
+TraceID: 0
+Children: [3, 4, 5]
+Ranges: [(line 4,col 13)-(line 4,col 17), (line 8,col 9)-(line 8,col 20), (line 9,col 14)-(line 9,col 22), (line 9,col 25)-(line 9,col 29), (line 13,col 9)-(line 13,col 19)]
+Link: ((line 17,col 22)-(line 17,col 25),Demo.java)
+Outlink: [((line 13,col 9)-(line 13,col 15),Demo.java), ((line 3,col 16)-(line 3,col 19),Demo.java)]
+Out: 1
+Parent: 1
+Iteration: null
+
+TraceID: 2
+Children: []
+Ranges: [(line 10,col 13)-(line 10,col 21), (line 9,col 32)-(line 9,col 34)]
+Link: ((line 9,col 9)-(line 9,col 11),null)
+Outlink: []
+Out: 0
+Parent: 2
+Iteration: 1
+
+TraceID: 2
+Children: []
+Ranges: [(line 10,col 13)-(line 10,col 21), (line 9,col 32)-(line 9,col 34)]
+Link: ((line 9,col 9)-(line 9,col 11),null)
+Outlink: []
+Out: 0
+Parent: 2
+Iteration: 2
+
+TraceID: 2
+Children: []
+Ranges: [(line 10,col 13)-(line 10,col 21), (line 9,col 32)-(line 9,col 34)]
+Link: ((line 9,col 9)-(line 9,col 11),null)
+Outlink: []
+Out: 0
+Parent: 2
+Iteration: 3

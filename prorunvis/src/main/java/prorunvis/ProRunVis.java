@@ -12,6 +12,8 @@ import com.google.gson.GsonBuilder;
 import org.apache.commons.cli.*;
 import prorunvis.instrument.Instrumenter;
 import prorunvis.preprocess.Preprocessor;
+import prorunvis.trace.process.AbstractRetracer;
+import prorunvis.trace.process.Scanner;
 import prorunvis.trace.process.TraceProcessor;
 
 import java.io.BufferedWriter;
@@ -19,10 +21,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class ProRunVis {
     /**
@@ -45,6 +44,7 @@ public final class ProRunVis {
         boolean instrumentOnly = false;
         String inputPath;
         String outputPath = "resources/out";
+        String srcTracerTrace = null;
 
         Options options = new Options();
         options.addOption(Option.builder("h")
@@ -60,6 +60,12 @@ public final class ProRunVis {
                 .hasArg()
                 .argName("output_directory")
                 .desc("Output file path")
+                .build());
+        options.addOption(Option.builder("s")
+                .longOpt("srctracer")
+                .hasArg()
+                .argName("trace_file")
+                .desc("Path to a SrcTracer .trace.txt file (skips compile & run)")
                 .build());
 
         CommandLineParser commandLineParser = new DefaultParser();
@@ -84,6 +90,9 @@ public final class ProRunVis {
             }
             if (cmd.hasOption("i")) {
                 instrumentOnly = true;
+            }
+            if (cmd.hasOption("s")) {
+                srcTracerTrace = cmd.getOptionValue("s");
             }
             if (!Paths.get(inputPath).toFile().exists()
                     || !Paths.get(inputPath).toFile().isDirectory()) {
@@ -127,8 +136,32 @@ public final class ProRunVis {
         //run and process the tracing if not specified otherwise by the -i flag
         if (!instrumentOnly) {
             try {
-                CompileAndRun.run(cus, outputPath + "/instrumented", outputPath + "/compiled");
-                TraceProcessor processor = new TraceProcessor(map, traceFile.getPath(), Paths.get(args[0]));
+                TraceProcessor processor;
+
+                if (srcTracerTrace != null) {
+                    // SrcTracer path: abstract retrace instead of compile & run
+                    AbstractRetracer retracer = new AbstractRetracer(
+                            cus, map, srcTracerTrace, Paths.get(args[0]));
+                    Stack<Integer> retraced = retracer.retrace();
+
+                    java.util.List<Integer> ids = new java.util.ArrayList<>(retraced);
+                    java.util.Collections.reverse(ids);
+                    System.out.println("AbstractRetracer block IDs (execution order): " + ids);
+
+                    processor = new TraceProcessor(map, retraced, Paths.get(args[0]));
+                } else {
+                    // Original path: compile, run, read block-ID trace
+                    CompileAndRun.run(cus, outputPath + "/instrumented", outputPath + "/compiled");
+
+                    Scanner traceScanner = new Scanner(traceFile.getPath());
+                    Stack<Integer> originalTokens = traceScanner.readFile();
+                    java.util.List<Integer> origIds = new java.util.ArrayList<>(originalTokens);
+                    java.util.Collections.reverse(origIds);
+                    System.out.println("Original block IDs (execution order): " + origIds);
+
+                    processor = new TraceProcessor(map, originalTokens, Paths.get(args[0]));
+                }
+
                 processor.start();
 
                 //save json trace to file

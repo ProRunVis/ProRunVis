@@ -73,6 +73,18 @@ public class UploadController {
         }
     }
 
+    @PostMapping("/api/upload-trace")
+    @ResponseBody
+    public void handleTraceUpload(final HttpServletRequest request) {
+        try {
+            for (Part part : request.getParts()) {
+                storageService.store(part);
+            }
+        } catch (IOException | ServletException e) {
+            throw new StorageException("No trace file for upload selected.");
+        }
+    }
+
     /**
      * An ExceptionHandler for handling {@link StorageException}s.
      * If an exceptions occurs, this handler returns a string representation of

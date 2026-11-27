@@ -1,0 +1,15 @@
+benchmark,java_files,trace_text_size_bytes,trace_binary_size_bytes,trace_text_tokens
+combined_large,1,46761,10308,46761
+files_1,2,29,8,29
+files_10,11,260,62,260
+files_20,21,517,122,517
+files_5,6,132,32,132
+nesting_10,1,224,41,224
+nesting_20,1,207,38,207
+nesting_5,1,247,45,247
+nesting_50,1,211,39,211
+trace_len_10,1,37,10,37
+trace_len_100,1,307,55,307
+trace_len_1000,1,3007,505,3007
+trace_len_10000,1,30007,5005,30007
+trace_len_50000,1,150007,25005,150007
